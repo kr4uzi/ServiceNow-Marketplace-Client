@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sys_alias_templates">
+    <sys_alias_templates action="INSERT_OR_UPDATE">
+        <default_data_template>{&#13;
+	"credential": {&#13;
+		"table": "api_key_credentials",&#13;
+		"name": "GitHub Access Token",&#13;
+		"api_key": ""&#13;
+	},&#13;
+	"connection": {&#13;
+		"table": "http_connection",&#13;
+		"use_mid": false,&#13;
+		"connection_url": "https://api.github.com",&#13;
+		"name": "GitHub Source",&#13;
+                "extended_attributes" : {&#13;
+			"type": "source"&#13;
+                 }&#13;
+	}&#13;
+}</default_data_template>
+        <dynamic_data_schema>{&#13;
+  "connection_fields" : [ {&#13;
+    "name" : "connection.name",&#13;
+    "label" : "Connection Name",&#13;
+    "type" : "text",&#13;
+    "defaultValue" : "GitHub Target or Source Name",&#13;
+    "hint" : "Display name for the Connection",&#13;
+    "mandatory" : true&#13;
+  }, {&#13;
+    "name" : "connection.connection_url",&#13;
+    "label" : "API Endpoint",&#13;
+    "type" : "text",&#13;
+    "defaultValue" : "https://api.github.com",&#13;
+    "hint" : "Cloud, Enterprise Cloud: https://api.github.com | Enterprise: https://github.&lt;company&gt;.com/api/v3",&#13;
+    "mandatory" : true&#13;
+  }, {&#13;
+    "name" : "connection.extended_attributes.type",&#13;
+    "label" : "Type",&#13;
+    "type" : "choice",&#13;
+    "defaultValue" : "source",&#13;
+    "hint" : "Marketplace Source: source | Marketplace Target: target",&#13;
+    "mandatory" : true,&#13;
+    "choices" : [ "source", "target" ]&#13;
+  }, {&#13;
+    "name" : "connection.extended_attributes.github_type",&#13;
+    "label" : "GitHub Type",&#13;
+    "type" : "choice",&#13;
+    "defaultValue" : "organization",&#13;
+    "hint" : "Marketplace Source: source | Marketplace Target: target",&#13;
+    "mandatory" : true,&#13;
+    "choices" : [ "organization", "user" ]&#13;
+  }, {&#13;
+    "name" : "connection.extended_attributes.github_name",&#13;
+    "label" : "GitHub Name",&#13;
+    "type" : "text",&#13;
+    "defaultValue" : "ServiceNow-Marketplace",&#13;
+    "hint" : "The name (as in the url) of the Marketplace Source or Target",&#13;
+    "mandatory" : true&#13;
+  } ],&#13;
+  "credential_fields" : [ {&#13;
+    "name" : "credential.api_key",&#13;
+    "label" : "Access token",&#13;
+    "type" : "password",&#13;
+    "defaultValue" : "",&#13;
+    "hint" : "Personal access token to access the source or target",&#13;
+    "mandatory" : true&#13;
+  } ]&#13;
+}</dynamic_data_schema>
+        <name>Marketplace Client Configuration</name>
+        <on_edit_script><![CDATA[(function execute(aliasId, connectionSysId, jsonDefaultData, jsonDynamicData) {
+   // aliasId: sys_id of the alias record
+   // connectionSysId: sys_id of the connection record created by using the default and dynamic data
+   // jsonDefaultData (String): The default JSON template data from template table
+   // e.g. var jsonDefaultParsed = JSON.parse(jsonDefaultData);
+   //      gs.info("default connection url = " + jsonDefaultParsed["connection"]["connection_url"]);
+   // jsonDynamicData (String): User input based on the key/values defined in "Dynamic Data"
+   // e.g. var jsonDynamicParsed = JSON.parse(jsonDynamicData);
+   //      gs.info("dynamic connection url = " + jsonDynamicParsed["connection.connection_url"]);
+})(aliasId, connectionSysId, jsonDefaultData, jsonDynamicData);
+]]></on_edit_script>
+        <post_process_script><![CDATA[(function execute(aliasId, connectionSysId, jsonDefaultData, jsonDynamicData) {
+   // aliasId: sys_id of the alias record
+   // connectionSysId: sys_id of the connection record created by using the default and dynamic data
+   // jsonDefaultData (String): The default JSON template data from template table
+   // e.g. var jsonDefaultParsed = JSON.parse(jsonDefaultData);
+   //      gs.info("default connection url = " + jsonDefaultParsed["connection"]["connection_url"]);
+   // jsonDynamicData (String): User input based on the key/values defined in "Dynamic Data"
+   // e.g. var jsonDynamicParsed = JSON.parse(jsonDynamicData);
+   //      gs.info("dynamic connection url = " + jsonDynamicParsed["connection.connection_url"]);
+})(aliasId, connectionSysId, jsonDefaultData, jsonDynamicData);
+]]></post_process_script>
+        <pre_edit_script><![CDATA[(function execute(aliasId, connectionSysId, jsonDefaultData, jsonDynamicData) {
+   // aliasId: sys_id of the alias record.
+   // connectionSysId: sys_id of the connection record created by using the default and dynamic data.
+   // jsonDefaultData (String): The default JSON template data from template table.
+   // e.g. var jsonDefaultParsed = JSON.parse(jsonDefaultData);
+   //      gs.info("default connection url = " + jsonDefaultParsed["connection"]["connection_url"]);
+   // jsonDynamicData (String): Current values of Connection and Credential fields (except Password fields) based on the key-value pairs defined in "Dynamic Data".
+   // e.g. var jsonDynamicParsed = JSON.parse(jsonDynamicData);
+   //      gs.info("dynamic connection url = " + jsonDynamicParsed["connection.connection_url"]);
+
+   //returns array of objects. Each object has name-value pairs for populating additional fields values in connections dashboard in the edit view.
+   //In this example script, additionalField1, additionalField2 are additional fields.
+   //Here we define calcAdditionalField1(), calcAdditionalField2() functions in the script
+   //to calculate current values for additionalField1, additionalField2.
+
+   //return [{
+   //         name: "additionalField1"
+   //         value: calcAdditionalField1(),
+   //    },
+   //    {
+   //         name: "additionalField2"
+   //         value: calcAdditionalField2(),
+   //    }
+   //];
+
+   return [];
+})(aliasId, connectionSysId, jsonDefaultData, jsonDynamicData);
+]]></pre_edit_script>
+        <sys_class_name>sys_alias_templates</sys_class_name>
+        <sys_created_by>markus.kraus</sys_created_by>
+        <sys_created_on>2024-01-20 15:29:02</sys_created_on>
+        <sys_id>ced9c02697bff1503c2d3f56f053af0b</sys_id>
+        <sys_mod_count>3</sys_mod_count>
+        <sys_name>Marketplace Client Configuration</sys_name>
+        <sys_package display_value="Marketplace Client" source="x_376096_mplc">2fe28b4497bf39103c2d3f56f053af4e</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="Marketplace Client">2fe28b4497bf39103c2d3f56f053af4e</sys_scope>
+        <sys_update_name>sys_alias_templates_ced9c02697bff1503c2d3f56f053af0b</sys_update_name>
+        <sys_updated_by>markus.kraus</sys_updated_by>
+        <sys_updated_on>2024-01-21 21:53:25</sys_updated_on>
+    </sys_alias_templates>
+</record_update>

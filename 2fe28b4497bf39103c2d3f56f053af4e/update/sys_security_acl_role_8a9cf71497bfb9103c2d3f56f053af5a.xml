@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sys_security_acl_role">
+    <sys_security_acl_role action="INSERT_OR_UPDATE">
+        <sys_class_name>sys_security_acl_role</sys_class_name>
+        <sys_created_by>markus.kraus</sys_created_by>
+        <sys_created_on>2024-01-14 07:14:04</sys_created_on>
+        <sys_id>8a9cf71497bfb9103c2d3f56f053af5a</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name>x_376096_mplc_overview.admin</sys_name>
+        <sys_package display_value="Marketplace Client" source="x_376096_mplc">2fe28b4497bf39103c2d3f56f053af4e</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="Marketplace Client">2fe28b4497bf39103c2d3f56f053af4e</sys_scope>
+        <sys_security_acl display_value="x_376096_mplc_overview">869cffd097bfb9103c2d3f56f053afc2</sys_security_acl>
+        <sys_update_name>sys_security_acl_role_8a9cf71497bfb9103c2d3f56f053af5a</sys_update_name>
+        <sys_updated_by>markus.kraus</sys_updated_by>
+        <sys_updated_on>2024-01-14 07:14:04</sys_updated_on>
+        <sys_user_role display_value="admin" name="admin">2831a114c611228501d4ea6c309d626d</sys_user_role>
+        <transaction_id/>
+    </sys_security_acl_role>
+</record_update>

@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sys_script_include">
+    <sys_script_include action="INSERT_OR_UPDATE">
+        <access>package_private</access>
+        <active>true</active>
+        <api_name>x_376096_mplc.MPLCUtil</api_name>
+        <caller_access/>
+        <client_callable>false</client_callable>
+        <description/>
+        <name>MPLCUtil</name>
+        <script><![CDATA[/* global Class, GlideRecord, sn_cc, sn_ws */
+/* eslint no-undef: "error" */
+var MPLCUtil = Class.create();
+MPLCUtil.prototype = {
+    initialize: function() {
+		
+    },
+	
+	getGitHubSources: function () {		
+		const provider = new sn_cc.ConnectionInfoProvider();
+		const gitHubSources = [];
+		
+		const aliasGr = new GlideRecord('sys_alias');
+		aliasGr.addQuery('parent.id', 'x_376096_mplc.GitHub');
+		aliasGr.query();
+		while (aliasGr.next()) {
+			const connInfo = provider.getConnectionInfo(aliasGr.sys_id);
+			const extendedAttributes = connInfo.getExtendedAttributes(); 
+			if (extendedAttributes.type == 'source') {	
+				// check if the target is present and if it is configured properly
+				const connGr = new GlideRecord('http_connection');
+				connGr.addQuery('sys_id', extendedAttributes.target);
+				connGr.addQuery('active', true);
+				connGr.setLimit(1);
+				connGr.query();
+				let valid = connGr.hasNext();
+				
+				const sm = new sn_ws.RESTMessageV2();
+				sm.setRequestHeader('Accept', 'application/vnd.github+json');
+				sm.setRequestHeader('Authorization', 'Bearer ' + connInfo.getCredentialAttribute('api_key'));
+
+				let endpoint = connInfo.getAttribute('connection_url');
+				if (!endpoint.endsWith('/')) {
+					endpoint += '/';
+				}
+				
+				if (extendedAttributes.github_type == 'organization') {
+					endpoint += 'orgs';
+				} else {
+					endpoint += 'users';
+				}
+				
+				endpoint += '/' + extendedAttributes.github_name;
+
+				sm.setHttpMethod('get');
+				sm.setEndpoint(endpoint);
+				const response = sm.execute();
+				
+				let description = '';
+				if (response.getStatusCode() == 200) {
+					const json = JSON.parse(response.getBody());
+					if (extendedAttributes.github_type == 'organization') {
+						description = json.description;
+					} else {
+						description = json.bio;
+					}
+				} else {
+					valid = false;
+					description = 'Failed to retrieve description!';
+				}				
+			
+				gitHubSources.push({
+					sys_id: connInfo.getAttribute('sys_id'), 
+					name: connInfo.getAttribute('name'),
+					description: description,
+					valid: valid
+				});
+			}
+		}
+		
+		return gitHubSources;
+	},
+
+    type: 'MPLCUtil'
+};]]></script>
+        <sys_class_name>sys_script_include</sys_class_name>
+        <sys_created_by>markus.kraus</sys_created_by>
+        <sys_created_on>2024-01-21 20:59:27</sys_created_on>
+        <sys_id>e53bb6fe973f75503c2d3f56f053af5d</sys_id>
+        <sys_mod_count>14</sys_mod_count>
+        <sys_name>MPLCUtil</sys_name>
+        <sys_package display_value="Marketplace Client" source="x_376096_mplc">2fe28b4497bf39103c2d3f56f053af4e</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="Marketplace Client">2fe28b4497bf39103c2d3f56f053af4e</sys_scope>
+        <sys_update_name>sys_script_include_e53bb6fe973f75503c2d3f56f053af5d</sys_update_name>
+        <sys_updated_by>markus.kraus</sys_updated_by>
+        <sys_updated_on>2024-01-21 21:46:15</sys_updated_on>
+    </sys_script_include>
+</record_update>
