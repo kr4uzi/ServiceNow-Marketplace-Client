@@ -7,13 +7,274 @@
         <client_callable>false</client_callable>
         <description/>
         <name>MPLCUtil</name>
-        <script><![CDATA[/* global Class, GlideRecord, sn_cc, sn_ws */
+        <script><![CDATA[/* global Class, GlideRecord, sn_cc, sn_ws, gs, x_376096_mplc, GlideStringUtil, XMLDocument2, GlideScriptedHierarchicalWorker */
 /* eslint no-undef: "error" */
 var MPLCUtil = Class.create();
 MPLCUtil.prototype = {
     initialize: function() {
 		
     },
+	
+	appHasChanges: function (appSysID, repoConfigSysID) {
+		const cookies = new x_376096_mplc.MPLCWorker()._runScript('global', '(GlideTransaction.get().getRequest().getHeader("Cookie") || "").toString()');
+		gs.info(cookies);
+		const requiredCookies = ['JSESSIONID'/*, 'glide_user_route', 'glide_session_store', 'BIGipServerpool_' + gs.getProperty('instance_name')*/];
+        const cookieOutput = [];
+        cookies.split(';').forEach(cookie => {
+			// cookie is still a global-scope String and has a space in the beginning
+			cookie = cookie.toString().trim();
+			
+            const cookieName = cookie.substring(0, cookie.indexOf('='));
+            if (requiredCookies.includes(cookieName)) {
+				const end = cookie.indexOf(';');
+                cookieOutput.push(cookie.substring(0, end == -1 ? cookie.length : end));
+            }
+        });
+		
+		const cookie = cookieOutput.join(';');
+		const sessionToken = gs.getSession().getSessionToken();
+		
+		const sm2 = new sn_ws.RESTMessageV2();
+		sm2.setHttpMethod('get');
+		sm2.setEndpoint(gs.getProperty('glide.servlet.uri') + 'login.do');
+		const response2 = sm2.execute();
+		const body2 = response2.getBody();
+
+		const cookieOutput2 = [];
+		const requiredCookies2 = ['glide_user_route', 'glide_session_store', 'BIGipServerpool_' + gs.getProperty('instance_name')];
+		response2.getAllHeaders().forEach(function (header) {
+			if (header.name == 'Set-Cookie') {
+				const e = header.value;
+				const cookieName = e.substring(0, e.indexOf('='));
+				if (requiredCookies2.includes(cookieName)) {
+					const end = e.indexOf(';');
+					cookieOutput2.push(e.substring(0, e.indexOf(';')));
+				}
+			}
+		});
+		
+		gs.info(cookie + ';' + cookieOutput2.join(';'));
+		const sm = new sn_ws.RESTMessageV2();
+		sm.setRequestHeader('Accept', 'application/json');
+		sm.setRequestHeader('Cookie', cookie + ';' + cookieOutput2.join(';'));
+		sm.setRequestHeader('X-Usertoken', body2.match(/var g_ck = '(.*?)';/)[1]);
+		sm.setHttpMethod('get');
+		sm.setEndpoint(gs.getProperty('glide.servlet.uri') + 'api/sn_devstudio/vcs/apps/' + appSysID + '/repos/' + repoConfigSysID + '/changes');
+		try {
+			const response = sm.executeAsync();
+			response.waitForResponse(5);
+			const body3 = response.getBody();
+			gs.info("MKR: success: " + body3);
+		} catch (e) {
+			gs.info("MKR: fail: " + e);
+		}
+		
+		/*
+		const worker = new GlideScriptedHierarchicalWorker();
+		worker.setProgressName('MPLC Application Has Changes');
+		worker.setScriptIncludeName('x_376096_mplc.MPLCWorker');
+		worker.setScriptIncludeMethod('appHasChanges');
+		worker.putMethodArg('appSysID', appSysID);
+		worker.putMethodArg('repoConfigSysID', repoConfigSysID);
+		worker.putMethodArg('cookie', cookie);
+		worker.putMethodArg('sessionToken', sessionToken);
+		worker.setBackground(true);
+		worker.start();
+
+		const workerID = worker.getProgressID();
+		return workerID;
+		const trackerGr = new GlideRecord('sys_execution_tracker');
+		trackerGr.addQuery('sys_id', workerID);
+		trackerGr.addQuery('state', 'IN', '2,3,4');
+		trackerGr.setLimit(1);
+		let i = 0;
+		do {
+			this._runScript('global', 'gs.sleep(100);');
+			trackerGr.query();
+			if (i++ > 100) {
+				gs.info("timeout" + workerID);
+				return '...';
+			}
+		} while (!trackerGr.next());
+		
+		return trackerGr.result.toString();*/
+	},
+	
+	getGitRepos: function (aliasSysID) {
+		const result = {
+			status: 'error',
+			error_message: 'unknown error'
+		};
+		
+		const aliasGr = new GlideRecord('sys_alias');
+		aliasGr.addQuery('parent.id', 'x_376096_mplc.GitHub');
+		aliasGr.addQuery('sys_id', aliasSysID);
+		aliasGr.setLimit(1);
+		aliasGr.query();
+		if (aliasGr.next()) {
+			const provider = new sn_cc.ConnectionInfoProvider();
+			const connInfo = provider.getConnectionInfo(aliasGr.sys_id);
+			const extendedAttributes = connInfo.getExtendedAttributes(); 
+			if (extendedAttributes.type == 'source') {
+				const apiKey = connInfo.getCredentialAttribute('api_key');
+				const sm = new sn_ws.RESTMessageV2();
+				sm.setRequestHeader('Accept', 'application/vnd.github+json');
+				sm.setRequestHeader('Authorization', 'Bearer ' + apiKey);
+
+				let baseURL = connInfo.getAttribute('connection_url');
+				if (!baseURL.endsWith('/')) {
+					baseURL += '/';
+				}
+				
+				let endpoint = baseURL;
+				if (extendedAttributes.github_type == 'organization') {
+					endpoint += 'orgs';
+				} else {
+					endpoint += 'users';
+				}
+				
+				endpoint += '/' + extendedAttributes.github_name + '/repos';
+
+				sm.setHttpMethod('get');
+				sm.setEndpoint(endpoint);
+				const response = sm.execute();
+				if (response.getStatusCode() == 200) {
+					const json = JSON.parse(response.getBody());					
+					result.status = 'success';
+					result.repositories = json.map(r => {
+						let app = null;
+						let status = 'unknown';
+						let statusMessage = '';
+						
+						const folder = getAppFolder(baseURL, apiKey, r.owner.login, r.name);
+						if (folder) {
+							const appFile = getAppFile(baseURL, apiKey, r.owner.login, r.name, folder);
+							if (appFile) {
+								app = getAppMetadata(baseURL, apiKey, r.owner.login, r.name, folder, appFile);
+								if (app) {
+									const appGr = new GlideRecord('sys_app');
+									appGr.addQuery('sys_id', app.sys_id);
+									appGr.setLimit(1);
+									appGr.query();
+									if (appGr.next()) {
+										const configGr = new GlideRecord('sys_repo_config');
+										configGr.addQuery('sys_app', appGr.sys_id);
+										configGr.setLimit(1);
+										configGr.query();
+										if (configGr.next()) {
+											if (configGr.url == r.ssh_url) {
+												if (appGr.version != app.version) {
+													status = 'update_available';
+												} else {
+													status = 'installed';
+												}
+											} else {
+												status = 'invalid';
+												statusMessage = 'Source Missmatch!';
+											}
+										} else {
+											status = 'invalid';
+											statusMessage = 'App not linked to Source Control';
+										}
+									} else {
+										status = 'not_installed';
+									}
+								}
+							}
+						}
+						
+						return {
+							id: r.id,
+							status: status,
+							status_message: statusMessage,
+							name: r.name,
+							description: r.description,
+							url: r.html_url,
+							default_branch: r.default_branch,
+							ssh_url: r.ssh_url,
+							clone_url: r.clone_url,
+							private: r.private,
+							app: app
+						};
+					}).filter(r => !!r.app);
+				} else {
+					result.error_message = 'Failed to retrieve repositories!';
+				}
+			} else {
+				result.error_message = 'The given Sys ID is not for a GitHub Source!';
+			}
+		} else {
+			result.error = 'Unknown GitHub Source!';
+		}
+		
+		return result;
+		
+		function getAppFolder(baseURL, apiKey, owner, repo) {
+			const sm = new sn_ws.RESTMessageV2();
+			sm.setRequestHeader('Accept', 'application/vnd.github+json');
+			sm.setRequestHeader('Authorization', 'Bearer ' + apiKey);
+			sm.setHttpMethod('get');
+			sm.setEndpoint(baseURL + 'repos/' + owner + '/' + repo + '/contents/sn_source_control.properties');
+			const response = sm.execute();
+			if (response.getStatusCode() == 200) {
+				const body = JSON.parse(response.getBody());
+				if (GlideStringUtil.isBase64(body.content)) {
+					const content = gs.base64Decode(body.content);
+					const pathMatch = content.match(/^path=(.+)/m);
+					if (pathMatch) {
+						return pathMatch[1];
+					}
+				}
+			}
+			
+			return null;
+		}
+		
+		function getAppFile(baseURL, apiKey, owner, repo, folder) {
+			const sm = new sn_ws.RESTMessageV2();
+			sm.setRequestHeader('Accept', 'application/vnd.github+json');
+			sm.setRequestHeader('Authorization', 'Bearer ' + apiKey);
+			sm.setHttpMethod('get');
+			sm.setEndpoint(baseURL + 'repos/' + owner + '/' + repo + '/contents/' + folder);
+			const response = sm.execute();
+			if (response.getStatusCode() == 200) {
+				const files = JSON.parse(response.getBody());
+				for (let i = 0; i < files.length; i++) {
+					const fileName = files[i].name;
+					if (fileName.startsWith('sys_app_') && fileName.endsWith('.xml')) {
+						return fileName;
+					}
+				}
+			}
+			
+			return null;
+		}
+		
+		function getAppMetadata(baseURL, apiKey, owner, repo, folder, appFile) {
+			const sm = new sn_ws.RESTMessageV2();
+			sm.setRequestHeader('Accept', 'application/vnd.github+json');
+			sm.setRequestHeader('Authorization', 'Bearer ' + apiKey);
+			sm.setHttpMethod('get');
+			sm.setEndpoint(baseURL + 'repos/' + owner + '/' + repo + '/contents/' + folder + '/' + appFile);
+			const response = sm.execute();
+			if (response.getStatusCode() == 200) {
+				const body = JSON.parse(response.getBody());
+				if (GlideStringUtil.isBase64(body.content)) {
+					const xml = new XMLDocument2();
+					xml.parseXML(gs.base64Decode(body.content));
+					return {
+						short_description: xml.getNodeText('//sys_app/short_description'),
+						logo: xml.getNodeText('//sys_app/logo'),
+						version: xml.getNodeText('//sys_app/version'),
+						scope: xml.getNodeText('//sys_app/scope'),
+						sys_id: xml.getNodeText('//sys_app/sys_id')
+					};
+				}
+			}
+			
+			return null;
+		}
+	},
 	
 	getGitHubSources: function () {		
 		const provider = new sn_cc.ConnectionInfoProvider();
@@ -26,13 +287,16 @@ MPLCUtil.prototype = {
 			const connInfo = provider.getConnectionInfo(aliasGr.sys_id);
 			const extendedAttributes = connInfo.getExtendedAttributes(); 
 			if (extendedAttributes.type == 'source') {	
+				let status = 'unknown';
+				let statusMessage = '';
+				
 				// check if the target is present and if it is configured properly
-				const connGr = new GlideRecord('http_connection');
-				connGr.addQuery('sys_id', extendedAttributes.target);
-				connGr.addQuery('active', true);
-				connGr.setLimit(1);
-				connGr.query();
-				let valid = connGr.hasNext();
+				if (provider.getConnectionInfo(extendedAttributes.target)) {
+					status = 'ok';
+					statusMessage = 'Source properly configured';
+				} else {
+					statusMessage = 'No target or no target connection configured!';
+				}
 				
 				const sm = new sn_ws.RESTMessageV2();
 				sm.setRequestHeader('Accept', 'application/vnd.github+json');
@@ -55,29 +319,49 @@ MPLCUtil.prototype = {
 				sm.setEndpoint(endpoint);
 				const response = sm.execute();
 				
+				let logoURL = '';
 				let description = '';
 				if (response.getStatusCode() == 200) {
 					const json = JSON.parse(response.getBody());
+					logoURL = json.avatar_url;
+					
 					if (extendedAttributes.github_type == 'organization') {
 						description = json.description;
 					} else {
 						description = json.bio;
 					}
 				} else {
-					valid = false;
+					status = 'unknown';
 					description = 'Failed to retrieve description!';
 				}				
 			
 				gitHubSources.push({
-					sys_id: connInfo.getAttribute('sys_id'), 
+					sys_id: aliasGr.getUniqueValue(), 
 					name: connInfo.getAttribute('name'),
 					description: description,
-					valid: valid
+					logo_url: logoURL,
+					status: status,
+					status_message: statusMessage
 				});
 			}
 		}
 		
 		return gitHubSources;
+	},
+	
+	_runScript: function (scope, script, vars) {
+		const scriptGr = new GlideRecord('sys_rte_eb_script_operation');
+		scriptGr.addQuery('sys_id', '26659daf97fb39503c2d3f56f053af90');
+		scriptGr.setLimit(1);
+		scriptGr.query();
+		if (scriptGr.next()) {
+			scriptGr.sys_scope = scope;
+			scriptGr.script = script;
+			const gse = new GlideScopedEvaluator();
+			return gse.evaluateScript(scriptGr, 'script', vars);
+		}
+
+		return null;
 	},
 
     type: 'MPLCUtil'
@@ -86,13 +370,13 @@ MPLCUtil.prototype = {
         <sys_created_by>markus.kraus</sys_created_by>
         <sys_created_on>2024-01-21 20:59:27</sys_created_on>
         <sys_id>e53bb6fe973f75503c2d3f56f053af5d</sys_id>
-        <sys_mod_count>14</sys_mod_count>
+        <sys_mod_count>45</sys_mod_count>
         <sys_name>MPLCUtil</sys_name>
         <sys_package display_value="Marketplace Client" source="x_376096_mplc">2fe28b4497bf39103c2d3f56f053af4e</sys_package>
         <sys_policy/>
         <sys_scope display_value="Marketplace Client">2fe28b4497bf39103c2d3f56f053af4e</sys_scope>
         <sys_update_name>sys_script_include_e53bb6fe973f75503c2d3f56f053af5d</sys_update_name>
         <sys_updated_by>markus.kraus</sys_updated_by>
-        <sys_updated_on>2024-01-21 21:46:15</sys_updated_on>
+        <sys_updated_on>2024-01-25 20:42:10</sys_updated_on>
     </sys_script_include>
 </record_update>

@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sys_script_include">
+    <sys_script_include action="INSERT_OR_UPDATE">
+        <access>package_private</access>
+        <active>true</active>
+        <api_name>x_376096_mplc.MPLCUtilClient</api_name>
+        <caller_access/>
+        <client_callable>true</client_callable>
+        <description/>
+        <name>MPLCUtilClient</name>
+        <script><![CDATA[/* global Class, global, GlideRecordSecure, GlideScriptedHierarchicalWorker */
+/* eslint no-undef: "error" */
+var MPLCUtilClient = Class.create();
+MPLCUtilClient.prototype = Object.extendsObject(global.AbstractAjaxProcessor, {
+	initialize: function () {
+		global.AbstractAjaxProcessor.prototype.initialize.apply(this, arguments);
+	},
+	
+	verifyGitRepo: function () {
+		const result = {
+			status: 'error',
+			error_message: 'unknown error'
+		};
+		
+		const aliasSysID = this.getParameter('alias');
+		const repo = this.getParameter('repo');
+		if (aliasSysID && repo) {
+			const aliasGr = new GlideRecordSecure('sys_alias');
+			aliasGr.addQuery('sys_id', aliasSysID);
+			aliasGr.setLimit(1);
+			aliasGr.query();
+			if (aliasGr.next()) {
+				const worker = new GlideScriptedHierarchicalWorker();
+				worker.setProgressName('Verify Application');
+				worker.setScriptIncludeName('x_376096_mplc.MPLCWorker');
+				worker.setScriptIncludeMethod('verifyGitApp');
+				worker.putMethodArg('aliasGr', aliasGr);
+				worker.putMethodArg('repo', JSON.parse(repo));
+				worker.setBackground(true);
+				worker.start();
+
+				result.progress_id = worker.getProgressID();
+				result.status = 'success';
+			} else {
+				result.error_message = 'No repo found or insufficient privileges';
+			}
+		} else {
+			result.error_message = 'Invalid parameters!';
+		}
+		
+		return JSON.stringify(result);
+	},
+
+    type: 'MPLCUtilClient'
+});]]></script>
+        <sys_class_name>sys_script_include</sys_class_name>
+        <sys_created_by>markus.kraus</sys_created_by>
+        <sys_created_on>2024-01-23 10:54:25</sys_created_on>
+        <sys_id>acde129f977ff5503c2d3f56f053af4b</sys_id>
+        <sys_mod_count>8</sys_mod_count>
+        <sys_name>MPLCUtilClient</sys_name>
+        <sys_package display_value="Marketplace Client" source="x_376096_mplc">2fe28b4497bf39103c2d3f56f053af4e</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="Marketplace Client">2fe28b4497bf39103c2d3f56f053af4e</sys_scope>
+        <sys_update_name>sys_script_include_acde129f977ff5503c2d3f56f053af4b</sys_update_name>
+        <sys_updated_by>markus.kraus</sys_updated_by>
+        <sys_updated_on>2024-01-25 19:28:23</sys_updated_on>
+    </sys_script_include>
+</record_update>

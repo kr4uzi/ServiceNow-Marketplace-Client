@@ -1,7 +1,44 @@
 <?xml version="1.0" encoding="UTF-8"?><record_update table="sys_ui_page">
     <sys_ui_page action="INSERT_OR_UPDATE">
         <category>general</category>
-        <client_script/>
+        <client_script><![CDATA[/* global GlideModalForm, window */
+/* eslint no-undef: "error" */
+function editConnection(connSysID) {
+	var gm = new GlideModalForm('Configure Source', 'sys_alias');
+	gm.setOnloadCallback(function () {
+		var g_form = window.frames.dialog_frame.g_form;
+		addFakeUIPolicy(g_form);
+	});
+	gm.setSysID(connSysID);
+	gm.render();
+}
+
+function addSource() {
+	var gm = new GlideModalForm('Add new Source', 'sys_alias');
+	gm.setOnloadCallback(function () {
+		var g_form = window.frames.dialog_frame.g_form;
+		addFakeUIPolicy(g_form);
+	});
+	
+	var mplcGitHubAliasSysID = 'ce0f535697fbf1503c2d3f56f053afee';
+	gm.addParm('sysparm_query', 'parent=' + mplcGitHubAliasSysID);
+	gm.render();
+}
+
+function addFakeUIPolicy(g_form) {
+	updateTarget();
+	g_form.getFormElement().on('glideform:onchange', function (event) {
+		if (event.memo.id && event.memo.id.endsWith('.type')) {
+			updateTarget();
+		}
+	});
+
+	function updateTarget() {
+		var targetVisibleAndMandatory = g_form.getValue('type') == 'source';
+		g_form.setMandatory('target', targetVisibleAndMandatory);
+		g_form.setDisplay('target', targetVisibleAndMandatory);
+	}
+}]]></client_script>
         <description/>
         <direct>false</direct>
         <endpoint>x_376096_mplc_overview.do</endpoint>
@@ -9,46 +46,112 @@
 <j:jelly trim="false" xmlns:j="jelly:core" xmlns:g="glide" xmlns:j2="null" xmlns:g2="null">
 	<g:evaluate>
 		const mplcUtil = new x_376096_mplc.MPLCUtil();
-		const sources = mplcUtil.getGitHubSources();
-		const searchString = RP.getParameterValue('search');
-		if (searchString) {
-			mplcUtil.searchGitSources(sources, searchString);
-		}
+		const gitHubSources = mplcUtil.getGitHubSources();
+		gitHubSources.forEach(src => src.status_icon = 'mpl-status-' + src.status + ' ' + (src.status == 'ok' ? 'icon-circle-solid' : 'icon-warning-circle bg-warning'));
 	</g:evaluate>
-	<div style="display: flex;">
-	<j:forEach var="jvar_source" items="${sources}">
-		<div style="width: 200px">
-			<table>
-				<tr>
-					<td>${jvar_source.name}</td>
-					<td>
-						<j:if test="${jvar_source.valid == true}">
-							<i class="icon icon-circle-solid"></i>
-						</j:if>
-						<j:if test="${jvar_source.valid == false}">
-							<i class="icon icon-error-circle"></i>
-						</j:if>
-					</td>
-				</tr>
-				<tr><td colspan="2">${jvar_source.description}</td></tr>
-			</table>
+	<style>
+		.card {
+			border: 1px solid rgba(0,0,0,.125);
+			border-radius: 0.25rem;
+			margin-bottom: 2rem;
+		}
+		
+		.card-header {
+			padding: 0.75rem 1.25rem;
+			background-color: rgba(0,0,0,.03);
+			border-bottom: 1px solid rgba(0,0,0,.125);
+		}
+
+		.card-body {
+			padding: 1.25rem;
+		}
+		
+		.card-header img {
+			height: 24px;
+			width: auto;
+			padding-right: 1rem;
+		}
+		
+		.card-header a {
+			margin-right: .4rem;
+		}
+		
+		.mpl-header {
+			margin-top: 1rem;
+			margin-bottom: 1rem;
+		}
+		
+		.mpl-status-unknown {
+			color: black;
+		}
+		
+		.mpl-status-ok {
+			color: green;
+		}
+		
+		.mpl-status-error {
+			color: red;
+		}
+	</style>
+	<div class="container">
+		<div class="row">
+			<div class="col-md-10">
+				<p>To install or update an application select one of the following Marketplace Sources</p>
+			</div>
+			<div class="col-md-2">
+				<button type="button" class="btn" onclick="addSource()"><i class="icon icon-form"></i>$[SP]Add Source</button>
+			</div>
 		</div>
-	</j:forEach>
+		<div class="row">
+			<j:forEach var="jvar_source" items="${gitHubSources}">
+				<div class="col col-lg-4 col-md-6 col-sm-6 col-xs-12">
+					<div class="card">
+						<div class="card-header">
+							<img src="${jvar_source.logo_url}" />
+							<a href="x_376096_mplc_source.do?source_id=${jvar_source.sys_id}">${jvar_source.name}</a>
+							<i class="icon ${jvar_source.status_icon} pull-right" data-toggle="tooltip" data-placement="bottom" title="${jvar_source.status_message}"></i>
+							<a class="icon icon-cog pull-right" onclick="editConnection('${jvar_source.sys_id}')"></a>
+						</div>
+						<div class="card-body">
+							<span class="card-text">${jvar_source.description}</span>
+						</div>
+					</div>
+				</div>
+			</j:forEach>
+		</div>
 	</div>
 </j:jelly>]]></html>
         <name>overview</name>
-        <processing_script/>
+        <processing_script><![CDATA[/* global x_376096_dla, GlideRecord */
+/* global request, response */
+/* eslint no-undef: "error" */
+(function (request, response) {
+	// request [GlideServletRequest]
+	// https://developer.servicenow.com/dev.do#!/reference/api/sandiego/server/no-namespace/c_GlideServletRequestScopedAPI
+	
+	// response [GlideServletResponse]
+	// https://developer.servicenow.com/dev.do#!/reference/api/sandiego/server/no-namespace/c_GlideServletResponseScopedAPI
+	
+	// this
+	// [represents the values from the <g:ui_form>]
+	let urlParams = '';
+	if (this.search) {
+		urlParams += 'search=' + encodeURIComponent(this.search);
+	}
+	
+	response.sendRedirect('x_376096_mplc_overview.do' + (urlParams && '?' + urlParams));
+}).call(this, request, response);]]></processing_script>
         <sys_class_name>sys_ui_page</sys_class_name>
         <sys_created_by>markus.kraus</sys_created_by>
         <sys_created_on>2024-01-14 07:14:03</sys_created_on>
         <sys_id>8e63c30c973b79103c2d3f56f053af99</sys_id>
-        <sys_mod_count>9</sys_mod_count>
+        <sys_mod_count>89</sys_mod_count>
         <sys_name>overview</sys_name>
         <sys_package display_value="Marketplace Client" source="x_376096_mplc">2fe28b4497bf39103c2d3f56f053af4e</sys_package>
         <sys_policy/>
         <sys_scope display_value="Marketplace Client">2fe28b4497bf39103c2d3f56f053af4e</sys_scope>
         <sys_update_name>sys_ui_page_8e63c30c973b79103c2d3f56f053af99</sys_update_name>
         <sys_updated_by>markus.kraus</sys_updated_by>
-        <sys_updated_on>2024-01-21 21:46:30</sys_updated_on>
+        <sys_updated_on>2024-01-25 18:03:53</sys_updated_on>
     </sys_ui_page>
 </record_update>

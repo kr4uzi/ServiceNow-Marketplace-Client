@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update sys_domain="global" table="sys_script_client">
+    <sys_script_client action="DELETE">
+        <active>false</active>
+        <applies_extended>false</applies_extended>
+        <condition/>
+        <description/>
+        <field/>
+        <global>true</global>
+        <isolate_script>true</isolate_script>
+        <messages/>
+        <name>MPLC Handle Connection Type</name>
+        <order/>
+        <script><![CDATA[function onLoad() {
+	updateTarget();
+	g_form.getFormElement().on('glideform:onchange', function (event) {
+		if (event.memo.id && event.memo.id.endsWith('.type')) {
+			updateTarget();
+		}
+	});
+	
+	function updateTarget() {
+		var targetVisibleAndMandatory = g_form.getValue('type') == 'source';
+		g_form.setDisplay('target', targetVisibleAndMandatory);
+		g_form.setMandatory('target', targetVisibleAndMandatory);
+	}
+}]]></script>
+        <sys_class_name>sys_script_client</sys_class_name>
+        <sys_created_by>markus.kraus</sys_created_by>
+        <sys_created_on>2024-01-21 19:53:16</sys_created_on>
+        <sys_domain>global</sys_domain>
+        <sys_domain_path>/</sys_domain_path>
+        <sys_id>e58c6ebe97fb75503c2d3f56f053af19</sys_id>
+        <sys_mod_count>12</sys_mod_count>
+        <sys_name>MPLC Handle Connection Type</sys_name>
+        <sys_overrides/>
+        <sys_package display_value="Marketplace Client" source="x_376096_mplc">2fe28b4497bf39103c2d3f56f053af4e</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="Marketplace Client">2fe28b4497bf39103c2d3f56f053af4e</sys_scope>
+        <sys_update_name>sys_script_client_e58c6ebe97fb75503c2d3f56f053af19</sys_update_name>
+        <sys_updated_by>markus.kraus</sys_updated_by>
+        <sys_updated_on>2024-01-22 17:11:39</sys_updated_on>
+        <table/>
+        <type>onLoad</type>
+        <ui_type>0</ui_type>
+        <view/>
+    </sys_script_client>
+    <sys_update_version action="INSERT_OR_UPDATE">
+        <action>DELETE</action>
+        <application display_value="Marketplace Client">2fe28b4497bf39103c2d3f56f053af4e</application>
+        <file_path/>
+        <instance_id>65348116dbf0fb04b847ac44d496196d</instance_id>
+        <instance_name>dev81254</instance_name>
+        <name>sys_script_client_e58c6ebe97fb75503c2d3f56f053af19</name>
+        <payload>&lt;?xml version="1.0" encoding="UTF-8"?&gt;&lt;record_update sys_domain="global" table="sys_script_client"&gt;&lt;sys_script_client action="INSERT_OR_UPDATE"&gt;&lt;active&gt;false&lt;/active&gt;&lt;applies_extended&gt;false&lt;/applies_extended&gt;&lt;condition/&gt;&lt;description/&gt;&lt;field/&gt;&lt;global&gt;true&lt;/global&gt;&lt;isolate_script&gt;true&lt;/isolate_script&gt;&lt;messages/&gt;&lt;name&gt;MPLC Handle Connection Type&lt;/name&gt;&lt;order/&gt;&lt;script&gt;&lt;![CDATA[function onLoad() {
+	updateTarget();
+	g_form.getFormElement().on('glideform:onchange', function (event) {
+		if (event.memo.id &amp;&amp; event.memo.id.endsWith('.type')) {
+			updateTarget();
+		}
+	});
+	
+	function updateTarget() {
+		var targetVisibleAndMandatory = g_form.getValue('type') == 'source';
+		g_form.setDisplay('target', targetVisibleAndMandatory);
+		g_form.setMandatory('target', targetVisibleAndMandatory);
+	}
+}]]&gt;&lt;/script&gt;&lt;sys_class_name&gt;sys_script_client&lt;/sys_class_name&gt;&lt;sys_created_by&gt;markus.kraus&lt;/sys_created_by&gt;&lt;sys_created_on&gt;2024-01-21 19:53:16&lt;/sys_created_on&gt;&lt;sys_domain&gt;global&lt;/sys_domain&gt;&lt;sys_domain_path&gt;/&lt;/sys_domain_path&gt;&lt;sys_id&gt;e58c6ebe97fb75503c2d3f56f053af19&lt;/sys_id&gt;&lt;sys_mod_count&gt;12&lt;/sys_mod_count&gt;&lt;sys_name&gt;MPLC Handle Connection Type&lt;/sys_name&gt;&lt;sys_overrides/&gt;&lt;sys_package display_value="Marketplace Client" source="x_376096_mplc"&gt;2fe28b4497bf39103c2d3f56f053af4e&lt;/sys_package&gt;&lt;sys_policy/&gt;&lt;sys_scope display_value="Marketplace Client"&gt;2fe28b4497bf39103c2d3f56f053af4e&lt;/sys_scope&gt;&lt;sys_update_name&gt;sys_script_client_e58c6ebe97fb75503c2d3f56f053af19&lt;/sys_update_name&gt;&lt;sys_updated_by&gt;markus.kraus&lt;/sys_updated_by&gt;&lt;sys_updated_on&gt;2024-01-22 17:11:39&lt;/sys_updated_on&gt;&lt;table/&gt;&lt;type&gt;onLoad&lt;/type&gt;&lt;ui_type&gt;0&lt;/ui_type&gt;&lt;view/&gt;&lt;/sys_script_client&gt;&lt;/record_update&gt;</payload>
+        <payload_hash>-536953389</payload_hash>
+        <record_name>MPLC Handle Connection Type</record_name>
+        <reverted_from/>
+        <source>8ebb728f97bfb5503c2d3f56f053af1a</source>
+        <source_table>sys_update_set</source_table>
+        <state>previous</state>
+        <sys_created_by>markus.kraus</sys_created_by>
+        <sys_created_on>2024-01-22 17:11:39</sys_created_on>
+        <sys_id>b112df0b9733f5503c2d3f56f053afc1</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_recorded_at>18d322801200000001</sys_recorded_at>
+        <sys_updated_by>markus.kraus</sys_updated_by>
+        <sys_updated_on>2024-01-22 17:11:39</sys_updated_on>
+        <type>Client Script</type>
+        <update_guid>7912df0b4933f550bbd19c98d1cabcc0</update_guid>
+        <update_guid_history>7912df0b4933f550bbd19c98d1cabcc0:-536953389,ab7de2be4afb75501ffe84e0288b182f:1581368493</update_guid_history>
+    </sys_update_version>
+    <sys_metadata_delete action="INSERT_OR_UPDATE">
+        <sys_audit_delete/>
+        <sys_class_name>sys_metadata_delete</sys_class_name>
+        <sys_created_by>markus.kraus</sys_created_by>
+        <sys_created_on>2024-01-22 17:18:34</sys_created_on>
+        <sys_db_object display_value="" name="sys_script_client">sys_script_client</sys_db_object>
+        <sys_id>4cb99825620b44ec8ddd51392d33e609</sys_id>
+        <sys_metadata>e58c6ebe97fb75503c2d3f56f053af19</sys_metadata>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name>MPLC Handle Connection Type</sys_name>
+        <sys_package display_value="Marketplace Client" source="x_376096_mplc">2fe28b4497bf39103c2d3f56f053af4e</sys_package>
+        <sys_parent/>
+        <sys_policy/>
+        <sys_scope display_value="Marketplace Client">2fe28b4497bf39103c2d3f56f053af4e</sys_scope>
+        <sys_scope_delete display_value="">32726ced9ef64fc4b1bfce5238790090</sys_scope_delete>
+        <sys_update_name>sys_script_client_e58c6ebe97fb75503c2d3f56f053af19</sys_update_name>
+        <sys_update_version display_value="sys_script_client_e58c6ebe97fb75503c2d3f56f053af19">b112df0b9733f5503c2d3f56f053afc1</sys_update_version>
+        <sys_updated_by>markus.kraus</sys_updated_by>
+        <sys_updated_on>2024-01-22 17:18:34</sys_updated_on>
+    </sys_metadata_delete>
+</record_update>

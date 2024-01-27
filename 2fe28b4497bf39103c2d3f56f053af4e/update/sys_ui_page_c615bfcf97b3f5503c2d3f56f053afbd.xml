@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sys_ui_page">
+    <sys_ui_page action="INSERT_OR_UPDATE">
+        <category>general</category>
+        <client_script><![CDATA[// emulate GlideStringUtil.escapeHTML which won't work in the HTML field
+pageConfig = JSON.parse(pageConfig.replace(/&quot;/g, '"').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&'));
+
+var app = angular.module('mplcSource', []);
+app.controller('repoController', function ($window, $scope) {
+    $scope.repos = $window.pageConfig.repos;
+	
+	$scope.install = function (repo) {
+		var req = new window.XMLHttpRequest();
+		req.open('POST', 'api/sn_cicd/sc/import?repo_url=');
+		req.setRequestHeader('X-UserToken', window.g_ck);
+		req.onload = function() {
+			var fileName = getFileName(updateSet, req);
+			zip.file(fileName, this.response);
+			resolve();
+		};
+
+		req.responseType = 'blob';
+		req.send();
+	};
+	
+	$scope.verify = function(repo) {
+		var ga = new GlideAjax('x_376096_mpl.MPLUtilClient');
+		ga.addParam('sysparm_name', 'verifyGitRepo');
+		ga.addParam('alias', $window.pageConfig.source);
+		ga.addParam('repo', JSON.stringify(repo));
+		ga.getXMLAnswer(function (result) {
+			result = JSON.parse(result);
+			if (result.status == 'success') {
+				var dd = new GlideModal('hierarchical_progress_viewer', false, '40em', '10em');
+				dd.setTitle(getMessage('Status'));
+				dd.setPreference('sysparm_renderer_execution_id', result.tracker_id);
+				dd.on('executionComplete', function () {
+					// g_navigation.reloadWindow();
+				});
+				dd.render();
+			} else if (result.message) {
+				console.error(result.message);
+			}
+		});
+	}
+});
+
+angular.bootstrap($('mplcSource'), ['mplcSource']);]]></client_script>
+        <description/>
+        <direct>false</direct>
+        <endpoint>x_376096_mplc_source.do</endpoint>
+        <html><![CDATA[<?xml version="1.0" encoding="utf-8" ?>
+<j:jelly trim="false" xmlns:j="jelly:core" xmlns:g="glide" xmlns:j2="null" xmlns:g2="null">
+	<script src="/scripts/angular_includes_no_min.1.5.11.js"></script>
+	<g:evaluate>
+		const pageConfig = {
+			source: RP.getParameterValue('source_id'),
+			repos: []
+		};
+		
+		if (pageConfig.source) {
+			const mplcUtil = new x_376096_mplc.MPLCUtil();
+			const result = mplcUtil.getGitRepos(pageConfig.source);
+			if (result.status == 'success') {
+				pageConfig.repos = result.repositories;
+			}
+		}
+	</g:evaluate>
+	<script>var pageConfig = '${JSON.stringify(pageConfig)}';</script>
+	<style>
+		.card {
+			border: 1px solid rgba(0,0,0,.125);
+			border-radius: 0.25rem;
+			margin-bottom: 2rem;
+		}
+		
+		.card-header {
+			padding: 0.75rem 1.25rem;
+			background-color: rgba(0,0,0,.03);
+			border-bottom: 1px solid rgba(0,0,0,.125);
+		}
+		
+		.card-footer {
+			background-color: rgba(0,0,0,.03);
+			border-top: 1px solid rgba(0,0,0,.125);
+		}
+
+		.card-body {
+			padding: 1.25rem;
+		}
+		
+		.card-header img {
+			height: 24px;
+			width: auto;
+			padding-right: 1rem;
+		}
+		
+		.card-header a {
+			margin-right: .4rem;
+		}
+		
+		.container {
+			margin-top: 1rem;
+		}
+		
+		.repo-logo {
+			height: 24px;
+			width: auto;
+		}
+	</style>
+	<div class="container">
+		<div class="row">
+			<div id="mplcSource" ng-controller="repoController">
+				<div class="col col-lg-12" ng-repeat="repo in repos">
+					<div class="card">
+						<div class="card-header">
+							<img class="repo-logo" ng-if="repo.logo_url" ng-src="{{::repo.logo_url}}" />
+							<a href="{{::repo.url}}" target="_blank">{{::repo.name}}</a>
+						</div>
+						<div class="card-body">
+							<span class="card-text">{{::repo.short_description}}</span>
+						</div>
+						<div class="card-footer">
+							<div class="pull-right">
+							<a href="javascript: void(0);" ng-if="repo.status != 'not_installed'" ng-click="verify(repo)">Verify</a>
+							<a href="javascript: void(0);" ng-if="repo.status == 'update_available'" ng-click="update(repo)">Update</a>
+							<a href="javascript: void(0);" ng-if="repo.status == 'available'" ng-click="install(repo)">Install</a>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</j:jelly>]]></html>
+        <name>source</name>
+        <processing_script/>
+        <sys_class_name>sys_ui_page</sys_class_name>
+        <sys_created_by>markus.kraus</sys_created_by>
+        <sys_created_on>2024-01-22 19:54:34</sys_created_on>
+        <sys_id>c615bfcf97b3f5503c2d3f56f053afbd</sys_id>
+        <sys_mod_count>22</sys_mod_count>
+        <sys_name>source</sys_name>
+        <sys_package display_value="Marketplace Client" source="x_376096_mplc">2fe28b4497bf39103c2d3f56f053af4e</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="Marketplace Client">2fe28b4497bf39103c2d3f56f053af4e</sys_scope>
+        <sys_update_name>sys_ui_page_c615bfcf97b3f5503c2d3f56f053afbd</sys_update_name>
+        <sys_updated_by>markus.kraus</sys_updated_by>
+        <sys_updated_on>2024-01-25 18:07:24</sys_updated_on>
+    </sys_ui_page>
+</record_update>
