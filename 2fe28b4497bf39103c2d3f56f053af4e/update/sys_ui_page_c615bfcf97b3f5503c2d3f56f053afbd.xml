@@ -14,6 +14,19 @@ app.controller('repoController', function ($window, $scope, $q) {
 		configureLogo(repo);
 	});
 	
+	$scope.filterRepos = function (repo) {
+		var searchString = ($scope.searchString || '').trim().toLowerCase();
+		if (searchString) {
+			if (JSON.stringify(repo).toLowerCase().includes(searchString)) {
+				return true;
+			}
+			
+			return false;
+		}
+		
+		return true;
+	};
+	
 	function configureActions(repo) {
 		repo.actions = [];
 		
@@ -284,7 +297,7 @@ angular.bootstrap($('mplcSource'), ['mplcSource']);]]></client_script>
 		}
 		
 		.app-content {
-			width: calc(100% - 10rem + 15px); /* 10rem = width of app-actions, 15px = padding of parent column */
+			width: calc(100% - 10rem); /* 10rem = width of app-actions */
 			border: thin solid darkgrey;
 			border-radius: .5rem 0 0 .5rem;
 			border-right: none;
@@ -294,7 +307,7 @@ angular.bootstrap($('mplcSource'), ['mplcSource']);]]></client_script>
 			z-index: 1;
 			position: absolute;
 			top: 0;
-			right: 0;
+			right: 15px; /* 15px = padding of (parent) column */
 			width: 10rem;
 			height: 100%;
 		
@@ -322,16 +335,42 @@ angular.bootstrap($('mplcSource'), ['mplcSource']);]]></client_script>
 			margin-top: 1rem;
 			marin-bottom: 1rem;
 		}
+		
+		.source-header {
+			position: fixed;
+			border-bottom: thin solid black;
+			width: 100%;
+			min-height: 3.5rem;
+			z-index: 1000;
+			background: white;
+			margin-top: -5px;
+		}
+		
+		.source-header h5 {
+			margin-left: 1rem;
+		}
+		
+		.source-header input[type="search"] {
+			margin: .5rem;
+			z-index: 1;
+			position: fixed;
+			top: 0;
+			right: 0;
+			width: 40rem;
+		}
+		
+		#mplcSource .container {
+			padding-top: 3rem;
+		}
 	</style>
-	<div class="container">
-		<div class="row">
-			<div class="col col-lg-12">
-				<p>Available applications for GitHub Repository Source ${pageConfig.source.name}</p>
-			</div>
-		</div>
-		<div class="row">
-			<div id="mplcSource" ng-controller="repoController">
-				<div class="col col-lg-12 app" ng-repeat="repo in repos">
+	<div id="mplcSource" ng-controller="repoController">
+		<nav class="source-header">
+			<h5>Available applications for GitHub Repository Source ${pageConfig.source.name}</h5>
+			<input class="form-control" type="search" placeholder="Search" aria-label="Search" ng-model="searchString" />
+		</nav>
+		<div class="container">
+			<div class="row">
+				<div class="col col-lg-12 app" ng-repeat="repo in repos | filter:filterRepos">
 					<div class="app-content">
 						<div class="app-header">
 							<div class="app-logo">
@@ -371,13 +410,13 @@ angular.bootstrap($('mplcSource'), ['mplcSource']);]]></client_script>
         <sys_created_by>markus.kraus</sys_created_by>
         <sys_created_on>2024-01-22 19:54:34</sys_created_on>
         <sys_id>c615bfcf97b3f5503c2d3f56f053afbd</sys_id>
-        <sys_mod_count>111</sys_mod_count>
+        <sys_mod_count>124</sys_mod_count>
         <sys_name>source</sys_name>
         <sys_package display_value="Marketplace Client" source="x_376096_mplc">2fe28b4497bf39103c2d3f56f053af4e</sys_package>
         <sys_policy/>
         <sys_scope display_value="Marketplace Client">2fe28b4497bf39103c2d3f56f053af4e</sys_scope>
         <sys_update_name>sys_ui_page_c615bfcf97b3f5503c2d3f56f053afbd</sys_update_name>
         <sys_updated_by>markus.kraus</sys_updated_by>
-        <sys_updated_on>2024-01-29 09:50:16</sys_updated_on>
+        <sys_updated_on>2024-01-29 20:54:07</sys_updated_on>
     </sys_ui_page>
 </record_update>
