@@ -63,8 +63,11 @@ MPLCUtil.prototype = {
 		if (aliasGr.next()) {
 			const provider = new sn_cc.ConnectionInfoProvider();
 			const connInfo = provider.getConnectionInfo(aliasGr.sys_id);
-			const extendedAttributes = connInfo.getExtendedAttributes(); 
-			if (extendedAttributes.type == 'source') {
+			const sourceExtAttrs = connInfo.getExtendedAttributes(); 
+			if (sourceExtAttrs.type == 'source') {
+				const targetConn = sourceExtAttrs.target && provider.getConnectionInfo(sourceExtAttrs.target);
+				const targetExtAttrs = targetConn && targetConn.getExtendedAttributes();
+				
 				const apiKey = connInfo.getCredentialAttribute('api_key');
 				const sm = new sn_ws.RESTMessageV2();
 				sm.setRequestHeader('Accept', 'application/vnd.github+json');
@@ -76,13 +79,13 @@ MPLCUtil.prototype = {
 				}
 				
 				let endpoint = baseURL;
-				if (extendedAttributes.github_type == 'organization') {
+				if (sourceExtAttrs.github_type == 'organization') {
 					endpoint += 'orgs';
 				} else {
 					endpoint += 'users';
 				}
 				
-				endpoint += '/' + extendedAttributes.github_name + '/repos';
+				endpoint += '/' + sourceExtAttrs.github_name + '/repos';
 
 				sm.setHttpMethod('get');
 				sm.setEndpoint(endpoint);
@@ -112,6 +115,7 @@ MPLCUtil.prototype = {
 							message: ''
 						};
 						
+						let repoConfig = null;						
 						const appGr = new GlideRecord('sys_app');
 						appGr.addQuery('sys_id', app.sys_id);
 						appGr.setLimit(1);
@@ -122,15 +126,34 @@ MPLCUtil.prototype = {
 							configGr.setLimit(1);
 							configGr.query();
 							if (configGr.next()) {
-								if (configGr.url == r.ssh_url || configGr.url == r.clone_url || configGr.url == r.html_url) {
-									if (appGr.version != app.version) {
-										status.state = 'update_available';
+								repoConfig = {
+									credential_sys_id: configGr.getValue('credential'),
+									current_branch: configGr.current_branch.toString()
+								};
+								
+								if (targetConn) {
+									// there is no easy way to check if repo-config is actually a cloned/forked from the source
+									// (the specified URL in the repo config must be first transformed GitHub-API compatible)
+									// we use a "good-enough" solution instead
+									if (configGr.url == r.ssh_url.replace(sourceExtAttrs.github_name, targetExtAttrs.github_name) ||
+										configGr.url == r.clone_url.replace(sourceExtAttrs.github_name, targetExtAttrs.github_name) ||
+										configGr.url == r.html_url.replace(sourceExtAttrs.github_name, targetExtAttrs.github_name)) {
+										if (repoConfig.current_branch == r.default_branch) {
+											if (appGr.version != app.version) {
+												status.state = 'update_available';
+											} else {
+												status.state = 'installed';
+											}
+										} else {
+											status.state = 'invalid';
+											status.message = 'Branch Missmatch';
+										}
 									} else {
-										status.state = 'installed';
+										status.state = 'invalid';
+										status.message = 'Source Missmatch';
 									}
 								} else {
-									status.state = 'invalid';
-									status.message = 'Source Missmatch!';
+									status.message = 'Unable to check repo config: No Target for GitHub Source configured';
 								}
 							} else {
 								status.state = 'invalid';
@@ -155,6 +178,7 @@ MPLCUtil.prototype = {
 								has_wiki: r.has_wiki
 							},
 							app: app,
+							repo_config: repoConfig,
 							status: status
 						});
 					});
@@ -357,13 +381,13 @@ MPLCUtil.prototype = {
         <sys_created_by>markus.kraus</sys_created_by>
         <sys_created_on>2024-01-21 20:59:27</sys_created_on>
         <sys_id>e53bb6fe973f75503c2d3f56f053af5d</sys_id>
-        <sys_mod_count>68</sys_mod_count>
+        <sys_mod_count>71</sys_mod_count>
         <sys_name>MPLCUtil</sys_name>
         <sys_package display_value="Marketplace Client" source="x_376096_mplc">2fe28b4497bf39103c2d3f56f053af4e</sys_package>
         <sys_policy/>
         <sys_scope display_value="Marketplace Client">2fe28b4497bf39103c2d3f56f053af4e</sys_scope>
         <sys_update_name>sys_script_include_e53bb6fe973f75503c2d3f56f053af5d</sys_update_name>
         <sys_updated_by>markus.kraus</sys_updated_by>
-        <sys_updated_on>2024-01-29 00:48:39</sys_updated_on>
+        <sys_updated_on>2024-01-29 10:33:10</sys_updated_on>
     </sys_script_include>
 </record_update>
