@@ -1,28 +1,94 @@
 <?xml version="1.0" encoding="UTF-8"?><record_update table="sys_ui_page">
     <sys_ui_page action="INSERT_OR_UPDATE">
         <category>general</category>
-        <client_script><![CDATA[// emulate GlideStringUtil.escapeHTML which won't work in the HTML field
+        <client_script><![CDATA[/* global pageConfig, angular, window, console, XMLHttpRequest, GlideAjax, GlideModal, Uint8Array, Response, Blob, DecompressionStream, URL, $ */
+/* eslint no-undef: "error" */
+// emulate GlideStringUtil.escapeHTML which won't work in the HTML field
 pageConfig = JSON.parse(pageConfig.replace(/&quot;/g, '"').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&'));
 
 var app = angular.module('mplcSource', []);
 app.controller('repoController', function ($window, $scope) {
     $scope.repos = $window.pageConfig.repos;
+	$scope.repos.forEach(function (repo) {
+		configureActions(repo);
+		configureLogo(repo);
+	});
 	
-	$scope.install = function (repo) {
-		var req = new window.XMLHttpRequest();
-		req.open('POST', 'api/sn_cicd/sc/import?repo_url=');
-		req.setRequestHeader('X-UserToken', window.g_ck);
-		req.onload = function() {
-			var fileName = getFileName(updateSet, req);
-			zip.file(fileName, this.response);
-			resolve();
-		};
+	function configureActions(repo) {
+		repo.actions = [];
+		
+		var repoState = repo.status.state;
+		if (repoState == 'update_available') {
+			repo.actions.push({
+				label: 'Update',
+				click: function () {
+					
+				}
+			});
+		} else if (repoState == 'not_installed') {
+			repo.actions.push({
+				label: 'Install',
+				click: function () {
+					install(repo);
+				}
+			});
+		}
+		
+		if (repoState != 'not_installed' && repoState != 'invalid' && repoState != 'unknown') {
+			repo.actions.push({
+				label: 'Verify',
+				click: function () {
+					
+				}
+			});
+		}
+	}
+	
+	function install(repo) {
+		var ga = new GlideAjax('x_376096_mplc.MPLCUtilClient');
+		ga.addParam('sysparm_name', 'installGitApp');
+		ga.addParam('alias', $window.pageConfig.source.sys_id);
+		ga.addParam('repo', JSON.stringify({
+			url: repo.git.url,
+			forks_url: repo.git.forks_url,
+			clone_url: repo.git.clone_url
+		}));
+		ga.getXMLAnswer(function (result) {
+			result = JSON.parse(result);
+			if (result.status == 'success') {
+				var dd = new GlideModal('hierarchical_progress_viewer', false, '40em', '10em');
+				dd.setTitle('Fork Status');
+				dd.setPreference('sysparm_renderer_execution_id', result.execution_id);
+				dd.on('executionComplete', function (result) {
+					debugger;
+					return;
+					var req = new XMLHttpRequest();
+					req.open('POST', 'api/sn_cicd/sc/import'
+						+ '?repo_url=' + encodeURIComponent(repo.clone_url)
+						+ '&branch_name=' + encodeURIComponent(repo.branch_name)
+						+ '&credential_sys_id=' + result.credential_sys_id
+					);
+					req.setRequestHeader('X-UserToken', window.g_ck);
+					req.setRequestHeader('Accept', 'application/json');
+					req.onload = function() {
+						dd.destroy();
+						
+						dd = new GlideModal('hierarchical_progress_viewer', false, '40em', '10em');
+						dd.setTitle('Import Status');
+						dd.setPreference('sysparm_renderer_execution_id', JSON.parse(this.response).links.progress.id);
+						dd.render();
+					};
 
-		req.responseType = 'blob';
-		req.send();
-	};
+					req.send();
+				});
+				dd.render();
+			} else if (result.message) {
+				console.error(result.message);
+			}
+		});
+	}
 	
-	$scope.verify = function(repo) {
+	function verify(repo) {
 		var ga = new GlideAjax('x_376096_mpl.MPLUtilClient');
 		ga.addParam('sysparm_name', 'verifyGitRepo');
 		ga.addParam('alias', $window.pageConfig.source);
@@ -42,6 +108,35 @@ app.controller('repoController', function ($window, $scope) {
 			}
 		});
 	}
+	
+	function configureLogo(repo) {
+		if (repo.app.logo) {
+			var content = new Blob(repo.app.logo.content_base64.map(function (b) {
+				return Uint8Array.from(window.atob(b), function (m) {
+					return m.codePointAt(0);
+				});
+			}), { type: repo.app.logo.content_type });
+			
+			if (repo.app.logo.compressed) {
+				new Response(
+					content
+					.stream()
+					.pipeThrough(new DecompressionStream('gzip'))
+				).blob().then(function (blob) {
+					// the response-blob does not have the attachment's content type
+					setSrcFromBlob(repo, new Blob([blob], { type: repo.app.logo.content_type }));
+				});
+			} else {
+				setSrcFromBlob(repo, content);
+			}
+		}
+		
+		function setSrcFromBlob(repo, blob) {
+			$scope.$apply(function () {
+				repo.app.logo.src = URL.createObjectURL(blob);
+			});
+		}
+	}
 });
 
 angular.bootstrap($('mplcSource'), ['mplcSource']);]]></client_script>
@@ -53,79 +148,153 @@ angular.bootstrap($('mplcSource'), ['mplcSource']);]]></client_script>
 	<script src="/scripts/angular_includes_no_min.1.5.11.js"></script>
 	<g:evaluate>
 		const pageConfig = {
-			source: RP.getParameterValue('source_id'),
+			source: {
+				sys_id: RP.getParameterValue('source_id')
+			},
 			repos: []
 		};
 		
 		if (pageConfig.source) {
-			const mplcUtil = new x_376096_mplc.MPLCUtil();
-			const result = mplcUtil.getGitRepos(pageConfig.source);
-			if (result.status == 'success') {
-				pageConfig.repos = result.repositories;
+			const aliasGr = new GlideRecordSecure('sys_alias');
+			aliasGr.addQuery('sys_id', pageConfig.source.sys_id);
+			aliasGr.setLimit(1);
+			aliasGr.query();
+			if (aliasGr.next()) {
+				pageConfig.source.name = aliasGr.name.toString();
+
+				const mplcUtil = new x_376096_mplc.MPLCUtil();
+				const result = mplcUtil.getGitRepos(aliasGr.sys_id);
+				if (result.status == 'success') {
+					pageConfig.repos = result.repositories;
+				}
 			}
 		}
 	</g:evaluate>
 	<script>var pageConfig = '${JSON.stringify(pageConfig)}';</script>
 	<style>
-		.card {
-			border: 1px solid rgba(0,0,0,.125);
-			border-radius: 0.25rem;
-			margin-bottom: 2rem;
-		}
-		
-		.card-header {
-			padding: 0.75rem 1.25rem;
+		.app-header {
+			display: flex;
+			padding: .75rem 1.25rem;
 			background-color: rgba(0,0,0,.03);
 			border-bottom: 1px solid rgba(0,0,0,.125);
 		}
 		
-		.card-footer {
-			background-color: rgba(0,0,0,.03);
-			border-top: 1px solid rgba(0,0,0,.125);
+		.app-logo {
+			margin-right: 1rem;
+			border: thin solid lightgrey;
+			border-radius: .4rem;
+			width: 4rem;
+			height: 4rem;
 		}
-
-		.card-body {
+		
+		.app-logo img {
+			padding: .2rem;
+			max-width: 100%;
+			max-height: 100%;
+		}
+		
+		.app-logo i {
+			font-size: 2.5rem;
+			width: 2.5rem;
+			color: grey;
+			display: block;
+			margin-left: 0.75rem;
+			margin-right: 0.75rem;
+		}
+		
+		.app-title {
+			display: grid;
+			font-size: 2rem;
+		}
+		
+		.app-subtitle {
+			font-size: 1.2rem;
+		}
+		
+		.app-description {
+			font-size: 1.5rem;
+		}
+		
+		.app-details {
 			padding: 1.25rem;
+			font-size: 1.2rem;
 		}
 		
-		.card-header img {
-			height: 24px;
-			width: auto;
-			padding-right: 1rem;
+		.app-content {
+			width: calc(100% - 10rem + 15px); /* 10rem = width of app-actions, 15px = padding of parent column */
+			border: thin solid darkgrey;
+			border-radius: .5rem 0 0 .5rem;
+			border-right: none;
 		}
 		
-		.card-header a {
-			margin-right: .4rem;
+		.app-actions {
+			z-index: 1;
+			position: absolute;
+			top: 0;
+			right: 0;
+			width: 10rem;
+			height: 100%;
+		
+			border: thin solid darkgrey;
+			border-radius: 0 0.5rem 0.5rem 0;
+			border-left: thin solid lightgrey;
+			padding-top: .75rem;
 		}
 		
-		.container {
+		.app-actions ul {
+			list-style: none;
+			padding: 0 .5rem 0 .5rem;
+		}
+		
+		.app-actions li {
+			padding-bottom: .5rem;
+		}
+		
+		.app-actions button {
+			padding: 6px 12px;
+			width: 100%;
+		}
+		
+		.app {
 			margin-top: 1rem;
-		}
-		
-		.repo-logo {
-			height: 24px;
-			width: auto;
+			marin-bottom: 1rem;
 		}
 	</style>
 	<div class="container">
 		<div class="row">
+			<div class="col col-lg-12">
+				<p>Available applications for GitHub Repository Source ${pageConfig.source.name}</p>
+			</div>
+		</div>
+		<div class="row">
 			<div id="mplcSource" ng-controller="repoController">
-				<div class="col col-lg-12" ng-repeat="repo in repos">
-					<div class="card">
-						<div class="card-header">
-							<img class="repo-logo" ng-if="repo.logo_url" ng-src="{{::repo.logo_url}}" />
-							<a href="{{::repo.url}}" target="_blank">{{::repo.name}}</a>
-						</div>
-						<div class="card-body">
-							<span class="card-text">{{::repo.short_description}}</span>
-						</div>
-						<div class="card-footer">
-							<div class="pull-right">
-							<a href="javascript: void(0);" ng-if="repo.status != 'not_installed'" ng-click="verify(repo)">Verify</a>
-							<a href="javascript: void(0);" ng-if="repo.status == 'update_available'" ng-click="update(repo)">Update</a>
-							<a href="javascript: void(0);" ng-if="repo.status == 'available'" ng-click="install(repo)">Install</a>
+				<div class="col col-lg-12 app" ng-repeat="repo in repos">
+					<div class="app-content">
+						<div class="app-header">
+							<div class="app-logo">
+								<img ng-if="repo.app.logo" ng-src="{{repo.app.logo.src}}"></img>
+								<i ng-if="!repo.app.logo" class="icon icon-application-generic"></i>
 							</div>
+							<span class="app-title">
+								{{::repo.app.name}}
+								<a class="app-subtitle" ng-if="repo.git.has_wiki" target="_blank" href="{{::repo.git.html_url}}/wiki">Wiki ➚</a>
+							</span>
 						</div>
+						<div class="app-details">
+							<span class="app-description">{{::repo.app.short_description}}</span>
+							<ul>
+								<li>Version: {{::repo.app.version}}</li>
+								<li>Created on: {{::repo.app.created}}</li>
+								<li>Modified on: {{::repo.app.updated}}</li>
+							</ul>
+						</div>
+					</div>
+					<div class="app-actions">
+						<ul>
+							<li ng-repeat="action in repo.actions">
+								<button ng-click="action.click()">{{::action.label}}</button>
+							</li>
+						</ul>
 					</div>
 				</div>
 			</div>
@@ -138,13 +307,13 @@ angular.bootstrap($('mplcSource'), ['mplcSource']);]]></client_script>
         <sys_created_by>markus.kraus</sys_created_by>
         <sys_created_on>2024-01-22 19:54:34</sys_created_on>
         <sys_id>c615bfcf97b3f5503c2d3f56f053afbd</sys_id>
-        <sys_mod_count>22</sys_mod_count>
+        <sys_mod_count>102</sys_mod_count>
         <sys_name>source</sys_name>
         <sys_package display_value="Marketplace Client" source="x_376096_mplc">2fe28b4497bf39103c2d3f56f053af4e</sys_package>
         <sys_policy/>
         <sys_scope display_value="Marketplace Client">2fe28b4497bf39103c2d3f56f053af4e</sys_scope>
         <sys_update_name>sys_ui_page_c615bfcf97b3f5503c2d3f56f053afbd</sys_update_name>
         <sys_updated_by>markus.kraus</sys_updated_by>
-        <sys_updated_on>2024-01-25 18:07:24</sys_updated_on>
+        <sys_updated_on>2024-01-29 00:58:14</sys_updated_on>
     </sys_ui_page>
 </record_update>

@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sys_security_acl_role">
+    <sys_security_acl_role action="DELETE">
+        <sys_class_name>sys_security_acl_role</sys_class_name>
+        <sys_created_by>markus.kraus</sys_created_by>
+        <sys_created_on>2024-01-22 19:54:35</sys_created_on>
+        <sys_id>e867330397f3f5503c2d3f56f053af25</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name>x_376096_mplc_source.admin</sys_name>
+        <sys_package display_value="Marketplace Client" source="x_376096_mplc">2fe28b4497bf39103c2d3f56f053af4e</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="Marketplace Client">2fe28b4497bf39103c2d3f56f053af4e</sys_scope>
+        <sys_security_acl display_value="x_376096_mplc_source">9c67330397f3f5503c2d3f56f053af21</sys_security_acl>
+        <sys_update_name>sys_security_acl_role_e867330397f3f5503c2d3f56f053af25</sys_update_name>
+        <sys_updated_by>markus.kraus</sys_updated_by>
+        <sys_updated_on>2024-01-22 19:54:35</sys_updated_on>
+        <sys_user_role display_value="admin" name="admin">2831a114c611228501d4ea6c309d626d</sys_user_role>
+        <transaction_id/>
+    </sys_security_acl_role>
+    <sys_update_version action="INSERT_OR_UPDATE">
+        <action>DELETE</action>
+        <application display_value="Marketplace Client">2fe28b4497bf39103c2d3f56f053af4e</application>
+        <file_path/>
+        <instance_id>65348116dbf0fb04b847ac44d496196d</instance_id>
+        <instance_name>dev81254</instance_name>
+        <name>sys_security_acl_role_e867330397f3f5503c2d3f56f053af25</name>
+        <payload><![CDATA[<?xml version="1.0" encoding="UTF-8"?><record_update table="sys_security_acl_role"><sys_security_acl_role action="INSERT_OR_UPDATE"><sys_class_name>sys_security_acl_role</sys_class_name><sys_created_by>markus.kraus</sys_created_by><sys_created_on>2024-01-22 19:54:35</sys_created_on><sys_id>e867330397f3f5503c2d3f56f053af25</sys_id><sys_mod_count>0</sys_mod_count><sys_name>x_376096_mplc_source.admin</sys_name><sys_package display_value="Marketplace Client" source="x_376096_mplc">2fe28b4497bf39103c2d3f56f053af4e</sys_package><sys_policy/><sys_scope display_value="Marketplace Client">2fe28b4497bf39103c2d3f56f053af4e</sys_scope><sys_security_acl display_value="x_376096_mplc_source">9c67330397f3f5503c2d3f56f053af21</sys_security_acl><sys_update_name>sys_security_acl_role_e867330397f3f5503c2d3f56f053af25</sys_update_name><sys_updated_by>markus.kraus</sys_updated_by><sys_updated_on>2024-01-22 19:54:35</sys_updated_on><sys_user_role display_value="admin" name="admin">2831a114c611228501d4ea6c309d626d</sys_user_role><transaction_id/></sys_security_acl_role></record_update>]]></payload>
+        <payload_hash>653789489</payload_hash>
+        <record_name>x_376096_mplc_source.admin</record_name>
+        <reverted_from/>
+        <source>8ebb728f97bfb5503c2d3f56f053af1a</source>
+        <source_table>sys_update_set</source_table>
+        <state>previous</state>
+        <sys_created_by>markus.kraus</sys_created_by>
+        <sys_created_on>2024-01-22 19:54:35</sys_created_on>
+        <sys_id>a0677b8397f3f5503c2d3f56f053af11</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_recorded_at>18d32bd2d430000001</sys_recorded_at>
+        <sys_updated_by>markus.kraus</sys_updated_by>
+        <sys_updated_on>2024-01-22 19:54:35</sys_updated_on>
+        <type>Access Roles</type>
+        <update_guid>a4677b8399f3f550329e181b7ebcf410</update_guid>
+        <update_guid_history>a4677b8399f3f550329e181b7ebcf410:653789489</update_guid_history>
+    </sys_update_version>
+    <sys_metadata_delete action="INSERT_OR_UPDATE">
+        <sys_audit_delete display_value="x_376096_mplc_source.admin">4e4ef2c997ccce503c2d3f56f053af31</sys_audit_delete>
+        <sys_class_name>sys_metadata_delete</sys_class_name>
+        <sys_created_by>markus.kraus</sys_created_by>
+        <sys_created_on>2024-01-28 20:52:57</sys_created_on>
+        <sys_db_object display_value="" name="sys_security_acl_role">sys_security_acl_role</sys_db_object>
+        <sys_id>1e6fc42b19ea44c29260eaea47faa179</sys_id>
+        <sys_metadata>e867330397f3f5503c2d3f56f053af25</sys_metadata>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name>x_376096_mplc_source.admin</sys_name>
+        <sys_package display_value="Marketplace Client" source="x_376096_mplc">2fe28b4497bf39103c2d3f56f053af4e</sys_package>
+        <sys_parent display_value="x_376096_mplc_source">9c67330397f3f5503c2d3f56f053af21</sys_parent>
+        <sys_policy/>
+        <sys_scope display_value="Marketplace Client">2fe28b4497bf39103c2d3f56f053af4e</sys_scope>
+        <sys_scope_delete display_value="">32726ced9ef64fc4b1bfce5238790090</sys_scope_delete>
+        <sys_update_name>sys_security_acl_role_e867330397f3f5503c2d3f56f053af25</sys_update_name>
+        <sys_update_version display_value="sys_security_acl_role_e867330397f3f5503c2d3f56f053af25">a0677b8397f3f5503c2d3f56f053af11</sys_update_version>
+        <sys_updated_by>markus.kraus</sys_updated_by>
+        <sys_updated_on>2024-01-28 20:52:57</sys_updated_on>
+    </sys_metadata_delete>
+</record_update>

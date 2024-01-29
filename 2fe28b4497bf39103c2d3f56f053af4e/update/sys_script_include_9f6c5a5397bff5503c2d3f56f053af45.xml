@@ -19,22 +19,144 @@ MPLCWorker.prototype = {
 		}
     },
 	
-	appHasChanges: function (appSysID, repoConfigSysID, cookie, token) {
-		// rest calls to the own instance do not work if happening in an interactive session
-		const sm = new sn_ws.RESTMessageV2();
-		sm.setRequestHeader('Accept', 'application/json');
-		sm.setRequestHeader('Cookie', cookie);
-		sm.setRequestHeader('X-Usertoken', token);
-		sm.setHttpMethod('get');
-		sm.setEndpoint(gs.getProperty('glide.servlet.uri') + 'api/sn_devstudio/vcs/apps/' + appSysID + '/repos/' + repoConfigSysID + '/changes');
-		try {
+	verifySourceAlias: function (aliasGr) {
+		const result = {
+			status: 'error',
+			message: ''
+		};
+		
+		const provider = new sn_cc.ConnectionInfoProvider();
+		const sourceConn = provider.getConnectionInfo(aliasGr.sys_id);
+		const sourceAttrs = sourceConn.getExtendedAttributes(); 
+		if (sourceAttrs.type == 'source') {
+			const targetConn = provider.getConnectionInfo(sourceAttrs.target);
+			if (targetConn) {
+				const targetAttrs = targetConn.getExtendedAttributes();
+				if (targetAttrs.type == 'target') {
+					const targetURL = targetConn.getAttribute('connection_url');
+					const sourceURL = sourceConn.getAttribute('connection_url');
+					if (targetURL.startsWith(sourceURL) || sourceURL.startsWith(targetURL)) {
+						const apiKey = targetConn.getCredentialAttribute('api_key');
+						const password = targetConn.getCredentialAttribute('password');
+						if (apiKey || password) {
+							result.connection = {
+								token: apiKey || password,
+								credential_sys_id: targetConn.getCredentialAttribute('sys_id'),
+								attrs: targetAttrs
+							};
+						
+							result.status = 'success';
+						} else {
+							result.message = 'Target has no Credential configured';
+						}
+					} else {
+						result.message = 'Source and Target API Endpoints incompatible';
+					}
+				} else {
+					result.message = 'Target Connection Alias on Source is not of type "Target"';
+				}
+			} else {
+				result.message = 'No Target Connection Alias configured on Source';
+			}
+		} else {
+			result.message = 'Provided Connection Alias is not of type "Source"';
+		}
+		
+		return result;
+	},
+	
+	installGitApp: function (aliasGr, repo) {
+		if (repo.clone_url) {
+			const verifyRes = this.verifySourceAlias(aliasGr);
+			if (verifyRes.status == 'success') {
+				let repoData = getRepoData(verifyRes.connection.token, repo.url);
+				if (repoData) {
+					if (repoData.fork && repoData.clone_url) {
+						this._trackerSuccess('Repository already forked!', { 
+							repo_url: repoData.clone_url,
+							branch: repoData.default_branch,
+							credential_sys_id: verifyRes.connection.credential_sys_id
+						});
+					} else {
+						this._trackerFail('The repo already exists, but is not a fork or was forked from a different source');
+					}
+				} else {
+					const repoURL = forkRepo(verifyRes.connection.token, repo, verifyRes.connection.attrs);
+					if (repoURL) {
+						let repoData = null;
+						do {
+							this._execScript('global', 'gs.sleep(1000)');
+							repoData = getRepoData(verifyRes.connection.token, repoURL);
+						} while (repoData == null && !this._trackerIsCancelled());
+
+						if (repoData) {
+							this._trackerSuccess('Repository successfully forked', { 
+								repo_url: repoData.clone_url,
+								branch_name: repoData.default_branch,
+								credential_sys_id: verifyRes.connection.credential_sys_id
+							});
+						}
+					} else {
+						this._trackerFail('Failed to fork repo!');
+					}
+				}
+			} else {
+				this._trackerFail(verifyRes.message);
+			}
+		} else {
+			this._trackerFail('Clone URL missing');
+		}
+		
+		function getRepoData(token, repo) {
+			let sm = new sn_ws.RESTMessageV2();
+			sm.setRequestHeader('Accept', 'application/vnd.github+json');
+			sm.setRequestHeader('Authorization', 'Bearer ' + token);
+			sm.setHttpMethod('get');
+			sm.setEndpoint(repo.url);
 			const response = sm.execute();
-			const body = response.getBody();
-			gs.info("MKR: success: " + body);
-			this._trackerSuccess('Success', JSON.parse(body));
-		} catch (e) {
-			gs.info("MKR: fail: " + e);
-			this._trackerFail('REST Step Failed', { error: e.message });
+			if (response.getStatusCode() == 200) {
+				const body = JSON.parse(response.getBody());
+				const repo = {
+					fork: body.fork,
+					clone_url: body.clone_url,
+					default_branch: body.default_branch
+				};
+				
+				if (body.parent) {
+					repo.parent = {
+						clone_url: body.parent.clone_url
+					};
+				}
+				
+				return repo;
+			}
+			
+			return null;
+		}
+			
+		function forkRepo(token, repo, connAttrs) {
+			let sm = new sn_ws.RESTMessageV2();
+			sm.setRequestHeader('Accept', 'application/vnd.github+json');
+			sm.setRequestHeader('Authorization', 'Bearer ' + token);
+			sm.setHttpMethod('post');
+			sm.setEndpoint(repo.forks_url);
+
+			const req = {
+				default_branch_only: true
+			};
+
+			if (connAttrs.github_type == 'organization') {
+				req.organization = connAttrs.github_name;
+			}
+
+			sm.setRequestBody(JSON.stringify(req));
+			const response = sm.execute();
+			if (response.getStatusCode() == 202) {
+				const body = JSON.parse(response.getBody());
+				return body.url;
+			}
+			
+			return null;
 		}
 	},
 	
@@ -49,48 +171,6 @@ MPLCWorker.prototype = {
 		appGr.addQuery('sys_id', repo.app.sys_id);
 		appGr.setLimit(1);
 		appGr.query();
-	},
-	
-	installGitApp: function (aliasGr, repo) {
-		const provider = new sn_cc.ConnectionInfoProvider();
-		const connInfo = provider.getConnectionInfo(aliasGr.sys_id);
-		const extendedAttributes = connInfo && connInfo.getExtendedAttributes();
-		if (connInfo && extendedAttributes.type == 'target') {
-			const apiKey = connInfo.getCredentialAttribute('api_key');
-			const sm = new sn_ws.RESTMessageV2();
-			sm.setRequestHeader('Accept', 'application/vnd.github+json');
-			sm.setRequestHeader('Authorization', 'Bearer ' + apiKey);
-
-			let baseURL = connInfo.getAttribute('connection_url');
-			if (!baseURL.endsWith('/')) {
-				baseURL += '/';
-			}
-
-			sm.setHttpMethod('post');
-			sm.setEndpoint(repo.clone_url);
-			
-			const request = {
-				name: repo.name,
-				default_branch_only: true
-			};
-			
-			if (extendedAttributes.github_type == 'organization') {
-				request.organization = extendedAttributes.github_name;
-			}
-			
-			sm.setRequestBody(JSON.stringify(request));			
-			const response = sm.execute();
-			if (response.getStatusCode() == 202) {
-				this._runScript('global', 'gs.sleep(5000)');
-				
-				
-				this._trackerSuccess('Succesfully forked');
-			} else {
-				this._trackerFail('Failed to fork repo (' + response.getStatusCode() + ')');
-			}
-		} else {
-			this._trackerFail('Expected a target connection alias');
-		}
 	},
 	
 	_trackerUpdateMessage: function (message) {
@@ -183,13 +263,13 @@ MPLCWorker.prototype = {
         <sys_created_by>markus.kraus</sys_created_by>
         <sys_created_on>2024-01-23 10:54:13</sys_created_on>
         <sys_id>9f6c5a5397bff5503c2d3f56f053af45</sys_id>
-        <sys_mod_count>38</sys_mod_count>
+        <sys_mod_count>41</sys_mod_count>
         <sys_name>MPLCWorker</sys_name>
         <sys_package display_value="Marketplace Client" source="x_376096_mplc">2fe28b4497bf39103c2d3f56f053af4e</sys_package>
         <sys_policy/>
         <sys_scope display_value="Marketplace Client">2fe28b4497bf39103c2d3f56f053af4e</sys_scope>
         <sys_update_name>sys_script_include_9f6c5a5397bff5503c2d3f56f053af45</sys_update_name>
         <sys_updated_by>markus.kraus</sys_updated_by>
-        <sys_updated_on>2024-01-25 20:10:14</sys_updated_on>
+        <sys_updated_on>2024-01-29 00:45:52</sys_updated_on>
     </sys_script_include>
 </record_update>
