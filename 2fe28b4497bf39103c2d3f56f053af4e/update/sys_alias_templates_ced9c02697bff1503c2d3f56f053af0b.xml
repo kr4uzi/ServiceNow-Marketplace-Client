@@ -2,9 +2,9 @@
     <sys_alias_templates action="INSERT_OR_UPDATE">
         <default_data_template>{&#13;
 	"credential": {&#13;
-		"table": "api_key_credentials",&#13;
+		"table": "basic_auth_credentials",&#13;
 		"name": "GitHub Access Token",&#13;
-		"api_key": ""&#13;
+		"password": ""&#13;
 	},&#13;
 	"connection": {&#13;
 		"table": "http_connection",&#13;
@@ -96,7 +96,7 @@
 							"label": "Credentials",&#13;
 							"type": "reference",&#13;
 							"table": "discovery_credentials",&#13;
-							"query": "sys_class_name=api_key_credentials^ORsys_class_name=basic_auth_credentials",&#13;
+							"query": "sys_class_name=basic_auth_credentials",&#13;
 							"mandatory": true&#13;
 						}&#13;
 					]&#13;
@@ -107,7 +107,7 @@
 					"default_group": true,&#13;
 					"fields": [&#13;
 						{&#13;
-							"name": "credential.api_key",&#13;
+							"name": "credential.password",&#13;
 							"label": "Access token",&#13;
 							"type": "password",&#13;
 							"hint": "Personal access token to access the source or target",&#13;
@@ -121,6 +121,8 @@
 }</dynamic_data_schema>
         <name>Marketplace Client Configuration</name>
         <on_edit_script><![CDATA[(function execute(aliasId, connectionSysId, jsonDefaultData, jsonDynamicData) {
+	gs.info('on edit script');
+	gs.addInfoMessage('mkr on edit script');
    // aliasId: sys_id of the alias record
    // connectionSysId: sys_id of the connection record created by using the default and dynamic data
    // jsonDefaultData (String): The default JSON template data from template table
@@ -140,7 +142,8 @@
    // jsonDynamicData (String): User input based on the key/values defined in "Dynamic Data"
    // e.g. var jsonDynamicParsed = JSON.parse(jsonDynamicData);
    //      gs.info("dynamic connection url = " + jsonDynamicParsed["connection.connection_url"]);
-	gs.info("MKR = " + JSON.parse(jsonDynamicData)["credentials_sys_id"]);
+	gs.addInfoMessage('on create script');
+	gs.info('mkr on create script');
 })(aliasId, connectionSysId, jsonDefaultData, jsonDynamicData);
 ]]></post_process_script>
         <pre_edit_script><![CDATA[(function execute(aliasId, connectionSysId, jsonDefaultData, jsonDynamicData) {
@@ -167,6 +170,9 @@
    //         value: calcAdditionalField2(),
    //    }
    //];
+	
+	gs.info('mkr pre edit script');
+	gs.addInfoMessage('pre edit script');
 
    return [];
 })(aliasId, connectionSysId, jsonDefaultData, jsonDynamicData);
@@ -175,13 +181,13 @@
         <sys_created_by>markus.kraus</sys_created_by>
         <sys_created_on>2024-01-20 15:29:02</sys_created_on>
         <sys_id>ced9c02697bff1503c2d3f56f053af0b</sys_id>
-        <sys_mod_count>20</sys_mod_count>
+        <sys_mod_count>24</sys_mod_count>
         <sys_name>Marketplace Client Configuration</sys_name>
         <sys_package display_value="Marketplace Client" source="x_376096_mplc">2fe28b4497bf39103c2d3f56f053af4e</sys_package>
         <sys_policy/>
         <sys_scope display_value="Marketplace Client">2fe28b4497bf39103c2d3f56f053af4e</sys_scope>
         <sys_update_name>sys_alias_templates_ced9c02697bff1503c2d3f56f053af0b</sys_update_name>
         <sys_updated_by>markus.kraus</sys_updated_by>
-        <sys_updated_on>2024-01-29 22:39:53</sys_updated_on>
+        <sys_updated_on>2024-02-21 23:25:02</sys_updated_on>
     </sys_alias_templates>
 </record_update>

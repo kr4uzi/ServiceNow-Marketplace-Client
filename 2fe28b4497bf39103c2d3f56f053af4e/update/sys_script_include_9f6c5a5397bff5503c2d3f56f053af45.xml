@@ -17,6 +17,8 @@ MPLCWorker.prototype = {
 		} else {
 			this.progress_id = new global.AJAXExecutionTracker().getLastRunning();
 		}
+		
+		this.connectionInfoProvider = new sn_cc.ConnectionInfoProvider();
     },
 	
 	verifySourceAlias: function (aliasGr) {
@@ -33,27 +35,31 @@ MPLCWorker.prototype = {
 			if (targetConn) {
 				const targetAttrs = targetConn.getExtendedAttributes();
 				if (targetAttrs.type == 'target') {
+					// if the targetURL and sourceURL overlap, they are for the same type of github (e.g. all cloud or all enterprise)
 					const targetURL = targetConn.getAttribute('connection_url');
 					const sourceURL = sourceConn.getAttribute('connection_url');
 					if (targetURL.startsWith(sourceURL) || sourceURL.startsWith(targetURL)) {
-						const apiKey = targetConn.getCredentialAttribute('api_key');
-						const password = targetConn.getCredentialAttribute('password');
-						if (apiKey || password) {
+						const targetToken = targetConn.getCredentialAttribute('password');
+						if (targetToken) {
 							result.target = {
+								id: getOwnerID(targetToken, targetURL, targetAttrs),
 								url: targetURL,
-								token: apiKey || password,
+								token: targetToken,
+								// credential_sys_id is required to import the application
 								credential_sys_id: targetConn.getCredentialAttribute('sys_id'),
 								attrs: targetAttrs
 							};
 							
+							const sourceToken = sourceConn.getCredentialAttribute('api_key') || sourceConn.getCredentialAttribute('password');
 							result.source = {
+								id: getOwnerID(sourceToken, sourceURL, sourceAttrs),
 								url: sourceURL,
 								attrs: sourceAttrs
 							};
 						
 							result.status = 'success';
 						} else {
-							result.message = 'Target has no Credential configured';
+							result.message = 'Target needs to have a Basic Auth Credential configured';
 						}
 					} else {
 						result.message = 'Source and Target API Endpoints incompatible';
@@ -69,6 +75,30 @@ MPLCWorker.prototype = {
 		}
 		
 		return result;
+		
+		function getOwnerID(token, connURL, attrs) {
+			const sm = new sn_ws.RESTMessageV2();
+			sm.setRequestHeader('Accept', 'application/vnd.github+json');
+			if (token) {
+				sm.setRequestHeader('Authorization', 'Bearer ' + token);
+			}
+			
+			sm.setHttpMethod('get');
+			
+			if (!connURL.endsWith('/')) {
+				connURL += '/';
+			}
+			
+			sm.setEndpoint(connURL + (attrs.github_type == 'user' ? 'users' : 'orgs') + '/' + attrs.github_name);
+			const response = sm.execute();
+			const status = response.getStatusCode();
+			if (status == 200) {
+				const body = JSON.parse(response.getBody());
+				return body.id;
+			}
+			
+			return null;
+		}
 	},
 	
 	prepareGitApp: function (aliasGr, repo) {
@@ -79,26 +109,20 @@ MPLCWorker.prototype = {
 		}
 	},
 	
-	// this function should fill the result with all variables required to import the application (api/sn_cicd/sc/import)!
-	// the application import cannot run in the backend because there seems to be some kind of lock happening in the background -
-	// this is probably caused by the gs.sleep which is used to repeatetly check if the import is already finished
+	// this function fills the (tracker)result with all variables required to import the application (api/sn_cicd/sc/import)!
 	_prepareGitApp: function (aliasGr, repo) {
 		if (repo.clone_url) {
 			this._trackerUpdateMessage('Validating Connection');
 			const verifyRes = this.verifySourceAlias(aliasGr);
 			if (verifyRes.status == 'success') {
 				this._trackerUpdateMessage('Checking existing repository');
-				let repoData = getRepoData(repo, verifyRes);
-				if (repoData) {
-					if (repoData.fork && repoData.clone_url) {
-						this._trackerSuccess('Repository already forked!', { 
-							repo_url: repoData.clone_url,
-							branch_name: repoData.default_branch,
-							credential_sys_id: verifyRes.target.credential_sys_id
-						});
-					} else {
-						this._trackerFail('The repo already exists, but is not a fork or was forked from a different source');
-					}
+				const fork = getRepoForks(repo, verifyRes)?.find(f => f.owner.id == verifyRes.target.id);
+				if (fork) {
+					this._trackerSuccess('Repository already forked!', { 
+						repo_url: fork.clone_url,
+						branch_name: fork.default_branch,
+						credential_sys_id: verifyRes.target.credential_sys_id
+					});
 				} else {
 					this._trackerUpdateMessage('Creating new fork');
 					const repoURL = forkRepo(repo, verifyRes);
@@ -128,6 +152,33 @@ MPLCWorker.prototype = {
 			}
 		} else {
 			this._trackerFail('Clone URL missing');
+		}
+		
+		function getRepoForks(repo, verifyRes) {
+			const sm = new sn_ws.RESTMessageV2();
+			sm.setRequestHeader('Accept', 'application/vnd.github+json');
+			sm.setRequestHeader('Authorization', 'Bearer ' + verifyRes.target.token);
+			sm.setHttpMethod('get');
+			sm.setEndpoint(repo.forks_url);
+			const response = sm.execute();
+			const status = response.getStatusCode();
+			if (status == 200) {
+				const body = JSON.parse(response.getBody());
+				return body.map(repo => ({
+					id: repo.id,
+					owner: {
+						id: repo.owner.id,
+						login: repo.owner.login,
+					},
+					html_url: repo.html_url,
+					git_url: repo.git_url,
+					ssh_url: repo.ssh_url,
+					clone_url: repo.clone_url,
+					default_branch: repo.default_branch
+				}));
+			}
+			
+			return null;
 		}
 		
 		function getRepoData(repo, verifyRes) {
@@ -287,13 +338,13 @@ MPLCWorker.prototype = {
         <sys_created_by>markus.kraus</sys_created_by>
         <sys_created_on>2024-01-23 10:54:13</sys_created_on>
         <sys_id>9f6c5a5397bff5503c2d3f56f053af45</sys_id>
-        <sys_mod_count>46</sys_mod_count>
+        <sys_mod_count>51</sys_mod_count>
         <sys_name>MPLCWorker</sys_name>
         <sys_package display_value="Marketplace Client" source="x_376096_mplc">2fe28b4497bf39103c2d3f56f053af4e</sys_package>
         <sys_policy/>
         <sys_scope display_value="Marketplace Client">2fe28b4497bf39103c2d3f56f053af4e</sys_scope>
         <sys_update_name>sys_script_include_9f6c5a5397bff5503c2d3f56f053af45</sys_update_name>
         <sys_updated_by>markus.kraus</sys_updated_by>
-        <sys_updated_on>2024-01-29 10:29:51</sys_updated_on>
+        <sys_updated_on>2024-02-22 07:52:43</sys_updated_on>
     </sys_script_include>
 </record_update>

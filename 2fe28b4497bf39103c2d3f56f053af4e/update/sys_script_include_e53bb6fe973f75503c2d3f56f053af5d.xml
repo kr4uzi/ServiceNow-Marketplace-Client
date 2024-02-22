@@ -15,6 +15,7 @@ MPLCUtil.prototype = {
 		
     },
 	
+	// this isn't working unfortunately because you cannot execute "reflective-transactions"
 	appHasChanges: function (appSysID, repoConfigSysID) {
 		const cookies = new x_376096_mplc.MPLCWorker()._runScript('global', '(GlideTransaction.get().getRequest().getHeader("Cookie") || "").toString()');
 		gs.info(cookies);
@@ -64,14 +65,13 @@ MPLCUtil.prototype = {
 			const provider = new sn_cc.ConnectionInfoProvider();
 			const connInfo = provider.getConnectionInfo(aliasGr.sys_id);
 			const sourceExtAttrs = connInfo.getExtendedAttributes(); 
-			if (sourceExtAttrs.type == 'source') {
-				const targetConn = sourceExtAttrs.target && provider.getConnectionInfo(sourceExtAttrs.target);
-				const targetExtAttrs = targetConn && targetConn.getExtendedAttributes();
-				
-				const apiKey = connInfo.getCredentialAttribute('api_key');
+			if (sourceExtAttrs.type == 'source') {				
 				const sm = new sn_ws.RESTMessageV2();
 				sm.setRequestHeader('Accept', 'application/vnd.github+json');
-				sm.setRequestHeader('Authorization', 'Bearer ' + apiKey);
+				const token = connInfo.getCredentialAttribute('api_key') || connInfo.getCredentialAttribute('password');
+				if (token) {
+					sm.setRequestHeader('Authorization', 'Bearer ' + token);
+				}
 
 				let baseURL = connInfo.getAttribute('connection_url');
 				if (!baseURL.endsWith('/')) {
@@ -91,21 +91,24 @@ MPLCUtil.prototype = {
 				sm.setEndpoint(endpoint);
 				const response = sm.execute();
 				if (response.getStatusCode() == 200) {
+					const targetConn = sourceExtAttrs.target && provider.getConnectionInfo(sourceExtAttrs.target);
+					const targetExtAttrs = targetConn && targetConn.getExtendedAttributes();
+					
 					const json = JSON.parse(response.getBody());					
 					result.status = 'success';
 					result.repositories = [];
 					json.forEach(r => {
-						const folder = getAppFolder(apiKey, r.url);
+						const folder = getAppFolder(token, r.url);
 						if (!folder) {
 							return;
 						}
 						
-						const appFile = getAppFile(apiKey, r.url, folder);
+						const appFile = getAppFile(token, r.url, folder);
 						if (!appFile) {
 							return;
 						}
 						
-						const app = getAppMetadata(apiKey, r.url, folder, appFile);
+						const app = getAppMetadata(token, r.url, folder, appFile);
 						if (!app) {
 							return;
 						}
@@ -132,12 +135,16 @@ MPLCUtil.prototype = {
 								};
 								
 								if (targetConn) {
+									let repoURL = configGr.url.toString();
+									if (!repoURL.endsWith('.git')) {
+										repoURL += '.git';
+									}
+									
 									// there is no easy way to check if repo-config is actually a cloned/forked from the source
 									// (the specified URL in the repo config must be first transformed GitHub-API compatible)
 									// we use a "good-enough" solution instead
-									if (configGr.url == r.ssh_url.replace(sourceExtAttrs.github_name, targetExtAttrs.github_name) ||
-										configGr.url == r.clone_url.replace(sourceExtAttrs.github_name, targetExtAttrs.github_name) ||
-										configGr.url == r.html_url.replace(sourceExtAttrs.github_name, targetExtAttrs.github_name)) {
+									if (repoURL == r.ssh_url.replace(sourceExtAttrs.github_name, targetExtAttrs.github_name) ||
+										repoURL == r.clone_url.replace(sourceExtAttrs.github_name, targetExtAttrs.github_name)) {
 										if (repoConfig.current_branch == r.default_branch) {
 											if (appGr.version != app.version) {
 												status.state = 'update_available';
@@ -194,10 +201,12 @@ MPLCUtil.prototype = {
 		
 		return result;
 		
-		function getAppFolder(apiKey, url) {
+		function getAppFolder(token, url) {
 			const sm = new sn_ws.RESTMessageV2();
 			sm.setRequestHeader('Accept', 'application/vnd.github+json');
-			sm.setRequestHeader('Authorization', 'Bearer ' + apiKey);
+			if (token) {
+				sm.setRequestHeader('Authorization', 'Bearer ' + token);
+			}
 			sm.setHttpMethod('get');
 			sm.setEndpoint(url + '/contents/sn_source_control.properties');
 			const response = sm.execute();
@@ -215,10 +224,12 @@ MPLCUtil.prototype = {
 			return null;
 		}
 		
-		function getAppFile(apiKey, url, folder) {
+		function getAppFile(token, url, folder) {
 			const sm = new sn_ws.RESTMessageV2();
 			sm.setRequestHeader('Accept', 'application/vnd.github+json');
-			sm.setRequestHeader('Authorization', 'Bearer ' + apiKey);
+			if (token) {
+				sm.setRequestHeader('Authorization', 'Bearer ' + token);
+			}
 			sm.setHttpMethod('get');
 			sm.setEndpoint(url + '/contents/' + folder);
 			const response = sm.execute();
@@ -235,10 +246,12 @@ MPLCUtil.prototype = {
 			return null;
 		}
 		
-		function getAppMetadata(apiKey, url, folder, appFile) {
+		function getAppMetadata(token, url, folder, appFile) {
 			const sm = new sn_ws.RESTMessageV2();
 			sm.setRequestHeader('Accept', 'application/vnd.github+json');
-			sm.setRequestHeader('Authorization', 'Bearer ' + apiKey);
+			if (token) {
+				sm.setRequestHeader('Authorization', 'Bearer ' + token);
+			}
 			sm.setHttpMethod('get');
 			sm.setEndpoint(url + '/contents/' + folder + '/' + appFile);
 			const response = sm.execute();
@@ -311,7 +324,11 @@ MPLCUtil.prototype = {
 				
 				const sm = new sn_ws.RESTMessageV2();
 				sm.setRequestHeader('Accept', 'application/vnd.github+json');
-				sm.setRequestHeader('Authorization', 'Bearer ' + connInfo.getCredentialAttribute('api_key'));
+				
+				const token = connInfo.getCredentialAttribute('api_key') || connInfo.getCredentialAttribute('password');
+				if (token) {
+					sm.setRequestHeader('Authorization', 'Bearer ' + token);
+				}
 
 				let endpoint = connInfo.getAttribute('connection_url');
 				if (!endpoint.endsWith('/')) {
@@ -342,8 +359,8 @@ MPLCUtil.prototype = {
 						description = json.bio;
 					}
 				} else {
-					status = 'unknown';
-					description = 'Failed to retrieve description!';
+					status = 'error';
+					description = 'Could not retrieve repo information:\n' + response.getErrorMessage();
 				}				
 			
 				gitHubSources.push({
@@ -381,13 +398,13 @@ MPLCUtil.prototype = {
         <sys_created_by>markus.kraus</sys_created_by>
         <sys_created_on>2024-01-21 20:59:27</sys_created_on>
         <sys_id>e53bb6fe973f75503c2d3f56f053af5d</sys_id>
-        <sys_mod_count>71</sys_mod_count>
+        <sys_mod_count>77</sys_mod_count>
         <sys_name>MPLCUtil</sys_name>
         <sys_package display_value="Marketplace Client" source="x_376096_mplc">2fe28b4497bf39103c2d3f56f053af4e</sys_package>
         <sys_policy/>
         <sys_scope display_value="Marketplace Client">2fe28b4497bf39103c2d3f56f053af4e</sys_scope>
         <sys_update_name>sys_script_include_e53bb6fe973f75503c2d3f56f053af5d</sys_update_name>
         <sys_updated_by>markus.kraus</sys_updated_by>
-        <sys_updated_on>2024-01-29 10:33:10</sys_updated_on>
+        <sys_updated_on>2024-02-22 07:58:07</sys_updated_on>
     </sys_script_include>
 </record_update>
