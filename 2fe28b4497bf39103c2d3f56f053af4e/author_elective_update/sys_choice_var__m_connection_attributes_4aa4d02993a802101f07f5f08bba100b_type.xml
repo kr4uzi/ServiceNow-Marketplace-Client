@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update>
+    <sys_choice action="DELETE" field="type" table="var__m_connection_attributes_4aa4d02993a802101f07f5f08bba100b" version="3">
+        <sys_choice_set action="DELETE">
+            <element>type</element>
+            <name>var__m_connection_attributes_4aa4d02993a802101f07f5f08bba100b</name>
+            <sys_class_name>sys_choice_set</sys_class_name>
+            <sys_created_by>markus.kraus</sys_created_by>
+            <sys_created_on>2024-02-23 18:20:14</sys_created_on>
+            <sys_id>16a494e993a802101f07f5f08bba10b7</sys_id>
+            <sys_mod_count>0</sys_mod_count>
+            <sys_name>type</sys_name>
+            <sys_package display_value="Marketplace Client" source="x_376096_mplc">2fe28b4497bf39103c2d3f56f053af4e</sys_package>
+            <sys_policy/>
+            <sys_scope display_value="Marketplace Client">2fe28b4497bf39103c2d3f56f053af4e</sys_scope>
+            <sys_update_name>sys_choice_var__m_connection_attributes_4aa4d02993a802101f07f5f08bba100b_type</sys_update_name>
+            <sys_updated_by>markus.kraus</sys_updated_by>
+            <sys_updated_on>2024-02-23 18:20:14</sys_updated_on>
+        </sys_choice_set>
+    </sys_choice>
+    <sys_update_version action="INSERT_OR_UPDATE">
+        <action>DELETE</action>
+        <application display_value="Marketplace Client">2fe28b4497bf39103c2d3f56f053af4e</application>
+        <file_path/>
+        <instance_id>8e74c4eadba2f910caf99027c59619e3</instance_id>
+        <instance_name>dev217055</instance_name>
+        <name>sys_choice_var__m_connection_attributes_4aa4d02993a802101f07f5f08bba100b_type</name>
+        <payload><![CDATA[<?xml version="1.0" encoding="UTF-8"?><record_update><sys_choice action="INSERT_OR_UPDATE" field="type" table="var__m_connection_attributes_4aa4d02993a802101f07f5f08bba100b" version="3"><sys_choice_set action="INSERT_OR_UPDATE"><element>type</element><name>var__m_connection_attributes_4aa4d02993a802101f07f5f08bba100b</name><sys_class_name>sys_choice_set</sys_class_name><sys_created_by>markus.kraus</sys_created_by><sys_created_on>2024-02-23 18:20:14</sys_created_on><sys_id>16a494e993a802101f07f5f08bba10b7</sys_id><sys_mod_count>0</sys_mod_count><sys_name>type</sys_name><sys_package display_value="Marketplace Client" source="x_376096_mplc">2fe28b4497bf39103c2d3f56f053af4e</sys_package><sys_policy/><sys_scope display_value="Marketplace Client">2fe28b4497bf39103c2d3f56f053af4e</sys_scope><sys_update_name>sys_choice_var__m_connection_attributes_4aa4d02993a802101f07f5f08bba100b_type</sys_update_name><sys_updated_by>markus.kraus</sys_updated_by><sys_updated_on>2024-02-23 18:20:14</sys_updated_on></sys_choice_set></sys_choice></record_update>]]></payload>
+        <payload_hash>921681111</payload_hash>
+        <record_name>null.Type</record_name>
+        <reverted_from display_value="sys_choice_var__m_connection_attributes_4aa4d02993a802101f07f5f08bba100b_type">bd806c6993e802101f07f5f08bba10d9</reverted_from>
+        <source>2cd61da3930002101f07f5f08bba10d5</source>
+        <source_table>sys_update_set</source_table>
+        <state>current</state>
+        <sys_created_by>markus.kraus</sys_created_by>
+        <sys_created_on>2024-02-24 09:34:21</sys_created_on>
+        <sys_id>70e52ba1936842101f07f5f08bba10e0</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_recorded_at>18dda77351e0000001</sys_recorded_at>
+        <sys_updated_by>markus.kraus</sys_updated_by>
+        <sys_updated_on>2024-02-24 09:34:21</sys_updated_on>
+        <type>Choice list</type>
+        <update_guid>bce52ba128684210e8a1472dee73d3dc</update_guid>
+        <update_guid_history>bce52ba128684210e8a1472dee73d3dc:921681111,35806c699be80210dc304a998376e4d9:921681111,7d806c696be8021037b49277800a24d6:-101176339,f1806c6956e8021043de62036540e9d4:-1680562954,17ef58295de802103230856e4f6e8db2:-1261174866,11bfd4297ee802100d30834f20c32ae9:375637404,9ea494e920a80210937c28bb176e79bb:1891447094,9ea494e958a80210dc06628f14f696b8:8620943</update_guid_history>
+    </sys_update_version>
+    <sys_metadata_delete action="INSERT_OR_UPDATE">
+        <sys_audit_delete/>
+        <sys_class_name>sys_metadata_delete</sys_class_name>
+        <sys_created_by>markus.kraus</sys_created_by>
+        <sys_created_on>2024-02-24 09:35:15</sys_created_on>
+        <sys_db_object display_value="" name="sys_choice_set">sys_choice_set</sys_db_object>
+        <sys_id>3348332317a34ed483ad15666fa1be10</sys_id>
+        <sys_metadata>16a494e993a802101f07f5f08bba10b7</sys_metadata>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name>type</sys_name>
+        <sys_package display_value="Marketplace Client" source="x_376096_mplc">2fe28b4497bf39103c2d3f56f053af4e</sys_package>
+        <sys_parent display_value="Type">d6a494e993a802101f07f5f08bba108e</sys_parent>
+        <sys_policy/>
+        <sys_scope display_value="Marketplace Client">2fe28b4497bf39103c2d3f56f053af4e</sys_scope>
+        <sys_scope_delete display_value="">32726ced9ef64fc4b1bfce5238790090</sys_scope_delete>
+        <sys_update_name>sys_choice_var__m_connection_attributes_4aa4d02993a802101f07f5f08bba100b_type</sys_update_name>
+        <sys_update_version display_value="sys_choice_var__m_connection_attributes_4aa4d02993a802101f07f5f08bba100b_type">70e52ba1936842101f07f5f08bba10e0</sys_update_version>
+        <sys_updated_by>markus.kraus</sys_updated_by>
+        <sys_updated_on>2024-02-24 09:35:15</sys_updated_on>
+    </sys_metadata_delete>
+</record_update>

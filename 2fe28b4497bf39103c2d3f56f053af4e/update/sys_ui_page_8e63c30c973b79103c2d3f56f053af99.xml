@@ -1,27 +1,39 @@
 <?xml version="1.0" encoding="UTF-8"?><record_update table="sys_ui_page">
     <sys_ui_page action="INSERT_OR_UPDATE">
         <category>general</category>
-        <client_script><![CDATA[/* global GlideModalForm, window */
+        <client_script><![CDATA[/* global pageConfig, GlideModalForm, window, g_navigation */
 /* eslint no-undef: "error" */
+pageConfig = JSON.parse(pageConfig.replace(/&quot;/g, '"').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&'));
+
 function editConnection(connSysID) {
-	var gm = new GlideModalForm('Configure Source', 'sys_alias');
-	gm.setOnloadCallback(function () {
-		var g_form = window.frames.dialog_frame.g_form;
-		addFakeUIPolicy(g_form);
-	});
-	gm.setSysID(connSysID);
-	gm.render();
+	openConnModal('Configure Source', connSysID);
 }
 
 function addSource() {
-	var gm = new GlideModalForm('Add new Source', 'sys_alias');
+	openConnModal('Add new Source');
+}
+
+function openConnModal(title, connSysID) {
+	if (!pageConfig.globalScopeSelected) {
+		window.alert('Please switch to Global Scope to create a Connection Alias');
+		return;
+	}
+	var gm = new GlideModalForm(title, 'sys_alias', function () {
+		g_navigation.reloadWindow();
+	});
+	
 	gm.setOnloadCallback(function () {
 		var g_form = window.frames.dialog_frame.g_form;
 		addFakeUIPolicy(g_form);
 	});
 	
-	var mplcGitHubAliasSysID = 'ce0f535697fbf1503c2d3f56f053afee';
-	gm.addParm('sysparm_query', 'parent=' + mplcGitHubAliasSysID);
+	if (connSysID) {
+		gm.setSysID(connSysID);
+	} else {
+		var mplcGitHubAliasSysID = 'ce0f535697fbf1503c2d3f56f053afee';
+		gm.addParm('sysparm_query', 'parent=' + mplcGitHubAliasSysID);
+	}
+	
 	gm.render();
 }
 
@@ -34,7 +46,7 @@ function addFakeUIPolicy(g_form) {
 	});
 
 	function updateTarget() {
-		var targetVisibleAndMandatory = g_form.getValue('type') == 'source';
+		var targetVisibleAndMandatory = g_form.getBooleanValue('source');
 		g_form.setMandatory('target', targetVisibleAndMandatory);
 		g_form.setDisplay('target', targetVisibleAndMandatory);
 	}
@@ -48,7 +60,12 @@ function addFakeUIPolicy(g_form) {
 		const mplcUtil = new x_376096_mplc.MPLCUtil();
 		const gitHubSources = mplcUtil.getGitHubSources();
 		gitHubSources.forEach(src => src.status_icon = 'mpl-status-' + src.status + ' ' + (src.status == 'ok' ? 'icon-circle-solid' : 'icon-warning-circle bg-warning'));
+		const pageConfig = {
+			globalScopeSelected: gs.getCurrentApplicationId() == 'global',
+			gitHubSources: gitHubSources
+		};
 	</g:evaluate>
+	<script>var pageConfig = '${JSON.stringify(pageConfig)}';</script>
 	<style>
 		.card {
 			border: 1px solid rgba(0,0,0,.125);
@@ -64,6 +81,10 @@ function addFakeUIPolicy(g_form) {
 
 		.card-body {
 			padding: 1.25rem;
+		}
+		
+		.card-body .card-text {
+			white-space: pre;
 		}
 		
 		.card-header img {
@@ -118,6 +139,11 @@ function addFakeUIPolicy(g_form) {
 					</div>
 				</div>
 			</j:forEach>
+			<j:if test="${gitHubSources.length == 0}">
+				<div class="col col-lg-12">
+					<p style="color: orange;">No Sources Configured</p>
+				</div>
+			</j:if>
 		</div>
 	</div>
 </j:jelly>]]></html>
@@ -145,13 +171,13 @@ function addFakeUIPolicy(g_form) {
         <sys_created_by>markus.kraus</sys_created_by>
         <sys_created_on>2024-01-14 07:14:03</sys_created_on>
         <sys_id>8e63c30c973b79103c2d3f56f053af99</sys_id>
-        <sys_mod_count>90</sys_mod_count>
+        <sys_mod_count>98</sys_mod_count>
         <sys_name>overview</sys_name>
         <sys_package display_value="Marketplace Client" source="x_376096_mplc">2fe28b4497bf39103c2d3f56f053af4e</sys_package>
         <sys_policy/>
         <sys_scope display_value="Marketplace Client">2fe28b4497bf39103c2d3f56f053af4e</sys_scope>
         <sys_update_name>sys_ui_page_8e63c30c973b79103c2d3f56f053af99</sys_update_name>
         <sys_updated_by>markus.kraus</sys_updated_by>
-        <sys_updated_on>2024-01-27 13:52:57</sys_updated_on>
+        <sys_updated_on>2024-02-23 19:40:14</sys_updated_on>
     </sys_ui_page>
 </record_update>

@@ -12,43 +12,8 @@
 var MPLCUtil = Class.create();
 MPLCUtil.prototype = {
     initialize: function() {
-		
+		this.CONN_ALIAS = 'ce0f535697fbf1503c2d3f56f053afee'; // x_376096_mplc.GitHub_Marketplace
     },
-	
-	// this isn't working unfortunately because you cannot execute "reflective-transactions"
-	appHasChanges: function (appSysID, repoConfigSysID) {
-		const cookies = new x_376096_mplc.MPLCWorker()._runScript('global', '(GlideTransaction.get().getRequest().getHeader("Cookie") || "").toString()');
-		gs.info(cookies);
-		const requiredCookies = ['JSESSIONID', 'glide_user_route', 'glide_session_store', 'BIGipServerpool_' + gs.getProperty('instance_name')];
-        const cookieOutput = [];
-        cookies.split(';').forEach(cookie => {
-			// cookie is still a global-scope String and has a space in the beginning
-			cookie = cookie.toString().trim();
-			
-            const cookieName = cookie.substring(0, cookie.indexOf('='));
-            if (requiredCookies.includes(cookieName)) {
-				const end = cookie.indexOf(';');
-                cookieOutput.push(cookie.substring(0, end == -1 ? cookie.length : end));
-            }
-        });
-		
-		const cookie = cookieOutput.join(';');
-		const sessionToken = gs.getSession().getSessionToken();
-		
-		const worker = new GlideScriptedHierarchicalWorker();
-		worker.setProgressName('MPLC Application Has Changes');
-		worker.setScriptIncludeName('x_376096_mplc.MPLCWorker');
-		worker.setScriptIncludeMethod('appHasChanges');
-		worker.putMethodArg('appSysID', appSysID);
-		worker.putMethodArg('repoConfigSysID', repoConfigSysID);
-		worker.putMethodArg('cookie', cookie);
-		worker.putMethodArg('sessionToken', sessionToken);
-		worker.setBackground(true);
-		worker.start();
-
-		const workerID = worker.getProgressID();
-		return workerID;
-	},
 	
 	getGitRepos: function (aliasSysID) {
 		const result = {
@@ -57,7 +22,7 @@ MPLCUtil.prototype = {
 		};
 		
 		const aliasGr = new GlideRecord('sys_alias');
-		aliasGr.addQuery('parent.id', 'x_376096_mplc.GitHub');
+		aliasGr.addQuery('parent', this.CONN_ALIAS);
 		aliasGr.addQuery('sys_id', aliasSysID);
 		aliasGr.setLimit(1);
 		aliasGr.query();
@@ -65,7 +30,7 @@ MPLCUtil.prototype = {
 			const provider = new sn_cc.ConnectionInfoProvider();
 			const connInfo = provider.getConnectionInfo(aliasGr.sys_id);
 			const sourceExtAttrs = connInfo.getExtendedAttributes(); 
-			if (sourceExtAttrs.type == 'source') {				
+			if (sourceExtAttrs.source) {				
 				const sm = new sn_ws.RESTMessageV2();
 				sm.setRequestHeader('Accept', 'application/vnd.github+json');
 				const token = connInfo.getCredentialAttribute('api_key') || connInfo.getCredentialAttribute('password');
@@ -305,12 +270,12 @@ MPLCUtil.prototype = {
 		const gitHubSources = [];
 		
 		const aliasGr = new GlideRecord('sys_alias');
-		aliasGr.addQuery('parent.id', 'x_376096_mplc.GitHub');
+		aliasGr.addQuery('parent', this.CONN_ALIAS);
 		aliasGr.query();
 		while (aliasGr.next()) {
 			const connInfo = provider.getConnectionInfo(aliasGr.sys_id);
-			const extendedAttributes = connInfo.getExtendedAttributes(); 
-			if (extendedAttributes.type == 'source') {	
+			const extendedAttributes = connInfo && connInfo.getExtendedAttributes(); 
+			if (extendedAttributes && extendedAttributes.source) {	
 				let status = 'unknown';
 				let statusMessage = '';
 				
@@ -365,7 +330,7 @@ MPLCUtil.prototype = {
 			
 				gitHubSources.push({
 					sys_id: aliasGr.getUniqueValue(), 
-					name: aliasGr.name.toString(),
+					name: connInfo.getAttribute('name'),
 					description: description,
 					logo_url: logoURL,
 					status: status,
@@ -398,13 +363,13 @@ MPLCUtil.prototype = {
         <sys_created_by>markus.kraus</sys_created_by>
         <sys_created_on>2024-01-21 20:59:27</sys_created_on>
         <sys_id>e53bb6fe973f75503c2d3f56f053af5d</sys_id>
-        <sys_mod_count>77</sys_mod_count>
+        <sys_mod_count>81</sys_mod_count>
         <sys_name>MPLCUtil</sys_name>
         <sys_package display_value="Marketplace Client" source="x_376096_mplc">2fe28b4497bf39103c2d3f56f053af4e</sys_package>
         <sys_policy/>
         <sys_scope display_value="Marketplace Client">2fe28b4497bf39103c2d3f56f053af4e</sys_scope>
         <sys_update_name>sys_script_include_e53bb6fe973f75503c2d3f56f053af5d</sys_update_name>
         <sys_updated_by>markus.kraus</sys_updated_by>
-        <sys_updated_on>2024-02-22 07:58:07</sys_updated_on>
+        <sys_updated_on>2024-02-24 09:30:28</sys_updated_on>
     </sys_script_include>
 </record_update>
