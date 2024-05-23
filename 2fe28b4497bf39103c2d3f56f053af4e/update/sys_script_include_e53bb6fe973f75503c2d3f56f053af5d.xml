@@ -29,8 +29,8 @@ MPLCUtil.prototype = {
 		if (aliasGr.next()) {
 			const provider = new sn_cc.ConnectionInfoProvider();
 			const connInfo = provider.getConnectionInfo(aliasGr.sys_id);
-			const sourceExtAttrs = connInfo.getExtendedAttributes(); 
-			if (sourceExtAttrs.source) {				
+			const sourceExtAttrs = connInfo && connInfo.getExtendedAttributes(); 
+			if (sourceExtAttrs && sourceExtAttrs.source) {				
 				const sm = new sn_ws.RESTMessageV2();
 				sm.setRequestHeader('Accept', 'application/vnd.github+json');
 				const token = connInfo.getCredentialAttribute('api_key') || connInfo.getCredentialAttribute('password');
@@ -134,7 +134,22 @@ MPLCUtil.prototype = {
 						} else {
 							status.state = 'not_installed';
 						}
-									
+						
+						if (status.state == 'unknown') {
+							status.state = { value: 'unknown', label: 'Unknown' };
+						} else if (status.state == 'invalid') {
+							status.state = { value: 'invalid', label: 'Invalid' };
+						} else if (status.state == 'installed') {
+							status.state = { value: 'installed', label: 'Installed' };
+						} else if (status.state == 'not_installed') {
+							status.state = { value: 'not_installed', label: 'Not installed' };
+						} else if (status.state == 'update_available') {
+							status.state = { value: 'update_available', label: 'Update available' };
+						} else {
+							status.state = { value: status.state, label: status.state };
+						}
+							
+						result.can_install = targetExtAttrs && !!targetExtAttrs.target;
 						result.repositories.push({
 							git: {
 								id: r.id,
@@ -275,7 +290,7 @@ MPLCUtil.prototype = {
 		while (aliasGr.next()) {
 			const connInfo = provider.getConnectionInfo(aliasGr.sys_id);
 			const extendedAttributes = connInfo && connInfo.getExtendedAttributes(); 
-			if (extendedAttributes && extendedAttributes.source) {	
+			if (extendedAttributes && extendedAttributes.source == 'true') {
 				let status = 'unknown';
 				let statusMessage = '';
 				
@@ -363,13 +378,13 @@ MPLCUtil.prototype = {
         <sys_created_by>markus.kraus</sys_created_by>
         <sys_created_on>2024-01-21 20:59:27</sys_created_on>
         <sys_id>e53bb6fe973f75503c2d3f56f053af5d</sys_id>
-        <sys_mod_count>81</sys_mod_count>
+        <sys_mod_count>85</sys_mod_count>
         <sys_name>MPLCUtil</sys_name>
         <sys_package display_value="Marketplace Client" source="x_376096_mplc">2fe28b4497bf39103c2d3f56f053af4e</sys_package>
         <sys_policy/>
         <sys_scope display_value="Marketplace Client">2fe28b4497bf39103c2d3f56f053af4e</sys_scope>
         <sys_update_name>sys_script_include_e53bb6fe973f75503c2d3f56f053af5d</sys_update_name>
         <sys_updated_by>markus.kraus</sys_updated_by>
-        <sys_updated_on>2024-02-24 09:30:28</sys_updated_on>
+        <sys_updated_on>2024-05-23 18:59:15</sys_updated_on>
     </sys_script_include>
 </record_update>

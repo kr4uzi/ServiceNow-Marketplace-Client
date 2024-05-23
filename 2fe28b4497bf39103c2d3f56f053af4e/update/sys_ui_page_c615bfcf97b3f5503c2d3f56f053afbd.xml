@@ -30,7 +30,10 @@ app.controller('repoController', function ($window, $scope, $q) {
 	function configureActions(repo) {
 		repo.actions = [];
 		
-		var repoState = repo.status.state;
+		// todo rework this, the actions need to be state aware, otherwise
+		// the "install" button will still remain visible after installation...
+		// (refreshing the whole window after installation to refresh the buttons is overkill)
+		var repoState = repo.status.state.value;
 		if (repoState == 'update_available') {
 			repo.actions.push({
 				label: 'Update',
@@ -39,13 +42,13 @@ app.controller('repoController', function ($window, $scope, $q) {
 					self.disabled = true;
 					update(repo)
 						.then(function () {
-							alert('success');
+
 						}, function (msg) {
-						alert('Error: ' + msg);
-					})
+
+						})
 						['finally'](function () {
-						self.disabled = false;
-					});
+							self.disabled = false;
+						});
 				}
 			});
 		} else if (repoState == 'not_installed') {
@@ -55,19 +58,15 @@ app.controller('repoController', function ($window, $scope, $q) {
 					var self = this;
 					self.disabled = true;
 					install(repo)
-						.then(function () {
-							alert('success');
-						}, function (msg) {
-						alert('Error: ' + msg);
-					})
-						['finally'](function () {
+					['finally'](function () {
 						self.disabled = false;
 					});
-				}
+				},
+				disabled: !pageConfig.can_install
 			});
 		}
 		
-		if (repoState != 'not_installed' && repoState != 'invalid' && repoState != 'unknown') {
+		if (repoState == 'update_available' || repoState == 'installed') {
 			repo.actions.push({
 				label: 'Verify',
 				click: function () {
@@ -117,7 +116,12 @@ app.controller('repoController', function ($window, $scope, $q) {
 							dd.setTitle('Import Status');
 							dd.setPreference('sysparm_renderer_execution_id', response.result.links.progress.id);
 							dd.on('executionComplete', function (res) {
-								deferred.resolve();
+								if (res.state == 2) {
+									deferred.resolve();
+								} else {
+									var errorMessage = (res.result && res.result['error.message']) || 'Unknown Error occurred';
+									deferred.reject(errorMessage);
+								}
 							});
 							dd.render();
 						} else {
@@ -236,12 +240,17 @@ angular.bootstrap($('mplcSource'), ['mplcSource']);]]></client_script>
 			aliasGr.setLimit(1);
 			aliasGr.query();
 			if (aliasGr.next()) {
-				pageConfig.source.name = aliasGr.name.toString();
+				const provider = new sn_cc.ConnectionInfoProvider();
+				const conn = provider.getConnectionInfo(aliasGr.sys_id);
+				if (conn) {
+					pageConfig.source.name = conn.getAttribute('name');
 
-				const mplcUtil = new x_376096_mplc.MPLCUtil();
-				const result = mplcUtil.getGitRepos(aliasGr.sys_id);
-				if (result.status == 'success') {
-					pageConfig.repos = result.repositories;
+					const mplcUtil = new x_376096_mplc.MPLCUtil();
+					const result = mplcUtil.getGitRepos(aliasGr.sys_id);
+					if (result.status == 'success') {
+						pageConfig.repos = result.repositories;
+						pageConfig.can_install = result.can_install;
+					}
 				}
 			}
 		}
@@ -251,8 +260,8 @@ angular.bootstrap($('mplcSource'), ['mplcSource']);]]></client_script>
 		.app-header {
 			display: flex;
 			padding: .75rem 1.25rem;
-			background-color: rgba(0,0,0,.03);
-			border-bottom: 1px solid rgba(0,0,0,.125);
+			background-color: rgba(0, 0, 0, .03);
+			border-bottom: 1px solid rgba(0, 0, 0, .125);
 		}
 		
 		.app-logo {
@@ -274,8 +283,8 @@ angular.bootstrap($('mplcSource'), ['mplcSource']);]]></client_script>
 			width: 2.5rem;
 			color: grey;
 			display: block;
-			margin-left: 0.75rem;
-			margin-right: 0.75rem;
+			margin-left: .75rem;
+			margin-right: .75rem;
 		}
 		
 		.app-title {
@@ -289,7 +298,7 @@ angular.bootstrap($('mplcSource'), ['mplcSource']);]]></client_script>
 		
 		.app-description {
 			font-size: 1.5rem;
-			white-space: pre;
+			white-space: pre-line;
 		}
 		
 		.app-details {
@@ -317,7 +326,7 @@ angular.bootstrap($('mplcSource'), ['mplcSource']);]]></client_script>
 			height: 100%;
 		
 			border: thin solid darkgrey;
-			border-radius: 0 0.5rem 0.5rem 0;
+			border-radius: 0 .5rem .5rem 0;
 			border-left: thin solid lightgrey;
 			padding-top: .75rem;
 		}
@@ -357,23 +366,21 @@ angular.bootstrap($('mplcSource'), ['mplcSource']);]]></client_script>
 		
 		.source-header input[type="search"] {
 			margin: .5rem;
-			z-index: 1;
-			position: fixed;
-			top: 0;
-			right: 0;
-			width: 40rem;
+			width: 30rem;
 		}
 		
-		#mplcSource .container {
+		.source-apps {
 			padding-top: 3rem;
 		}
 	</style>
 	<div id="mplcSource" ng-controller="repoController">
-		<nav class="source-header">
-			<h5>Available applications for GitHub Repository Source ${pageConfig.source.name}</h5>
-			<input class="form-control" type="search" placeholder="Search" aria-label="Search" ng-model="searchString" />
-		</nav>
-		<div class="container">
+		<div class="source-header container">
+			<div class="row">
+				<h5 class="col-md-8">Available applications for GitHub Repository Source ${pageConfig.source.name}</h5>
+				<input class="col-md-4 form-control" type="search" placeholder="Search" aria-label="Search" ng-model="searchString" />
+			</div>
+		</div>
+		<div class="source-apps container">
 			<div class="row">
 				<div class="col col-lg-12 app" ng-repeat="repo in repos | filter:filterRepos">
 					<div class="app-content">
@@ -393,7 +400,7 @@ angular.bootstrap($('mplcSource'), ['mplcSource']);]]></client_script>
 								<li>Version: {{::repo.app.version}}</li>
 								<li>Created on: {{::repo.app.created}}</li>
 								<li>Modified on: {{::repo.app.updated}}</li>
-								<li>State: {{::repo.status.state}}<span ng-if="repo.status.message">$[SP]({{::repo.status.message}})</span></li>
+								<li>State: {{::repo.status.state.label}}<span ng-if="repo.status.message">$[SP]({{::repo.status.message}})</span></li>
 							</ul>
 						</div>
 					</div>
@@ -415,13 +422,13 @@ angular.bootstrap($('mplcSource'), ['mplcSource']);]]></client_script>
         <sys_created_by>markus.kraus</sys_created_by>
         <sys_created_on>2024-01-22 19:54:34</sys_created_on>
         <sys_id>c615bfcf97b3f5503c2d3f56f053afbd</sys_id>
-        <sys_mod_count>126</sys_mod_count>
+        <sys_mod_count>145</sys_mod_count>
         <sys_name>source</sys_name>
         <sys_package display_value="Marketplace Client" source="x_376096_mplc">2fe28b4497bf39103c2d3f56f053af4e</sys_package>
         <sys_policy/>
         <sys_scope display_value="Marketplace Client">2fe28b4497bf39103c2d3f56f053af4e</sys_scope>
         <sys_update_name>sys_ui_page_c615bfcf97b3f5503c2d3f56f053afbd</sys_update_name>
         <sys_updated_by>markus.kraus</sys_updated_by>
-        <sys_updated_on>2024-02-22 09:26:05</sys_updated_on>
+        <sys_updated_on>2024-05-23 18:59:51</sys_updated_on>
     </sys_ui_page>
 </record_update>
