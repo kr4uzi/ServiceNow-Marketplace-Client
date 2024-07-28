@@ -120,6 +120,12 @@ MPLCWorker.prototype = {
 						branch_name: fork.default_branch,
 						credential_sys_id: verifyRes.target.credential_sys_id
 					});
+				} else if (verifyRes.target.id == verifyRes.source.id) {
+					this._trackerSuccess('Repository owned!', { 
+						repo_url: repo.clone_url,
+						branch_name: repo.default_branch,
+						credential_sys_id: verifyRes.target.credential_sys_id
+					});
 				} else {
 					this._trackerUpdateMessage('Creating new fork');
 					const repoURL = forkRepo(repo, verifyRes);
@@ -183,7 +189,7 @@ MPLCWorker.prototype = {
 			sm.setRequestHeader('Accept', 'application/vnd.github+json');
 			sm.setRequestHeader('Authorization', 'Bearer ' + verifyRes.target.token);
 			sm.setHttpMethod('get');
-			sm.setEndpoint(repo.url.replace(verifyRes.source.attrs.github_name, verifyRes.target.attrs.github_name));
+			sm.setEndpoint(repo.repo_url.replace(verifyRes.source.attrs.github_name, verifyRes.target.attrs.github_name));
 			const response = sm.execute();
 			const status = response.getStatusCode();
 			if (status == 200) {
@@ -335,13 +341,13 @@ MPLCWorker.prototype = {
         <sys_created_by>markus.kraus</sys_created_by>
         <sys_created_on>2024-01-23 10:54:13</sys_created_on>
         <sys_id>9f6c5a5397bff5503c2d3f56f053af45</sys_id>
-        <sys_mod_count>52</sys_mod_count>
+        <sys_mod_count>53</sys_mod_count>
         <sys_name>MPLCWorker</sys_name>
         <sys_package display_value="Marketplace Client" source="x_376096_mplc">2fe28b4497bf39103c2d3f56f053af4e</sys_package>
         <sys_policy/>
         <sys_scope display_value="Marketplace Client">2fe28b4497bf39103c2d3f56f053af4e</sys_scope>
         <sys_update_name>sys_script_include_9f6c5a5397bff5503c2d3f56f053af45</sys_update_name>
-        <sys_updated_by>markus.kraus</sys_updated_by>
-        <sys_updated_on>2024-02-23 19:14:04</sys_updated_on>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2024-07-28 18:14:25</sys_updated_on>
     </sys_script_include>
 </record_update>

@@ -7,13 +7,13 @@
         <client_callable>false</client_callable>
         <description/>
         <name>MPLCUtil</name>
-        <script><![CDATA[/* global Class, GlideRecord, sn_cc, sn_ws, gs, x_376096_mplc, GlideStringUtil, XMLDocument2, GlideScriptedHierarchicalWorker */
+        <script><![CDATA[/* global Class, GlideRecord, sn_cc, sn_ws, gs, x_376096_mplc, GlideStringUtil, XMLDocument2, GlideScriptedHierarchicalWorker, GlideScopedEvaluator */
 /* eslint no-undef: "error" */
 var MPLCUtil = Class.create();
 MPLCUtil.prototype = {
-    initialize: function() {
+	initialize: function() {
 		this.CONN_ALIAS = 'ce0f535697fbf1503c2d3f56f053afee'; // x_376096_mplc.GitHub_Marketplace
-    },
+	},
 	
 	getGitRepos: function (aliasSysID) {
 		const result = {
@@ -54,121 +54,149 @@ MPLCUtil.prototype = {
 
 				sm.setHttpMethod('get');
 				sm.setEndpoint(endpoint);
-				const response = sm.execute();
+				let response = sm.execute();
 				if (response.getStatusCode() == 200) {
 					const targetConn = sourceExtAttrs.target && provider.getConnectionInfo(sourceExtAttrs.target);
 					const targetExtAttrs = targetConn && targetConn.getExtendedAttributes();
-					
-					const json = JSON.parse(response.getBody());					
-					result.status = 'success';
+					result.can_install = targetExtAttrs && !!targetExtAttrs.target;
 					result.repositories = [];
-					json.forEach(r => {
-						const folder = getAppFolder(token, r.url);
-						if (!folder) {
-							return;
-						}
-						
-						const appFile = getAppFile(token, r.url, folder);
-						if (!appFile) {
-							return;
-						}
-						
-						const app = getAppMetadata(token, r.url, folder, appFile);
-						if (!app) {
-							return;
-						}
-						
-						const status = {
-							state: 'unknown',
-							message: ''
-						};
-						
-						let repoConfig = null;						
-						const appGr = new GlideRecord('sys_app');
-						appGr.addQuery('sys_id', app.sys_id);
-						appGr.setLimit(1);
-						appGr.query();
-						if (appGr.next()) {
-							const configGr = new GlideRecord('sys_repo_config');
-							configGr.addQuery('sys_app', appGr.sys_id);
-							configGr.setLimit(1);
-							configGr.query();
-							if (configGr.next()) {
-								repoConfig = {
-									credential_sys_id: configGr.getValue('credential'),
-									current_branch: configGr.current_branch.toString()
-								};
-								
-								if (targetConn) {
-									let repoURL = configGr.url.toString();
-									if (!repoURL.endsWith('.git')) {
-										repoURL += '.git';
-									}
+					
+					let hasNextPage = false;
+					do {
+						const json = JSON.parse(response.getBody());
+						json.forEach(r => {
+							const folder = getAppFolder(token, r.url);
+							if (!folder) {
+								return;
+							}
+							
+							const appFile = getAppFile(token, r.url, folder);
+							if (!appFile) {
+								return;
+							}
+							
+							const app = getAppMetadata(token, r.url, folder, appFile);
+							if (!app) {
+								return;
+							}
+							
+							const status = {
+								state: 'unknown',
+								message: ''
+							};
+							
+							let repoConfig = null;						
+							const appGr = new GlideRecord('sys_app');
+							appGr.addQuery('sys_id', app.sys_id);
+							appGr.setLimit(1);
+							appGr.query();
+							if (appGr.next()) {
+								const configGr = new GlideRecord('sys_repo_config');
+								configGr.addQuery('sys_app', appGr.sys_id);
+								configGr.setLimit(1);
+								configGr.query();
+								if (configGr.next()) {
+									repoConfig = {
+										credential_sys_id: configGr.getValue('credential'),
+										current_branch: configGr.current_branch.toString()
+									};
 									
-									// there is no easy way to check if repo-config is actually a cloned/forked from the source
-									// (the specified URL in the repo config must be first transformed GitHub-API compatible)
-									// we use a "good-enough" solution instead
-									if (repoURL == r.ssh_url.replace(sourceExtAttrs.github_name, targetExtAttrs.github_name) ||
-										repoURL == r.clone_url.replace(sourceExtAttrs.github_name, targetExtAttrs.github_name)) {
-										if (repoConfig.current_branch == r.default_branch) {
-											if (appGr.version != app.version) {
-												status.state = 'update_available';
+									if (targetConn) {
+										let repoURL = configGr.url.toString();
+										if (!repoURL.endsWith('.git')) {
+											repoURL += '.git';
+										}
+										
+										// there is no easy way to check if repo-config is actually a cloned/forked from the source
+										// (the specified URL in the repo config must be first transformed GitHub-API compatible)
+										// we use a "good-enough" solution instead
+										if (repoURL == r.ssh_url.replace(sourceExtAttrs.github_name, targetExtAttrs.github_name) ||
+											repoURL == r.clone_url.replace(sourceExtAttrs.github_name, targetExtAttrs.github_name)) {
+											if (repoConfig.current_branch == r.default_branch) {
+												if (appGr.version != app.version) {
+													status.state = 'update_available';
+												} else {
+													status.state = 'installed';
+												}
 											} else {
-												status.state = 'installed';
+												status.state = 'invalid';
+												status.message = 'Branch Missmatch';
 											}
 										} else {
 											status.state = 'invalid';
-											status.message = 'Branch Missmatch';
+											status.message = 'Source Missmatch';
 										}
 									} else {
-										status.state = 'invalid';
-										status.message = 'Source Missmatch';
+										status.message = 'Unable to check repo config: No Target for GitHub Source configured';
 									}
 								} else {
-									status.message = 'Unable to check repo config: No Target for GitHub Source configured';
+									status.state = 'invalid';
+									status.message = 'App not linked to Source Control';
 								}
 							} else {
-								status.state = 'invalid';
-								status.message = 'App not linked to Source Control';
+								status.state = 'not_installed';
 							}
-						} else {
-							status.state = 'not_installed';
-						}
-						
-						if (status.state == 'unknown') {
-							status.state = { value: 'unknown', label: 'Unknown' };
-						} else if (status.state == 'invalid') {
-							status.state = { value: 'invalid', label: 'Invalid' };
-						} else if (status.state == 'installed') {
-							status.state = { value: 'installed', label: 'Installed' };
-						} else if (status.state == 'not_installed') {
-							status.state = { value: 'not_installed', label: 'Not installed' };
-						} else if (status.state == 'update_available') {
-							status.state = { value: 'update_available', label: 'Update available' };
-						} else {
-							status.state = { value: status.state, label: status.state };
-						}
 							
-						result.can_install = targetExtAttrs && !!targetExtAttrs.target;
-						result.repositories.push({
-							git: {
-								id: r.id,
-								name: r.name,
-								description: r.description,
-								url: r.url,
-								default_branch: r.default_branch,
-								ssh_url: r.ssh_url,
-								forks_url: r.forks_url,
-								clone_url: r.clone_url,
-								private: r.private,
-								html_url: r.html_url,
-								has_wiki: r.has_wiki
-							},
-							app: app,
-							repo_config: repoConfig,
-							status: status
+							if (status.state == 'unknown') {
+								status.state = { value: 'unknown', label: 'Unknown' };
+							} else if (status.state == 'invalid') {
+								status.state = { value: 'invalid', label: 'Invalid' };
+							} else if (status.state == 'installed') {
+								status.state = { value: 'installed', label: 'Installed' };
+							} else if (status.state == 'not_installed') {
+								status.state = { value: 'not_installed', label: 'Not installed' };
+							} else if (status.state == 'update_available') {
+								status.state = { value: 'update_available', label: 'Update available' };
+							} else {
+								status.state = { value: status.state, label: status.state };
+							}
+
+							result.repositories.push({
+								git: {
+									id: r.id,
+									name: r.name,
+									description: r.description,
+									url: r.url,
+									default_branch: r.default_branch,
+									ssh_url: r.ssh_url,
+									forks_url: r.forks_url,
+									clone_url: r.clone_url,
+									private: r.private,
+									html_url: r.html_url,
+									has_wiki: r.has_wiki,
+									created_at: r.created_at,
+									updated_at: r.updated_at
+								},
+								app: app,
+								repo_config: repoConfig,
+								status: status
+							});
 						});
-					});
+
+						hasNextPage = false;
+						const linkHeader = response.getHeader('link');
+						if (linkHeader && linkHeader.includes(`rel="next"`)) {
+							const links = linkHeader.split(',');
+							for (let i = 0; i < links.length; i++) {
+								const parts = links[i].split(';');
+								if (parts.length != 2) {
+									continue;
+								}
+
+								const url = parts[0].replace(/<(.*)>/, '$1').trim();
+								const rel = parts[1].replace(/rel="(.*)"/, '$1').trim();
+								if (rel == 'next') {
+									sm.setEndpoint(url);
+									response = sm.execute();
+									if (response.getStatusCode() == 200) {
+										hasNextPage = true;
+										break;
+									}
+								}
+							}
+						}						
+					} while (hasNextPage);
+					result.status = 'success';
 				} else {
 					result.error_message = 'Failed to retrieve repositories!';
 				}
@@ -372,19 +400,19 @@ MPLCUtil.prototype = {
 		return null;
 	},
 
-    type: 'MPLCUtil'
+	type: 'MPLCUtil'
 };]]></script>
         <sys_class_name>sys_script_include</sys_class_name>
         <sys_created_by>markus.kraus</sys_created_by>
         <sys_created_on>2024-01-21 20:59:27</sys_created_on>
         <sys_id>e53bb6fe973f75503c2d3f56f053af5d</sys_id>
-        <sys_mod_count>85</sys_mod_count>
+        <sys_mod_count>94</sys_mod_count>
         <sys_name>MPLCUtil</sys_name>
         <sys_package display_value="Marketplace Client" source="x_376096_mplc">2fe28b4497bf39103c2d3f56f053af4e</sys_package>
         <sys_policy/>
         <sys_scope display_value="Marketplace Client">2fe28b4497bf39103c2d3f56f053af4e</sys_scope>
         <sys_update_name>sys_script_include_e53bb6fe973f75503c2d3f56f053af5d</sys_update_name>
-        <sys_updated_by>markus.kraus</sys_updated_by>
-        <sys_updated_on>2024-05-23 18:59:15</sys_updated_on>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2024-07-28 21:25:40</sys_updated_on>
     </sys_script_include>
 </record_update>
