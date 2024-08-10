@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sys_extension_instance">
+    <sys_extension_instance action="INSERT_OR_UPDATE">
+        <active>true</active>
+        <order>999</order>
+        <point>x_376096_mplc.MPLCExt</point>
+        <script_include display_value="MPLCExt">64a87def93778210e02873718bba1018</script_include>
+        <sys_class_name>sys_extension_instance</sys_class_name>
+        <sys_created_by>markus.kraus</sys_created_by>
+        <sys_created_on>2024-08-09 20:08:55</sys_created_on>
+        <sys_id>20a8fda393b78210e02873718bba1001</sys_id>
+        <sys_mod_count>1</sys_mod_count>
+        <sys_name>x_376096_mplc.MPLCExt</sys_name>
+        <sys_package display_value="Marketplace Client" source="x_376096_mplc">2fe28b4497bf39103c2d3f56f053af4e</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="Marketplace Client">2fe28b4497bf39103c2d3f56f053af4e</sys_scope>
+        <sys_update_name>sys_extension_instance_20a8fda393b78210e02873718bba1001</sys_update_name>
+        <sys_updated_by>markus.kraus</sys_updated_by>
+        <sys_updated_on>2024-08-09 20:12:22</sys_updated_on>
+    </sys_extension_instance>
+</record_update>

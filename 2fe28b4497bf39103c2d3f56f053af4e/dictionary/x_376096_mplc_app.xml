@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?><database>
+    <element db_object_id="3a1ea52b93f38210e02873718bba107d" label="app" max_length="40" name="x_376096_mplc_app" type="collection">
+        <element label="App Sys ID" max_length="32" name="app_sys_id" type="string"/>
+        <element label="App Scope" max_length="18" name="app_scope" type="string"/>
+        <element label="Metadata" max_length="4000" name="metadata" type="simple_name_values"/>
+        <element label="Source" max_length="32" name="source" reference="sys_alias" reference_qual="parent=ce0f535697fbf1503c2d3f56f053afee^ORparent=1dcce07f93ff4610e02873718bba10e8^EQ" reference_qual_condition="parent=ce0f535697fbf1503c2d3f56f053afee^ORparent=1dcce07f93ff4610e02873718bba10e8^EQ" type="reference"/>
+        <element label="Name" max_length="100" name="name" type="string"/>
+        <element label="Logo" max_length="40" name="logo" type="user_image"/>
+        <element label="URL" max_length="1024" name="url" type="url"/>
+        <element label="Description" max_length="500" name="description" type="string"/>
+        <index name="index">
+            <element name="source"/>
+        </index>
+    </element>
+</database>

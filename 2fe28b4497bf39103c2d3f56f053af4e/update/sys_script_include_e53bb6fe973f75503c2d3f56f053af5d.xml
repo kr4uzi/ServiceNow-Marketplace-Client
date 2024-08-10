@@ -50,7 +50,7 @@ MPLCUtil.prototype = {
 					endpoint += 'users';
 				}
 				
-				endpoint += '/' + sourceExtAttrs.github_name + '/repos';
+				endpoint += '/' + sourceExtAttrs.github_name + '/repos?sort=pushed';
 
 				sm.setHttpMethod('get');
 				sm.setEndpoint(endpoint);
@@ -284,6 +284,7 @@ MPLCUtil.prototype = {
 						}
 						
 						logo = {
+							hash: xml.getNodeText('//sys_attachment[./sys_id="' + logoSysID + '"]/hash'),
 							compressed: xml.getNodeText('//sys_attachment[./sys_id="' + logoSysID + '"]/compressed') == 'true',
 							content_type: xml.getNodeText('//sys_attachment[./sys_id="' + logoSysID + '"]/content_type'),
 							content_base64: attContentBlocks.sort((a, b) => a.position - b.position).map(b => b.data)
@@ -384,21 +385,6 @@ MPLCUtil.prototype = {
 		
 		return gitHubSources;
 	},
-	
-	_runScript: function (scope, script, vars) {
-		const scriptGr = new GlideRecord('sys_rte_eb_script_operation');
-		scriptGr.addQuery('sys_id', '26659daf97fb39503c2d3f56f053af90');
-		scriptGr.setLimit(1);
-		scriptGr.query();
-		if (scriptGr.next()) {
-			scriptGr.sys_scope = scope;
-			scriptGr.script = script;
-			const gse = new GlideScopedEvaluator();
-			return gse.evaluateScript(scriptGr, 'script', vars);
-		}
-
-		return null;
-	},
 
 	type: 'MPLCUtil'
 };]]></script>
@@ -406,13 +392,13 @@ MPLCUtil.prototype = {
         <sys_created_by>markus.kraus</sys_created_by>
         <sys_created_on>2024-01-21 20:59:27</sys_created_on>
         <sys_id>e53bb6fe973f75503c2d3f56f053af5d</sys_id>
-        <sys_mod_count>94</sys_mod_count>
+        <sys_mod_count>108</sys_mod_count>
         <sys_name>MPLCUtil</sys_name>
         <sys_package display_value="Marketplace Client" source="x_376096_mplc">2fe28b4497bf39103c2d3f56f053af4e</sys_package>
         <sys_policy/>
         <sys_scope display_value="Marketplace Client">2fe28b4497bf39103c2d3f56f053af4e</sys_scope>
         <sys_update_name>sys_script_include_e53bb6fe973f75503c2d3f56f053af5d</sys_update_name>
-        <sys_updated_by>admin</sys_updated_by>
-        <sys_updated_on>2024-07-28 21:25:40</sys_updated_on>
+        <sys_updated_by>markus.kraus</sys_updated_by>
+        <sys_updated_on>2024-08-10 09:13:19</sys_updated_on>
     </sys_script_include>
 </record_update>

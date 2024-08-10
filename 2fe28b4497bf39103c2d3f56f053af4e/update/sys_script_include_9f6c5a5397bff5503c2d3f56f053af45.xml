@@ -7,11 +7,19 @@
         <client_callable>false</client_callable>
         <description>This script include handles all background processing work</description>
         <name>MPLCWorker</name>
-        <script><![CDATA[/* global Class, global, GlideRecord, gs, sn_cc, sn_ws, GlideScopedEvaluator */
+        <script><![CDATA[/* global Class, global, GlideRecord, gs, sn_cc, sn_ws, GlideScriptedExtensionPoint */
 /* eslint no-undef: "error" */
 var MPLCWorker = Class.create();
 MPLCWorker.prototype = {
     initialize: function (progressID) {
+		const eps = new GlideScriptedExtensionPoint().getExtensions('MPLCExt');
+		if (eps.length) {
+			eps[0].initialize();
+			this.ext = eps[0];
+		} else {
+			throw new Error(`${this.type} requires a MPLCExt Extension Point implementation`);
+		}
+
 		if (progressID) {
 			this.progress_id = progressID;
 		} else {
@@ -133,7 +141,7 @@ MPLCWorker.prototype = {
 						this._trackerUpdateMessage('Waiting for fork to finish');
 						let repoData = null;
 						do {
-							this._runScript('global', 'gs.sleep(1000)');
+							this.ext.sleep(1000);
 							repoData = getRepoData(repo, verifyRes);
 						} while (repoData == null && !this._trackerIsCancelled());
 
@@ -319,21 +327,6 @@ MPLCWorker.prototype = {
 			tracker.updateResult(result);
 		}
 	},
-	
-	_runScript: function (scope, script, vars) {
-		const scriptGr = new GlideRecord('sys_rte_eb_script_operation');
-		scriptGr.addQuery('sys_id', '26659daf97fb39503c2d3f56f053af90');
-		scriptGr.setLimit(1);
-		scriptGr.query();
-		if (scriptGr.next()) {
-			scriptGr.sys_scope = scope;
-			scriptGr.script = script;
-			const gse = new GlideScopedEvaluator();
-			return gse.evaluateScript(scriptGr, 'script', vars);
-		}
-
-		return null;
-	},
 
     type: 'MPLCWorker'
 };]]></script>
@@ -341,13 +334,13 @@ MPLCWorker.prototype = {
         <sys_created_by>markus.kraus</sys_created_by>
         <sys_created_on>2024-01-23 10:54:13</sys_created_on>
         <sys_id>9f6c5a5397bff5503c2d3f56f053af45</sys_id>
-        <sys_mod_count>53</sys_mod_count>
+        <sys_mod_count>54</sys_mod_count>
         <sys_name>MPLCWorker</sys_name>
         <sys_package display_value="Marketplace Client" source="x_376096_mplc">2fe28b4497bf39103c2d3f56f053af4e</sys_package>
         <sys_policy/>
         <sys_scope display_value="Marketplace Client">2fe28b4497bf39103c2d3f56f053af4e</sys_scope>
         <sys_update_name>sys_script_include_9f6c5a5397bff5503c2d3f56f053af45</sys_update_name>
-        <sys_updated_by>admin</sys_updated_by>
-        <sys_updated_on>2024-07-28 18:14:25</sys_updated_on>
+        <sys_updated_by>markus.kraus</sys_updated_by>
+        <sys_updated_on>2024-08-10 09:13:22</sys_updated_on>
     </sys_script_include>
 </record_update>
