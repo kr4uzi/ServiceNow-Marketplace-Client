@@ -7,7 +7,7 @@
         <client_callable>false</client_callable>
         <description/>
         <name>MPLCImport</name>
-        <script><![CDATA[/* global Uint8Array, Class, GlideScriptedExtensionPoint, GlideSysAttachment, GlideRecord, sn_ws */
+        <script><![CDATA[/* global Uint8Array, Class, GlideScriptedExtensionPoint, GlideSysAttachment, GlideRecord, GlideStringUtil, sn_ws */
 /* global x_376096_mplc */
 /* eslint no-undef: "error" */
 var MPLCImport = Class.create();
@@ -46,6 +46,501 @@ MPLCImport.prototype = {
 			}
 		};
 
+		const detailSchema = {
+    "result": {
+        "data": {
+            "discussions": {
+                "all_versions": {
+                    "comments_count": 5,
+                    "is_last_minus_one_page": true,
+                    "last_page": true,
+                    "no_discussion": "This version of the project currently does not have any discussions. Try selecting another version or \"view all versions\"",
+                    "page": 1,
+                    "posts": [
+                        {
+                            "content": "Hello,\nI really like your Barcode App, but at the moment I am not able to download it via NowShare. \nCan you send it to me or update the xml at Share or GitHub?\nThanks a lot!",
+                            "created_by": "Nils Stukenbrok",
+                            "notify_me": false,
+                            "post_id": "DSP000002435",
+                            "replies": [
+                                {
+                                    "content": "This app is now available in ServiceNow Store. You should be able to download it from there.\n\nhttps://store.servicenow.com/sn_appstore_store.do#!/store/application/024cfef4db86a4100ced64b813961994/1.0.2?sl=sh",
+                                    "created_by": "Probir Das",
+                                    "notify_me": false,
+                                    "post_id": "DSC000001166",
+                                    "replies": [],
+                                    "reply_to": "DSP000002435",
+                                    "reply_to_user": "Nils Stukenbrok",
+                                    "reply_to_when": "2022-10-28 07:18:27",
+                                    "reset_indentation": false,
+                                    "submit_post": {
+                                        "content": "",
+                                        "notify": false
+                                    },
+                                    "version": "1.0",
+                                    "when": "2022-10-31 15:50:44"
+                                }
+                            ],
+                            "reply_to": null,
+                            "reply_to_user": null,
+                            "reset_indentation": false,
+                            "submit_post": {
+                                "content": "",
+                                "notify": false
+                            },
+                            "version": "1.0",
+                            "when": "2022-10-28 07:18:27"
+                        },
+                        {
+                            "content": "Amazing APP",
+                            "created_by": "Sam kumar",
+                            "notify_me": false,
+                            "post_id": "DSP000002323",
+                            "replies": [],
+                            "reply_to": null,
+                            "reply_to_user": null,
+                            "reset_indentation": false,
+                            "submit_post": {
+                                "content": "",
+                                "notify": false
+                            },
+                            "version": "1.0",
+                            "when": "2022-05-22 08:04:12"
+                        },
+                        {
+                            "content": "It's a fantastic app! Just a question, how can I add/change items? For instance, I need a new conference room with a name provided by the customer. if I want to add a new conference room what should I do?",
+                            "created_by": "Gianmario Marongiu",
+                            "notify_me": false,
+                            "post_id": "DSP000001985",
+                            "replies": [],
+                            "reply_to": null,
+                            "reply_to_user": null,
+                            "reset_indentation": false,
+                            "submit_post": {
+                                "content": "",
+                                "notify": false
+                            },
+                            "version": "1.0",
+                            "when": "2021-07-12 14:54:40"
+                        },
+                        {
+                            "content": "This looks great. We've been looking for a companion app to Yansa Labs' Barcode/QR Code Generator app on the Store, and this might be the best solution out. Thanks for doing this!",
+                            "created_by": "Ben Hollifield",
+                            "notify_me": false,
+                            "post_id": "DSP000001266",
+                            "replies": [],
+                            "reply_to": null,
+                            "reply_to_user": null,
+                            "reset_indentation": false,
+                            "submit_post": {
+                                "content": "",
+                                "notify": false
+                            },
+                            "version": "1.0",
+                            "when": "2020-05-28 14:27:55"
+                        }
+                    ]
+                },
+                "discussion_content_length": 10000,
+                "is_post_id_valid": false,
+                "not_logged_in": false,
+                "post_disabled_msg": "<span class=\"log-in-link\"  data-ng-click=\"goToSignIn()\">please log in to participate in this discussion</span>",
+                "post_focus_msg": "<p><span>You are starting a discussion thread on version </span>\n\t<span data-ng-bind=\"shareDetailsVM.currentVersionValue\"></span>\n\t<span> of this project. If you wish to start the thread on a different version, use the version selector above.</span>\n</p>",
+                "post_id_invalid_msg": "<p>Whoops! Looks like the discussion post id in the url is invalid.</p>",
+                "v1_0": {
+                    "comments_count": 5,
+                    "is_last_minus_one_page": true,
+                    "last_page": true,
+                    "no_discussion": "This version of the project currently does not have any discussions. Try selecting another version or \"view all versions\"",
+                    "page": 1,
+                    "posts": [
+                        {
+                            "content": "Hello,\nI really like your Barcode App, but at the moment I am not able to download it via NowShare. \nCan you send it to me or update the xml at Share or GitHub?\nThanks a lot!",
+                            "created_by": "Nils Stukenbrok",
+                            "notify_me": false,
+                            "post_id": "DSP000002435",
+                            "replies": [
+                                {
+                                    "content": "This app is now available in ServiceNow Store. You should be able to download it from there.\n\nhttps://store.servicenow.com/sn_appstore_store.do#!/store/application/024cfef4db86a4100ced64b813961994/1.0.2?sl=sh",
+                                    "created_by": "Probir Das",
+                                    "notify_me": false,
+                                    "post_id": "DSC000001166",
+                                    "replies": [],
+                                    "reply_to": "DSP000002435",
+                                    "reply_to_user": "Nils Stukenbrok",
+                                    "reply_to_when": "2022-10-28 07:18:27",
+                                    "reset_indentation": false,
+                                    "submit_post": {
+                                        "content": "",
+                                        "notify": false
+                                    },
+                                    "version": "1.0",
+                                    "when": "2022-10-31 15:50:44"
+                                }
+                            ],
+                            "reply_to": null,
+                            "reply_to_user": null,
+                            "reset_indentation": false,
+                            "submit_post": {
+                                "content": "",
+                                "notify": false
+                            },
+                            "version": "1.0",
+                            "when": "2022-10-28 07:18:27"
+                        },
+                        {
+                            "content": "Amazing APP",
+                            "created_by": "Sam kumar",
+                            "notify_me": false,
+                            "post_id": "DSP000002323",
+                            "replies": [],
+                            "reply_to": null,
+                            "reply_to_user": null,
+                            "reset_indentation": false,
+                            "submit_post": {
+                                "content": "",
+                                "notify": false
+                            },
+                            "version": "1.0",
+                            "when": "2022-05-22 08:04:12"
+                        },
+                        {
+                            "content": "It's a fantastic app! Just a question, how can I add/change items? For instance, I need a new conference room with a name provided by the customer. if I want to add a new conference room what should I do?",
+                            "created_by": "Gianmario Marongiu",
+                            "notify_me": false,
+                            "post_id": "DSP000001985",
+                            "replies": [],
+                            "reply_to": null,
+                            "reply_to_user": null,
+                            "reset_indentation": false,
+                            "submit_post": {
+                                "content": "",
+                                "notify": false
+                            },
+                            "version": "1.0",
+                            "when": "2021-07-12 14:54:40"
+                        },
+                        {
+                            "content": "This looks great. We've been looking for a companion app to Yansa Labs' Barcode/QR Code Generator app on the Store, and this might be the best solution out. Thanks for doing this!",
+                            "created_by": "Ben Hollifield",
+                            "notify_me": false,
+                            "post_id": "DSP000001266",
+                            "replies": [],
+                            "reply_to": null,
+                            "reply_to_user": null,
+                            "reset_indentation": false,
+                            "submit_post": {
+                                "content": "",
+                                "notify": false
+                            },
+                            "version": "1.0",
+                            "when": "2020-05-28 14:27:55"
+                        }
+                    ]
+                }
+            },
+            "product_details": {
+                "all_app_files": [
+                    {
+                        "name": "yTW_hYU2X_w",
+                        "share_product_gallery_sys_id": "0042d5ad1b0d9c10cd0e62c4bd4bcb6d",
+                        "thumbnail_url": "https://i.ytimg.com/vi/yTW_hYU2X_w/hqdefault.jpg",
+                        "type": "video",
+                        "url": "https://youtu.be/yTW_hYU2X_w",
+                        "versions": [
+                            "1.0"
+                        ]
+                    },
+                    {
+                        "name": "IMG_1051.PNG",
+                        "share_product_gallery_sys_id": "0d01196d1b0d9c10cd0e62c4bd4bcbf3",
+                        "sys_id": "0501d56d1b0d9c10cd0e62c4bd4bcb8a",
+                        "type": "image",
+                        "url": "7815211_qr_scan_IMG_1051.PNG",
+                        "versions": [
+                            "1.0"
+                        ]
+                    },
+                    {
+                        "name": "IMG_1052.PNG",
+                        "share_product_gallery_sys_id": "48111d6d1b0d9c10cd0e62c4bd4bcb9a",
+                        "sys_id": "1c11996d1b0d9c10cd0e62c4bd4bcba1",
+                        "type": "image",
+                        "url": "7815211_qr_scan_IMG_1052.PNG",
+                        "versions": [
+                            "1.0"
+                        ]
+                    },
+                    {
+                        "name": "IMG_1053.PNG",
+                        "share_product_gallery_sys_id": "5021996d1b0d9c10cd0e62c4bd4bcba5",
+                        "sys_id": "d821596d1b0d9c10cd0e62c4bd4bcbc2",
+                        "type": "image",
+                        "url": "7815211_qr_scan_1_IMG_1053.PNG",
+                        "versions": [
+                            "1.0"
+                        ]
+                    }
+                ],
+                "documents_files_specs": {
+                    "accept": [
+                        "text/xml",
+                        "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+                        "application/msword",
+                        "application/pdf"
+                    ],
+                    "file_name_length": 100,
+                    "file_name_length_error": "File must not exceed 50MB. File names must not exceed 100 characters and must be one of the following file types: .pdf,.docx,.doc,.xml,.json",
+                    "max_files": 10,
+                    "max_size": "50MB",
+                    "pattern": ".pdf,.docx,.doc,.xml,.json"
+                },
+                "product_gallery_files_specs": {
+                    "accept": [
+                        "image/*"
+                    ],
+                    "max_files": 10,
+                    "max_size": "10MB",
+                    "pattern": ".jpg,.png,.jpeg,.bmp,.gif"
+                },
+                "v1_0": {
+                    "app_files_info": {
+                        "compatibility": "New York, Orlando",
+                        "files": [
+                            {
+                                "name": "yTW_hYU2X_w",
+                                "share_product_gallery_sys_id": "0042d5ad1b0d9c10cd0e62c4bd4bcb6d",
+                                "thumbnail_url": "https://i.ytimg.com/vi/yTW_hYU2X_w/hqdefault.jpg",
+                                "type": "video",
+                                "url": "https://youtu.be/yTW_hYU2X_w"
+                            },
+                            {
+                                "name": "IMG_1051.PNG",
+                                "share_product_gallery_sys_id": "0d01196d1b0d9c10cd0e62c4bd4bcbf3",
+                                "type": "image",
+                                "url": "7815211_qr_scan_IMG_1051.PNG"
+                            },
+                            {
+                                "name": "IMG_1052.PNG",
+                                "share_product_gallery_sys_id": "48111d6d1b0d9c10cd0e62c4bd4bcb9a",
+                                "type": "image",
+                                "url": "7815211_qr_scan_IMG_1052.PNG"
+                            },
+                            {
+                                "name": "IMG_1053.PNG",
+                                "share_product_gallery_sys_id": "5021996d1b0d9c10cd0e62c4bd4bcba5",
+                                "type": "image",
+                                "url": "7815211_qr_scan_1_IMG_1053.PNG"
+                            }
+                        ],
+                        "total_downloads": "96"
+                    },
+                    "documents": [
+                        {
+                            "artifact_sys_id": "ca153e65db859090a732a345ca961954",
+                            "download_link": "sys_attachment.do?sys_id=1e15fe65db859090a732a345ca961995",
+                            "name": "Employee Experience Pack - QR Scan - Documentation.pdf",
+                            "size": "2.27 MB",
+                            "status": "updateset_upload_validation_complete",
+                            "sys_id": "1e15fe65db859090a732a345ca961995",
+                            "type": "DOWNLOADABLE_DOCUMENT"
+                        },
+                        {
+                            "artifact_sys_id": "1fa0556d1b0d9c10cd0e62c4bd4bcb31",
+                            "download_link": "sys_attachment.do?sys_id=57a0956d1b0d9c10cd0e62c4bd4bcb8a",
+                            "name": "Employee Experience Pack - Example Data - QR Codes.pdf",
+                            "size": "160 KB",
+                            "status": "updateset_upload_validation_complete",
+                            "sys_id": "57a0956d1b0d9c10cd0e62c4bd4bcb8a",
+                            "type": "DOWNLOADABLE_DOCUMENT"
+                        },
+                        {
+                            "artifact_sys_id": "e9a0156d1b0d9c10cd0e62c4bd4bcb87",
+                            "download_link": "sys_attachment.do?sys_id=b5a0916d1b0d9c10cd0e62c4bd4bcb8b",
+                            "name": "Employee Experience Pack - Example Data - Scan Actions.xml",
+                            "size": "68 KB",
+                            "status": "updateset_upload_validation_complete",
+                            "sys_id": "b5a0916d1b0d9c10cd0e62c4bd4bcb8b",
+                            "type": "DOWNLOADABLE_DOCUMENT"
+                        },
+                        {
+                            "artifact_sys_id": "1f90d16d1b0d9c10cd0e62c4bd4bcb65",
+                            "download_link": "sys_attachment.do?sys_id=5790156d1b0d9c10cd0e62c4bd4bcb74",
+                            "name": "Employee Experience Pack - Example Data - Scan Definitions.xml",
+                            "size": "8 KB",
+                            "status": "updateset_upload_validation_complete",
+                            "sys_id": "5790156d1b0d9c10cd0e62c4bd4bcb74",
+                            "type": "DOWNLOADABLE_DOCUMENT"
+                        }
+                    ],
+                    "download_update_set": {
+                        "content_type": "application/xml",
+                        "file_name": "Update Set - QR Scan v1.0.xml",
+                        "link": "sys_attachment.do?sys_id=b1bf492d1b0d9c10cd0e62c4bd4bcb0d"
+                    },
+                    "release_notes": "<p>Initial Release: 1.0</p><p>QR Scan application consists of a Mobile list screen, sample scan definitions and scan actions</p><p>Please note that version 1.0 of this Experience Pack is compatible with New York and Orlando release only. Click the \"follow project\" button at the top of this page to get updates including new versions with enhancements or compatibility with other releases.&nbsp;<br></p><p>Included content:</p><ul><li>Scoped Application: Get Help - Scan</li><li>Custom tables: Scan Definitions, Scan Actions and Scanned URL (Remote table)</li><li>Get Help Section in Now Mobile App</li><li>Parameterized list screen to scan QR / Barcode and show list of applicable actions</li><li>Multiple functions to support opening catalog item, viewing knowledge article, reporting an issue and opening external URL</li><li>Example of Scan Definitions and Scan Actions</li></ul>",
+                    "release_notes_md": "Initial Release: 1.0\n\nQR Scan application consists of a Mobile list screen, sample scan definitions and scan actions\n\nPlease note that version 1.0 of this Experience Pack is compatible with New York and Orlando release only. Click the \"follow project\" button at the top of this page to get updates including new versions with enhancements or compatibility with other releases.   \n\nIncluded content:\n\n*   Scoped Application: Get Help - Scan\n*   Custom tables: Scan Definitions, Scan Actions and Scanned URL (Remote table)\n*   Get Help Section in Now Mobile App\n*   Parameterized list screen to scan QR / Barcode and show list of applicable actions\n*   Multiple functions to support opening catalog item, viewing knowledge article, reporting an issue and opening external URL\n*   Example of Scan Definitions and Scan Actions",
+                    "update_set_preview": [
+                        {
+                            "is_open": false,
+                            "remote_table": [
+                                {
+                                    "copy_text": "copy to clipboard",
+                                    "name": "Scanned URL",
+                                    "sys_id": "9ebf812d1b0d9c10cd0e62c4bd4bcb12"
+                                }
+                            ],
+                            "snc_object_name": "Remote Table",
+                            "type": "remote_table"
+                        }
+                    ]
+                }
+            },
+            "project": {
+                "active_version": "v1_0",
+                "author": "",
+                "can_edit": false,
+                "category": [
+                    "Employee Experience Packs"
+                ],
+                "completion_status": true,
+                "description": "<p>Employees within an organization can quickly report an issue or get help using the Now Mobile's QR Scan application.</p><p>Laptop not working, printer out of paper or spill in the conference room? Simply scan to report an issue or get help using our knowledge bases and catalogs.</p><p>Sometime, the speediness and timeliness of reporting an issue is paramount. An employee no longer has to open the laptop and navigate to the portal to report an issue. With the QR Scan application, it is now simple. Tap, scan and get help.</p><p>QR Scan application allows</p><ul><li>An employee to report an issue by creating incident using pre-defined template specific to the item scanned</li><li>An employee to get help regarding the item scanned with the help of existing knowledge articles</li><li>An employee to place order regarding the item scanned using the existing catalogs</li><li>A system administrator to configure targeted actions for specific item. This ensures that the employees have the right set of actions related to the item scanned</li></ul><p>For full instructions and troubleshooting, please refer the document <i>Employee&nbsp;Experience Pack -&nbsp;QR Scan - Documentation.pdf </i>available under Related Files section.<br></p>",
+                "is_domain_verified": false,
+                "is_servicenow_user": false,
+                "legal_agreement": {
+                    "dont_show_again_label": "Don't warn me again",
+                    "share_legal": {
+                        "agreement_text": "Dont show legal agreement",
+                        "modal_title": "Download Warning",
+                        "show_legal_agreement": false
+                    }
+                },
+                "permalink": "7815211_qr_scan",
+                "product": [
+                    "Now Platform"
+                ],
+                "project_urls": {
+                    "modal_title": "Share Project",
+                    "show_share_button": true,
+                    "urls": {
+                        "latest_version": "https://developer.servicenow.com/connect.do#!/share/contents/7815211_qr_scan?t=PRODUCT_DETAILS",
+                        "v1_0": "https://developer.servicenow.com/connect.do#!/share/contents/7815211_qr_scan?v=1.0&t=PRODUCT_DETAILS"
+                    },
+                    "versions": [
+                        {
+                            "key": "latest_version",
+                            "name": "Always latest"
+                        },
+                        {
+                            "key": "v1_0",
+                            "name": "1.0"
+                        }
+                    ]
+                },
+                "report_problem": {
+                    "blurb": "Use this form only if you feel this items violates our terms of use",
+                    "field_help_texts": {
+                        "description": "Please describe the abuse with sufficient detail for us to investigate this matter",
+                        "reason": "",
+                        "version": ""
+                    },
+                    "reasons": [
+                        {
+                            "name": "This project caused my instance to be unstable",
+                            "value": "This project caused my instance to be unstable"
+                        },
+                        {
+                            "name": "This project contains malicious code",
+                            "value": "This project contains malicious code"
+                        },
+                        {
+                            "name": "This project contains offensive material",
+                            "value": "This project contains offensive material"
+                        }
+                    ],
+                    "versions": [
+                        {
+                            "key": "v1_0",
+                            "name": "1.0"
+                        }
+                    ]
+                },
+                "review_ratings_star_type": 0,
+                "subscription": {
+                    "following": false,
+                    "following_message": "you are following this project",
+                    "not_logged_in_message": "<span class=\"log-in-link\" data-ng-click=\"goToSignIn()\">follow project</span>",
+                    "unfollowing_message": "follow project"
+                },
+                "title": "Now Mobile - QR Scan",
+                "total_comments": 5,
+                "total_reviews": 0,
+                "versions": [
+                    {
+                        "key": "v1_0",
+                        "name": "1.0"
+                    }
+                ]
+            },
+            "review_ratings": {
+                "all_versions": {
+                    "app_downloaded": false,
+                    "can_not_review": true,
+                    "invalid_page_for_current_version": false,
+                    "no_review_ratings_message": "This version of the project does not have any reviews. Select \"view all versions\" to see all reviews for this project or select a different version to see other reviews.",
+                    "post_disabled_msg": "Only users who have downloaded this version of the project can leave a rating and review for it. Use the version selector to pick another version to provide a review for it.",
+                    "review_count": 0,
+                    "review_posted": false,
+                    "reviews": [],
+                    "reviews_pagination": {
+                        "current_page": 1,
+                        "reviews_per_page": 5,
+                        "total_pages": 0
+                    },
+                    "stars_progress": {
+                        "five_star": 0,
+                        "four_star": 0,
+                        "one_star": 0,
+                        "three_star": 0,
+                        "two_star": 0
+                    }
+                },
+                "invalid_page_number_message": "Invalid page number ",
+                "is_owner": false,
+                "no_reviews_for_all_versions": false,
+                "not_logged_in": false,
+                "review_content_length": 2000,
+                "total_reviews": 0,
+                "v1_0": {
+                    "app_downloaded": false,
+                    "can_not_review": true,
+                    "invalid_page_for_current_version": false,
+                    "no_review_ratings_message": "This version of the project does not have any reviews. Select \"view all versions\" to see all reviews for this project or select a different version to see other reviews.",
+                    "post_disabled_msg": "Only users who have downloaded this version of the project can leave a rating and review for it. Use the version selector to pick another version to provide a review for it.",
+                    "review_count": 0,
+                    "review_posted": false,
+                    "reviews": [],
+                    "reviews_pagination": {
+                        "current_page": 1,
+                        "reviews_per_page": 5,
+                        "total_pages": 0
+                    },
+                    "stars_progress": {
+                        "five_star": 0,
+                        "four_star": 0,
+                        "one_star": 0,
+                        "three_star": 0,
+                        "two_star": 0
+                    },
+                    "total_downloads": "96"
+                }
+            }
+        },
+        "message": "returning project details",
+        "status": "success"
+    }
+};
+
 		const NOWShareConnAlias = '1dcce07f93ff4610e02873718bba10e8';
 		const conn = initConn();
 		if (conn) {
@@ -64,7 +559,20 @@ MPLCImport.prototype = {
 
 				const resultData = pageData.result.data;
 				resultData.projects.forEach(project => {
-					const projectID = project.url.match(/contents\/(\d+)_/)[1];
+					const projectID = project.url.match(/contents\/(.+)\?/)[1];
+					const projectVer = project.url.match(/[?&]v=(.+)[&$]/)[1];
+					const details = conn.data({
+						action: 'share.project.details',
+						data: {
+							permalink: projectID,
+							v: projectVer,
+							t: 'PRODUCT_DETAILS'
+						}
+					});
+
+					const activeVersionID = details.result.data.project.active_version;
+					const updateSetDownload = details.result.data.product_details[activeVersionID].download_update_set.link;
+
 					const appGr = new GlideRecord('x_376096_mplc_app');
 					appGr.addQuery('source', NOWShareConnAlias);
 					appGr.addQuery('source_id', projectID);
@@ -81,7 +589,7 @@ MPLCImport.prototype = {
 					//updateLogo(jsLibs, eps, gsa, appGr, appData);
 
 					appGr.name = project.title;
-					appGr.description = project.description.replaceAll('&nbsp;', ' ');
+					appGr.description = GlideStringUtil.unescapeHTML(details.result.data.project.description);
 					appGr.url = 'https://developer.servicenow.com' + project.url;
 					appGr.metadata = JSON.stringify({
 						created: project.created_on,
@@ -90,7 +598,9 @@ MPLCImport.prototype = {
 						downloads: project.downloads,
 						overall_rating: project.overall_rating,
 						total_ratings: project.total_ratings,
-						updated: project.owner_last_updated_on
+						updated: project.owner_last_updated_on,
+						version: projectVer,
+						update_set: updateSetDownload
 					});
 
 					if (appGr.isNewRecord()) {
@@ -118,7 +628,6 @@ MPLCImport.prototype = {
 				if (userToken) {
 					const cookies = {};
 					parseCookies(cookies, userTokenResp);
-
 
 					const DevConn = function () { };
 					DevConn.prototype.data = function (jsonData) {
@@ -288,13 +797,13 @@ MPLCImport.prototype = {
         <sys_created_by>markus.kraus</sys_created_by>
         <sys_created_on>2024-08-11 08:03:57</sys_created_on>
         <sys_id>1b95290493041210e02873718bba10a2</sys_id>
-        <sys_mod_count>10</sys_mod_count>
+        <sys_mod_count>14</sys_mod_count>
         <sys_name>MPLCImport</sys_name>
         <sys_package display_value="Marketplace Client" source="x_376096_mplc">2fe28b4497bf39103c2d3f56f053af4e</sys_package>
         <sys_policy/>
         <sys_scope display_value="Marketplace Client">2fe28b4497bf39103c2d3f56f053af4e</sys_scope>
         <sys_update_name>sys_script_include_1b95290493041210e02873718bba10a2</sys_update_name>
         <sys_updated_by>markus.kraus</sys_updated_by>
-        <sys_updated_on>2024-08-11 17:33:40</sys_updated_on>
+        <sys_updated_on>2024-08-11 20:54:18</sys_updated_on>
     </sys_script_include>
 </record_update>
