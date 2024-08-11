@@ -2,157 +2,366 @@
     <sys_script_include action="INSERT_OR_UPDATE">
         <access>package_private</access>
         <active>true</active>
-        <api_name>x_376096_mplc.JSLibs</api_name>
+        <api_name>x_376096_mplc.JSLibDeflate</api_name>
         <caller_access/>
         <client_callable>false</client_callable>
-        <description>Collection of several JavaScript Libraries to enable gzip handling&#13;
-https://github.com/dankogai/js-base64&#13;
-https://github.com/beatgammit/deflate-js&#13;
-https://github.com/beatgammit/crc32&#13;
-https://github.com/beatgammit/gzip-js</description>
-        <name>JSLibs</name>
-        <script><![CDATA[/* global Class, GlideScriptedExtensionPoint */
+        <description>https://github.com/beatgammit/deflate-js&#13;
+&#13;
+GNU GENERAL PUBLIC LICENSE&#13;
+                       Version 2, June 1991&#13;
+&#13;
+ Copyright (C) 1989, 1991 Free Software Foundation, Inc.,&#13;
+ 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA&#13;
+ Everyone is permitted to copy and distribute verbatim copies&#13;
+ of this license document, but changing it is not allowed.&#13;
+&#13;
+                            Preamble&#13;
+&#13;
+  The licenses for most software are designed to take away your&#13;
+freedom to share and change it.  By contrast, the GNU General Public&#13;
+License is intended to guarantee your freedom to share and change free&#13;
+software--to make sure the software is free for all its users.  This&#13;
+General Public License applies to most of the Free Software&#13;
+Foundation's software and to any other program whose authors commit to&#13;
+using it.  (Some other Free Software Foundation software is covered by&#13;
+the GNU Lesser General Public License instead.)  You can apply it to&#13;
+your programs, too.&#13;
+&#13;
+  When we speak of free software, we are referring to freedom, not&#13;
+price.  Our General Public Licenses are designed to make sure that you&#13;
+have the freedom to distribute copies of free software (and charge for&#13;
+this service if you wish), that you receive source code or can get it&#13;
+if you want it, that you can change the software or use pieces of it&#13;
+in new free programs; and that you know you can do these things.&#13;
+&#13;
+  To protect your rights, we need to make restrictions that forbid&#13;
+anyone to deny you these rights or to ask you to surrender the rights.&#13;
+These restrictions translate to certain responsibilities for you if you&#13;
+distribute copies of the software, or if you modify it.&#13;
+&#13;
+  For example, if you distribute copies of such a program, whether&#13;
+gratis or for a fee, you must give the recipients all the rights that&#13;
+you have.  You must make sure that they, too, receive or can get the&#13;
+source code.  And you must show them these terms so they know their&#13;
+rights.&#13;
+&#13;
+  We protect your rights with two steps: (1) copyright the software, and&#13;
+(2) offer you this license which gives you legal permission to copy,&#13;
+distribute and/or modify the software.&#13;
+&#13;
+  Also, for each author's protection and ours, we want to make certain&#13;
+that everyone understands that there is no warranty for this free&#13;
+software.  If the software is modified by someone else and passed on, we&#13;
+want its recipients to know that what they have is not the original, so&#13;
+that any problems introduced by others will not reflect on the original&#13;
+authors' reputations.&#13;
+&#13;
+  Finally, any free program is threatened constantly by software&#13;
+patents.  We wish to avoid the danger that redistributors of a free&#13;
+program will individually obtain patent licenses, in effect making the&#13;
+program proprietary.  To prevent this, we have made it clear that any&#13;
+patent must be licensed for everyone's free use or not licensed at all.&#13;
+&#13;
+  The precise terms and conditions for copying, distribution and&#13;
+modification follow.&#13;
+&#13;
+                    GNU GENERAL PUBLIC LICENSE&#13;
+   TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION&#13;
+&#13;
+  0. This License applies to any program or other work which contains&#13;
+a notice placed by the copyright holder saying it may be distributed&#13;
+under the terms of this General Public License.  The "Program", below,&#13;
+refers to any such program or work, and a "work based on the Program"&#13;
+means either the Program or any derivative work under copyright law:&#13;
+that is to say, a work containing the Program or a portion of it,&#13;
+either verbatim or with modifications and/or translated into another&#13;
+language.  (Hereinafter, translation is included without limitation in&#13;
+the term "modification".)  Each licensee is addressed as "you".&#13;
+&#13;
+Activities other than copying, distribution and modification are not&#13;
+covered by this License; they are outside its scope.  The act of&#13;
+running the Program is not restricted, and the output from the Program&#13;
+is covered only if its contents constitute a work based on the&#13;
+Program (independent of having been made by running the Program).&#13;
+Whether that is true depends on what the Program does.&#13;
+&#13;
+  1. You may copy and distribute verbatim copies of the Program's&#13;
+source code as you receive it, in any medium, provided that you&#13;
+conspicuously and appropriately publish on each copy an appropriate&#13;
+copyright notice and disclaimer of warranty; keep intact all the&#13;
+notices that refer to this License and to the absence of any warranty;&#13;
+and give any other recipients of the Program a copy of this License&#13;
+along with the Program.&#13;
+&#13;
+You may charge a fee for the physical act of transferring a copy, and&#13;
+you may at your option offer warranty protection in exchange for a fee.&#13;
+&#13;
+  2. You may modify your copy or copies of the Program or any portion&#13;
+of it, thus forming a work based on the Program, and copy and&#13;
+distribute such modifications or work under the terms of Section 1&#13;
+above, provided that you also meet all of these conditions:&#13;
+&#13;
+    a) You must cause the modified files to carry prominent notices&#13;
+    stating that you changed the files and the date of any change.&#13;
+&#13;
+    b) You must cause any work that you distribute or publish, that in&#13;
+    whole or in part contains or is derived from the Program or any&#13;
+    part thereof, to be licensed as a whole at no charge to all third&#13;
+    parties under the terms of this License.&#13;
+&#13;
+    c) If the modified program normally reads commands interactively&#13;
+    when run, you must cause it, when started running for such&#13;
+    interactive use in the most ordinary way, to print or display an&#13;
+    announcement including an appropriate copyright notice and a&#13;
+    notice that there is no warranty (or else, saying that you provide&#13;
+    a warranty) and that users may redistribute the program under&#13;
+    these conditions, and telling the user how to view a copy of this&#13;
+    License.  (Exception: if the Program itself is interactive but&#13;
+    does not normally print such an announcement, your work based on&#13;
+    the Program is not required to print an announcement.)&#13;
+&#13;
+These requirements apply to the modified work as a whole.  If&#13;
+identifiable sections of that work are not derived from the Program,&#13;
+and can be reasonably considered independent and separate works in&#13;
+themselves, then this License, and its terms, do not apply to those&#13;
+sections when you distribute them as separate works.  But when you&#13;
+distribute the same sections as part of a whole which is a work based&#13;
+on the Program, the distribution of the whole must be on the terms of&#13;
+this License, whose permissions for other licensees extend to the&#13;
+entire whole, and thus to each and every part regardless of who wrote it.&#13;
+&#13;
+Thus, it is not the intent of this section to claim rights or contest&#13;
+your rights to work written entirely by you; rather, the intent is to&#13;
+exercise the right to control the distribution of derivative or&#13;
+collective works based on the Program.&#13;
+&#13;
+In addition, mere aggregation of another work not based on the Program&#13;
+with the Program (or with a work based on the Program) on a volume of&#13;
+a storage or distribution medium does not bring the other work under&#13;
+the scope of this License.&#13;
+&#13;
+  3. You may copy and distribute the Program (or a work based on it,&#13;
+under Section 2) in object code or executable form under the terms of&#13;
+Sections 1 and 2 above provided that you also do one of the following:&#13;
+&#13;
+    a) Accompany it with the complete corresponding machine-readable&#13;
+    source code, which must be distributed under the terms of Sections&#13;
+    1 and 2 above on a medium customarily used for software interchange; or,&#13;
+&#13;
+    b) Accompany it with a written offer, valid for at least three&#13;
+    years, to give any third party, for a charge no more than your&#13;
+    cost of physically performing source distribution, a complete&#13;
+    machine-readable copy of the corresponding source code, to be&#13;
+    distributed under the terms of Sections 1 and 2 above on a medium&#13;
+    customarily used for software interchange; or,&#13;
+&#13;
+    c) Accompany it with the information you received as to the offer&#13;
+    to distribute corresponding source code.  (This alternative is&#13;
+    allowed only for noncommercial distribution and only if you&#13;
+    received the program in object code or executable form with such&#13;
+    an offer, in accord with Subsection b above.)&#13;
+&#13;
+The source code for a work means the preferred form of the work for&#13;
+making modifications to it.  For an executable work, complete source&#13;
+code means all the source code for all modules it contains, plus any&#13;
+associated interface definition files, plus the scripts used to&#13;
+control compilation and installation of the executable.  However, as a&#13;
+special exception, the source code distributed need not include&#13;
+anything that is normally distributed (in either source or binary&#13;
+form) with the major components (compiler, kernel, and so on) of the&#13;
+operating system on which the executable runs, unless that component&#13;
+itself accompanies the executable.&#13;
+&#13;
+If distribution of executable or object code is made by offering&#13;
+access to copy from a designated place, then offering equivalent&#13;
+access to copy the source code from the same place counts as&#13;
+distribution of the source code, even though third parties are not&#13;
+compelled to copy the source along with the object code.&#13;
+&#13;
+  4. You may not copy, modify, sublicense, or distribute the Program&#13;
+except as expressly provided under this License.  Any attempt&#13;
+otherwise to copy, modify, sublicense or distribute the Program is&#13;
+void, and will automatically terminate your rights under this License.&#13;
+However, parties who have received copies, or rights, from you under&#13;
+this License will not have their licenses terminated so long as such&#13;
+parties remain in full compliance.&#13;
+&#13;
+  5. You are not required to accept this License, since you have not&#13;
+signed it.  However, nothing else grants you permission to modify or&#13;
+distribute the Program or its derivative works.  These actions are&#13;
+prohibited by law if you do not accept this License.  Therefore, by&#13;
+modifying or distributing the Program (or any work based on the&#13;
+Program), you indicate your acceptance of this License to do so, and&#13;
+all its terms and conditions for copying, distributing or modifying&#13;
+the Program or works based on it.&#13;
+&#13;
+  6. Each time you redistribute the Program (or any work based on the&#13;
+Program), the recipient automatically receives a license from the&#13;
+original licensor to copy, distribute or modify the Program subject to&#13;
+these terms and conditions.  You may not impose any further&#13;
+restrictions on the recipients' exercise of the rights granted herein.&#13;
+You are not responsible for enforcing compliance by third parties to&#13;
+this License.&#13;
+&#13;
+  7. If, as a consequence of a court judgment or allegation of patent&#13;
+infringement or for any other reason (not limited to patent issues),&#13;
+conditions are imposed on you (whether by court order, agreement or&#13;
+otherwise) that contradict the conditions of this License, they do not&#13;
+excuse you from the conditions of this License.  If you cannot&#13;
+distribute so as to satisfy simultaneously your obligations under this&#13;
+License and any other pertinent obligations, then as a consequence you&#13;
+may not distribute the Program at all.  For example, if a patent&#13;
+license would not permit royalty-free redistribution of the Program by&#13;
+all those who receive copies directly or indirectly through you, then&#13;
+the only way you could satisfy both it and this License would be to&#13;
+refrain entirely from distribution of the Program.&#13;
+&#13;
+If any portion of this section is held invalid or unenforceable under&#13;
+any particular circumstance, the balance of the section is intended to&#13;
+apply and the section as a whole is intended to apply in other&#13;
+circumstances.&#13;
+&#13;
+It is not the purpose of this section to induce you to infringe any&#13;
+patents or other property right claims or to contest validity of any&#13;
+such claims; this section has the sole purpose of protecting the&#13;
+integrity of the free software distribution system, which is&#13;
+implemented by public license practices.  Many people have made&#13;
+generous contributions to the wide range of software distributed&#13;
+through that system in reliance on consistent application of that&#13;
+system; it is up to the author/donor to decide if he or she is willing&#13;
+to distribute software through any other system and a licensee cannot&#13;
+impose that choice.&#13;
+&#13;
+This section is intended to make thoroughly clear what is believed to&#13;
+be a consequence of the rest of this License.&#13;
+&#13;
+  8. If the distribution and/or use of the Program is restricted in&#13;
+certain countries either by patents or by copyrighted interfaces, the&#13;
+original copyright holder who places the Program under this License&#13;
+may add an explicit geographical distribution limitation excluding&#13;
+those countries, so that distribution is permitted only in or among&#13;
+countries not thus excluded.  In such case, this License incorporates&#13;
+the limitation as if written in the body of this License.&#13;
+&#13;
+  9. The Free Software Foundation may publish revised and/or new versions&#13;
+of the General Public License from time to time.  Such new versions will&#13;
+be similar in spirit to the present version, but may differ in detail to&#13;
+address new problems or concerns.&#13;
+&#13;
+Each version is given a distinguishing version number.  If the Program&#13;
+specifies a version number of this License which applies to it and "any&#13;
+later version", you have the option of following the terms and conditions&#13;
+either of that version or of any later version published by the Free&#13;
+Software Foundation.  If the Program does not specify a version number of&#13;
+this License, you may choose any version ever published by the Free Software&#13;
+Foundation.&#13;
+&#13;
+  10. If you wish to incorporate parts of the Program into other free&#13;
+programs whose distribution conditions are different, write to the author&#13;
+to ask for permission.  For software which is copyrighted by the Free&#13;
+Software Foundation, write to the Free Software Foundation; we sometimes&#13;
+make exceptions for this.  Our decision will be guided by the two goals&#13;
+of preserving the free status of all derivatives of our free software and&#13;
+of promoting the sharing and reuse of software generally.&#13;
+&#13;
+                            NO WARRANTY&#13;
+&#13;
+  11. BECAUSE THE PROGRAM IS LICENSED FREE OF CHARGE, THERE IS NO WARRANTY&#13;
+FOR THE PROGRAM, TO THE EXTENT PERMITTED BY APPLICABLE LAW.  EXCEPT WHEN&#13;
+OTHERWISE STATED IN WRITING THE COPYRIGHT HOLDERS AND/OR OTHER PARTIES&#13;
+PROVIDE THE PROGRAM "AS IS" WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESSED&#13;
+OR IMPLIED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF&#13;
+MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.  THE ENTIRE RISK AS&#13;
+TO THE QUALITY AND PERFORMANCE OF THE PROGRAM IS WITH YOU.  SHOULD THE&#13;
+PROGRAM PROVE DEFECTIVE, YOU ASSUME THE COST OF ALL NECESSARY SERVICING,&#13;
+REPAIR OR CORRECTION.&#13;
+&#13;
+  12. IN NO EVENT UNLESS REQUIRED BY APPLICABLE LAW OR AGREED TO IN WRITING&#13;
+WILL ANY COPYRIGHT HOLDER, OR ANY OTHER PARTY WHO MAY MODIFY AND/OR&#13;
+REDISTRIBUTE THE PROGRAM AS PERMITTED ABOVE, BE LIABLE TO YOU FOR DAMAGES,&#13;
+INCLUDING ANY GENERAL, SPECIAL, INCIDENTAL OR CONSEQUENTIAL DAMAGES ARISING&#13;
+OUT OF THE USE OR INABILITY TO USE THE PROGRAM (INCLUDING BUT NOT LIMITED&#13;
+TO LOSS OF DATA OR DATA BEING RENDERED INACCURATE OR LOSSES SUSTAINED BY&#13;
+YOU OR THIRD PARTIES OR A FAILURE OF THE PROGRAM TO OPERATE WITH ANY OTHER&#13;
+PROGRAMS), EVEN IF SUCH HOLDER OR OTHER PARTY HAS BEEN ADVISED OF THE&#13;
+POSSIBILITY OF SUCH DAMAGES.&#13;
+&#13;
+                     END OF TERMS AND CONDITIONS&#13;
+&#13;
+            How to Apply These Terms to Your New Programs&#13;
+&#13;
+  If you develop a new program, and you want it to be of the greatest&#13;
+possible use to the public, the best way to achieve this is to make it&#13;
+free software which everyone can redistribute and change under these terms.&#13;
+&#13;
+  To do so, attach the following notices to the program.  It is safest&#13;
+to attach them to the start of each source file to most effectively&#13;
+convey the exclusion of warranty; and each file should have at least&#13;
+the "copyright" line and a pointer to where the full notice is found.&#13;
+&#13;
+    &lt;one line to give the program's name and a brief idea of what it does.&gt;&#13;
+    Copyright (C) &lt;year&gt;  &lt;name of author&gt;&#13;
+&#13;
+    This program is free software; you can redistribute it and/or modify&#13;
+    it under the terms of the GNU General Public License as published by&#13;
+    the Free Software Foundation; either version 2 of the License, or&#13;
+    (at your option) any later version.&#13;
+&#13;
+    This program is distributed in the hope that it will be useful,&#13;
+    but WITHOUT ANY WARRANTY; without even the implied warranty of&#13;
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the&#13;
+    GNU General Public License for more details.&#13;
+&#13;
+    You should have received a copy of the GNU General Public License along&#13;
+    with this program; if not, write to the Free Software Foundation, Inc.,&#13;
+    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.&#13;
+&#13;
+Also add information on how to contact you by electronic and paper mail.&#13;
+&#13;
+If the program is interactive, make it output a short notice like this&#13;
+when it starts in an interactive mode:&#13;
+&#13;
+    Gnomovision version 69, Copyright (C) year name of author&#13;
+    Gnomovision comes with ABSOLUTELY NO WARRANTY; for details type `show w'.&#13;
+    This is free software, and you are welcome to redistribute it&#13;
+    under certain conditions; type `show c' for details.&#13;
+&#13;
+The hypothetical commands `show w' and `show c' should show the appropriate&#13;
+parts of the General Public License.  Of course, the commands you use may&#13;
+be called something other than `show w' and `show c'; they could even be&#13;
+mouse-clicks or menu items--whatever suits your program.&#13;
+&#13;
+You should also get your employer (if you work as a programmer) or your&#13;
+school, if any, to sign a "copyright disclaimer" for the program, if&#13;
+necessary.  Here is a sample; alter the names:&#13;
+&#13;
+  Yoyodyne, Inc., hereby disclaims all copyright interest in the program&#13;
+  `Gnomovision' (which makes passes at compilers) written by James Hacker.&#13;
+&#13;
+  &lt;signature of Ty Coon&gt;, 1 April 1989&#13;
+  Ty Coon, President of Vice&#13;
+&#13;
+This General Public License does not permit incorporating your program into&#13;
+proprietary programs.  If your program is a subroutine library, you may&#13;
+consider it more useful to permit linking proprietary applications with the&#13;
+library.  If this is what you want to do, use the GNU Lesser General&#13;
+Public License instead of this License.</description>
+        <name>JSLibDeflate</name>
+        <script><![CDATA[/* global Class */
 /* eslint no-undef: "error" */
-var JSLibs = Class.create();
-JSLibs.prototype = {
+var JSLibDeflate = Class.create();
+JSLibDeflate.prototype = {
 	initialize: function () {
-		this.modules = {};
 
-		const eps = new GlideScriptedExtensionPoint().getExtensions('JSLibFactory');
-		for (let i = 0; i < eps.length; i++) {
-			try {
-				const factory = eps[i];
-				factory.initialize();
-				const module = factory.factory(this);
-				this.modules[factory.type] = module;
-			} catch (e) {
-				gs.error(`Failed to initialize JavaScript library ${eps[i].type}: ${e}\n${e.stack}`);
+	},
+
+	factory: function (libs) {
+		const module = {};
+		const console = {
+			error: function (...args) {
+				throw new Error(...args);
 			}
-		}
-
-		return;
-
-		let module = {};
-void function(global, callback) {
-	if (typeof module === 'object') {
-		module.exports = callback();
-	} else if (typeof define === 'function') {
-		define(callback);
-	} else {
-		global.crc32 = callback();
-	}
-}(this, function() {
-	'use strict';
-
-	var table = [],
-		poly = 0xEDB88320; // reverse polynomial
-
-	// build the table
-	function makeTable() {
-		var c, n, k;
-
-		for (n = 0; n < 256; n += 1) {
-			c = n;
-			for (k = 0; k < 8; k += 1) {
-				if (c & 1) {
-					c = poly ^ (c >>> 1);
-				} else {
-					c = c >>> 1;
-				}
-			}
-			table[n] = c >>> 0;
-		}
-	}
-
-	function strToArr(str) {
-		// sweet hack to turn string into a 'byte' array
-		return Array.prototype.map.call(str, function (c) {
-			return c.charCodeAt(0);
-		});
-	}
-
-	/*
-	 * Compute CRC of array directly.
-	 *
-	 * This is slower for repeated calls, so append mode is not supported.
-	 */
-	function crcDirect(arr) {
-		var crc = -1, // initial contents of LFBSR
-			i, j, l, temp;
-
-		for (i = 0, l = arr.length; i < l; i += 1) {
-			temp = (crc ^ arr[i]) & 0xff;
-
-			// read 8 bits one at a time
-			for (j = 0; j < 8; j += 1) {
-				if ((temp & 1) === 1) {
-					temp = (temp >>> 1) ^ poly;
-				} else {
-					temp = (temp >>> 1);
-				}
-			}
-			crc = (crc >>> 8) ^ temp;
-		}
-
-		// flip bits
-		return crc ^ -1;
-	}
-
-	/*
-	 * Compute CRC with the help of a pre-calculated table.
-	 *
-	 * This supports append mode, if the second parameter is set.
-	 */
-	function crcTable(arr, append) {
-		var crc, i, l;
-
-		// if we're in append mode, don't reset crc
-		// if arr is null or undefined, reset table and return
-		if (typeof crcTable.crc === 'undefined' || !append || !arr) {
-			crcTable.crc = 0 ^ -1;
-
-			if (!arr) {
-				return;
-			}
-		}
-
-		// store in temp variable for minor speed gain
-		crc = crcTable.crc;
-
-		for (i = 0, l = arr.length; i < l; i += 1) {
-			crc = (crc >>> 8) ^ table[(crc ^ arr[i]) & 0xff];
-		}
-
-		crcTable.crc = crc;
-
-		return crc ^ -1;
-	}
-
-	// build the table
-	// this isn't that costly, and most uses will be for table assisted mode
-	makeTable();
-
-	var exports = function (val, direct) {
-		var val = (typeof val === 'string') ? strToArr(val) : val,
-			ret = direct ? crcDirect(val) : crcTable(val);
-
-		// convert to 2's complement hex
-		return (ret >>> 0).toString(16);
-	};
-	exports.direct = crcDirect;
-	exports.table = crcTable;
-
-	return exports;
-});
-
-	this.modules['crc32'] = module.exports;
-	module = {};
-	const console = {
-		error: function (...args) {
-			throw new Error([...args].join(', '));
-		}
-	};
-
+		};
 /*
  * $Id: rawdeflate.js,v 0.3 2009/03/01 19:05:05 dankogai Exp dankogai $
  *
@@ -1849,1444 +2058,32 @@ void function(global, callback) {
 	module.exports = deflate;
 	module.exports.DEFAULT_LEVEL = DEFAULT_LEVEL;
 }());
-	const deflateJs = {
-		deflate: module.exports
-	};
-	this.modules['deflate-js'] = deflateJs;
-	module = {};
 
-/*
- * $Id: rawinflate.js,v 0.2 2009/03/01 18:32:24 dankogai Exp $
- *
- * original:
- * http://www.onicos.com/staff/iz/amuse/javascript/expert/inflate.txt
- */
-
-/* Copyright (C) 1999 Masanao Izumo <iz@onicos.co.jp>
- * Version: 1.0.0.1
- * LastModified: Dec 25 1999
- */
-
-/* Interface:
- * data = inflate(src);
- */
-
-(function () {
-	/* constant parameters */
-	var WSIZE = 32768, // Sliding Window size
-		STORED_BLOCK = 0,
-		STATIC_TREES = 1,
-		DYN_TREES = 2,
-
-	/* for inflate */
-		lbits = 9, // bits in base literal/length lookup table
-		dbits = 6, // bits in base distance lookup table
-
-	/* variables (inflate) */
-		slide,
-		wp, // current position in slide
-		fixed_tl = null, // inflate static
-		fixed_td, // inflate static
-		fixed_bl, // inflate static
-		fixed_bd, // inflate static
-		bit_buf, // bit buffer
-		bit_len, // bits in bit buffer
-		method,
-		eof,
-		copy_leng,
-		copy_dist,
-		tl, // literal length decoder table
-		td, // literal distance decoder table
-		bl, // number of bits decoded by tl
-		bd, // number of bits decoded by td
-
-		inflate_data,
-		inflate_pos,
-
-
-/* constant tables (inflate) */
-		MASK_BITS = [
-			0x0000,
-			0x0001, 0x0003, 0x0007, 0x000f, 0x001f, 0x003f, 0x007f, 0x00ff,
-			0x01ff, 0x03ff, 0x07ff, 0x0fff, 0x1fff, 0x3fff, 0x7fff, 0xffff
-		],
-		// Tables for deflate from PKZIP's appnote.txt.
-		// Copy lengths for literal codes 257..285
-		cplens = [
-			3, 4, 5, 6, 7, 8, 9, 10, 11, 13, 15, 17, 19, 23, 27, 31,
-			35, 43, 51, 59, 67, 83, 99, 115, 131, 163, 195, 227, 258, 0, 0
-		],
-/* note: see note #13 above about the 258 in this list. */
-		// Extra bits for literal codes 257..285
-		cplext = [
-			0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2,
-			3, 3, 3, 3, 4, 4, 4, 4, 5, 5, 5, 5, 0, 99, 99 // 99==invalid
-		],
-		// Copy offsets for distance codes 0..29
-		cpdist = [
-			1, 2, 3, 4, 5, 7, 9, 13, 17, 25, 33, 49, 65, 97, 129, 193,
-			257, 385, 513, 769, 1025, 1537, 2049, 3073, 4097, 6145,
-			8193, 12289, 16385, 24577
-		],
-		// Extra bits for distance codes
-		cpdext = [
-			0, 0, 0, 0, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6,
-			7, 7, 8, 8, 9, 9, 10, 10, 11, 11,
-			12, 12, 13, 13
-		],
-		// Order of the bit length code lengths
-		border = [
-			16, 17, 18, 0, 8, 7, 9, 6, 10, 5, 11, 4, 12, 3, 13, 2, 14, 1, 15
-		];
-	/* objects (inflate) */
-
-	function HuftList() {
-		this.next = null;
-		this.list = null;
-	}
-
-	function HuftNode() {
-		this.e = 0; // number of extra bits or operation
-		this.b = 0; // number of bits in this code or subcode
-
-		// union
-		this.n = 0; // literal, length base, or distance base
-		this.t = null; // (HuftNode) pointer to next level of table
-	}
-
-	/*
-	 * @param b-  code lengths in bits (all assumed <= BMAX)
-	 * @param n- number of codes (assumed <= N_MAX)
-	 * @param s- number of simple-valued codes (0..s-1)
-	 * @param d- list of base values for non-simple codes
-	 * @param e- list of extra bits for non-simple codes
-	 * @param mm- maximum lookup bits
-	 */
-	function HuftBuild(b, n, s, d, e, mm) {
-		this.BMAX = 16; // maximum bit length of any code
-		this.N_MAX = 288; // maximum number of codes in any set
-		this.status = 0; // 0: success, 1: incomplete table, 2: bad input
-		this.root = null; // (HuftList) starting table
-		this.m = 0; // maximum lookup bits, returns actual
-
-	/* Given a list of code lengths and a maximum table size, make a set of
-	   tables to decode that set of codes. Return zero on success, one if
-	   the given code set is incomplete (the tables are still built in this
-	   case), two if the input is invalid (all zero length codes or an
-	   oversubscribed set of lengths), and three if not enough memory.
-	   The code with value 256 is special, and the tables are constructed
-	   so that no bits beyond that code are fetched when that code is
-	   decoded. */
-		var a; // counter for codes of length k
-		var c = [];
-		var el; // length of EOB code (value 256)
-		var f; // i repeats in table every f entries
-		var g; // maximum code length
-		var h; // table level
-		var i; // counter, current code
-		var j; // counter
-		var k; // number of bits in current code
-		var lx = [];
-		var p; // pointer into c[], b[], or v[]
-		var pidx; // index of p
-		var q; // (HuftNode) points to current table
-		var r = new HuftNode(); // table entry for structure assignment
-		var u = [];
-		var v = [];
-		var w;
-		var x = [];
-		var xp; // pointer into x or c
-		var y; // number of dummy codes added
-		var z; // number of entries in current table
-		var o;
-		var tail; // (HuftList)
-
-		tail = this.root = null;
-
-		// bit length count table
-		for (i = 0; i < this.BMAX + 1; i++) {
-			c[i] = 0;
-		}
-		// stack of bits per table
-		for (i = 0; i < this.BMAX + 1; i++) {
-			lx[i] = 0;
-		}
-		// HuftNode[BMAX][]  table stack
-		for (i = 0; i < this.BMAX; i++) {
-			u[i] = null;
-		}
-		// values in order of bit length
-		for (i = 0; i < this.N_MAX; i++) {
-			v[i] = 0;
-		}
-		// bit offsets, then code stack
-		for (i = 0; i < this.BMAX + 1; i++) {
-			x[i] = 0;
-		}
-
-		// Generate counts for each bit length
-		el = n > 256 ? b[256] : this.BMAX; // set length of EOB code, if any
-		p = b; pidx = 0;
-		i = n;
-		do {
-			c[p[pidx]]++; // assume all entries <= BMAX
-			pidx++;
-		} while (--i > 0);
-		if (c[0] === n) { // null input--all zero length codes
-			this.root = null;
-			this.m = 0;
-			this.status = 0;
-			return;
-		}
-
-		// Find minimum and maximum length, bound *m by those
-		for (j = 1; j <= this.BMAX; j++) {
-			if (c[j] !== 0) {
-				break;
-			}
-		}
-		k = j; // minimum code length
-		if (mm < j) {
-			mm = j;
-		}
-		for (i = this.BMAX; i !== 0; i--) {
-			if (c[i] !== 0) {
-				break;
-			}
-		}
-		g = i; // maximum code length
-		if (mm > i) {
-			mm = i;
-		}
-
-		// Adjust last length count to fill out codes, if needed
-		for (y = 1 << j; j < i; j++, y <<= 1) {
-			if ((y -= c[j]) < 0) {
-				this.status = 2; // bad input: more codes than bits
-				this.m = mm;
-				return;
-			}
-		}
-		if ((y -= c[i]) < 0) {
-			this.status = 2;
-			this.m = mm;
-			return;
-		}
-		c[i] += y;
-
-		// Generate starting offsets into the value table for each length
-		x[1] = j = 0;
-		p = c;
-		pidx = 1;
-		xp = 2;
-		while (--i > 0) { // note that i == g from above
-			x[xp++] = (j += p[pidx++]);
-		}
-
-		// Make a table of values in order of bit lengths
-		p = b; pidx = 0;
-		i = 0;
-		do {
-			if ((j = p[pidx++]) !== 0) {
-				v[x[j]++] = i;
-			}
-		} while (++i < n);
-		n = x[g]; // set n to length of v
-
-		// Generate the Huffman codes and for each, make the table entries
-		x[0] = i = 0; // first Huffman code is zero
-		p = v; pidx = 0; // grab values in bit order
-		h = -1; // no tables yet--level -1
-		w = lx[0] = 0; // no bits decoded yet
-		q = null; // ditto
-		z = 0; // ditto
-
-		// go through the bit lengths (k already is bits in shortest code)
-		for (null; k <= g; k++) {
-			a = c[k];
-			while (a-- > 0) {
-				// here i is the Huffman code of length k bits for value p[pidx]
-				// make tables up to required level
-				while (k > w + lx[1 + h]) {
-					w += lx[1 + h]; // add bits already decoded
-					h++;
-
-					// compute minimum size table less than or equal to *m bits
-					z = (z = g - w) > mm ? mm : z; // upper limit
-					if ((f = 1 << (j = k - w)) > a + 1) { // try a k-w bit table
-						// too few codes for k-w bit table
-						f -= a + 1; // deduct codes from patterns left
-						xp = k;
-						while (++j < z) { // try smaller tables up to z bits
-							if ((f <<= 1) <= c[++xp]) {
-								break; // enough codes to use up j bits
-							}
-							f -= c[xp]; // else deduct codes from patterns
-						}
-					}
-					if (w + j > el && w < el) {
-						j = el - w; // make EOB code end at table
-					}
-					z = 1 << j; // table entries for j-bit table
-					lx[1 + h] = j; // set table size in stack
-
-					// allocate and link in new table
-					q = [];
-					for (o = 0; o < z; o++) {
-						q[o] = new HuftNode();
-					}
-
-					if (!tail) {
-						tail = this.root = new HuftList();
-					} else {
-						tail = tail.next = new HuftList();
-					}
-					tail.next = null;
-					tail.list = q;
-					u[h] = q; // table starts after link
-
-					/* connect to last table, if there is one */
-					if (h > 0) {
-						x[h] = i; // save pattern for backing up
-						r.b = lx[h]; // bits to dump before this table
-						r.e = 16 + j; // bits in this table
-						r.t = q; // pointer to this table
-						j = (i & ((1 << w) - 1)) >> (w - lx[h]);
-						u[h - 1][j].e = r.e;
-						u[h - 1][j].b = r.b;
-						u[h - 1][j].n = r.n;
-						u[h - 1][j].t = r.t;
-					}
-				}
-
-				// set up table entry in r
-				r.b = k - w;
-				if (pidx >= n) {
-					r.e = 99; // out of values--invalid code
-				} else if (p[pidx] < s) {
-					r.e = (p[pidx] < 256 ? 16 : 15); // 256 is end-of-block code
-					r.n = p[pidx++]; // simple code is just the value
-				} else {
-					r.e = e[p[pidx] - s]; // non-simple--look up in lists
-					r.n = d[p[pidx++] - s];
-				}
-
-				// fill code-like entries with r //
-				f = 1 << (k - w);
-				for (j = i >> w; j < z; j += f) {
-					q[j].e = r.e;
-					q[j].b = r.b;
-					q[j].n = r.n;
-					q[j].t = r.t;
-				}
-
-				// backwards increment the k-bit code i
-				for (j = 1 << (k - 1); (i & j) !== 0; j >>= 1) {
-					i ^= j;
-				}
-				i ^= j;
-
-				// backup over finished tables
-				while ((i & ((1 << w) - 1)) !== x[h]) {
-					w -= lx[h]; // don't need to update q
-					h--;
-				}
-			}
-		}
-
-		/* return actual size of base table */
-		this.m = lx[1];
-
-		/* Return true (1) if we were given an incomplete table */
-		this.status = ((y !== 0 && g !== 1) ? 1 : 0);
-	}
-
-
-	/* routines (inflate) */
-
-	function GET_BYTE() {
-		if (inflate_data.length === inflate_pos) {
-			return -1;
-		}
-		return inflate_data[inflate_pos++] & 0xff;
-	}
-
-	function NEEDBITS(n) {
-		while (bit_len < n) {
-			bit_buf |= GET_BYTE() << bit_len;
-			bit_len += 8;
-		}
-	}
-
-	function GETBITS(n) {
-		return bit_buf & MASK_BITS[n];
-	}
-
-	function DUMPBITS(n) {
-		bit_buf >>= n;
-		bit_len -= n;
-	}
-
-	function inflate_codes(buff, off, size) {
-		// inflate (decompress) the codes in a deflated (compressed) block.
-		// Return an error code or zero if it all goes ok.
-		var e; // table entry flag/number of extra bits
-		var t; // (HuftNode) pointer to table entry
-		var n;
-
-		if (size === 0) {
-			return 0;
-		}
-
-		// inflate the coded data
-		n = 0;
-		for (;;) { // do until end of block
-			NEEDBITS(bl);
-			t = tl.list[GETBITS(bl)];
-			e = t.e;
-			while (e > 16) {
-				if (e === 99) {
-					return -1;
-				}
-				DUMPBITS(t.b);
-				e -= 16;
-				NEEDBITS(e);
-				t = t.t[GETBITS(e)];
-				e = t.e;
-			}
-			DUMPBITS(t.b);
-
-			if (e === 16) { // then it's a literal
-				wp &= WSIZE - 1;
-				buff[off + n++] = slide[wp++] = t.n;
-				if (n === size) {
-					return size;
-				}
-				continue;
-			}
-
-			// exit if end of block
-			if (e === 15) {
-				break;
-			}
-
-			// it's an EOB or a length
-
-			// get length of block to copy
-			NEEDBITS(e);
-			copy_leng = t.n + GETBITS(e);
-			DUMPBITS(e);
-
-			// decode distance of block to copy
-			NEEDBITS(bd);
-			t = td.list[GETBITS(bd)];
-			e = t.e;
-
-			while (e > 16) {
-				if (e === 99) {
-					return -1;
-				}
-				DUMPBITS(t.b);
-				e -= 16;
-				NEEDBITS(e);
-				t = t.t[GETBITS(e)];
-				e = t.e;
-			}
-			DUMPBITS(t.b);
-			NEEDBITS(e);
-			copy_dist = wp - t.n - GETBITS(e);
-			DUMPBITS(e);
-
-			// do the copy
-			while (copy_leng > 0 && n < size) {
-				copy_leng--;
-				copy_dist &= WSIZE - 1;
-				wp &= WSIZE - 1;
-				buff[off + n++] = slide[wp++] = slide[copy_dist++];
-			}
-
-			if (n === size) {
-				return size;
-			}
-		}
-
-		method = -1; // done
-		return n;
-	}
-
-	function inflate_stored(buff, off, size) {
-		/* "decompress" an inflated type 0 (stored) block. */
-		var n;
-
-		// go to byte boundary
-		n = bit_len & 7;
-		DUMPBITS(n);
-
-		// get the length and its complement
-		NEEDBITS(16);
-		n = GETBITS(16);
-		DUMPBITS(16);
-		NEEDBITS(16);
-		if (n !== ((~bit_buf) & 0xffff)) {
-			return -1; // error in compressed data
-		}
-		DUMPBITS(16);
-
-		// read and output the compressed data
-		copy_leng = n;
-
-		n = 0;
-		while (copy_leng > 0 && n < size) {
-			copy_leng--;
-			wp &= WSIZE - 1;
-			NEEDBITS(8);
-			buff[off + n++] = slide[wp++] = GETBITS(8);
-			DUMPBITS(8);
-		}
-
-		if (copy_leng === 0) {
-			method = -1; // done
-		}
-		return n;
-	}
-
-	function inflate_fixed(buff, off, size) {
-		// decompress an inflated type 1 (fixed Huffman codes) block.  We should
-		// either replace this with a custom decoder, or at least precompute the
-		// Huffman tables.
-
-		// if first time, set up tables for fixed blocks
-		if (!fixed_tl) {
-			var i; // temporary variable
-			var l = []; // 288 length list for huft_build (initialized below)
-			var h; // HuftBuild
-
-			// literal table
-			for (i = 0; i < 144; i++) {
-				l[i] = 8;
-			}
-			for (null; i < 256; i++) {
-				l[i] = 9;
-			}
-			for (null; i < 280; i++) {
-				l[i] = 7;
-			}
-			for (null; i < 288; i++) { // make a complete, but wrong code set
-				l[i] = 8;
-			}
-			fixed_bl = 7;
-
-			h = new HuftBuild(l, 288, 257, cplens, cplext, fixed_bl);
-			if (h.status !== 0) {
-				console.error("HufBuild error: " + h.status);
-				return -1;
-			}
-			fixed_tl = h.root;
-			fixed_bl = h.m;
-
-			// distance table
-			for (i = 0; i < 30; i++) { // make an incomplete code set
-				l[i] = 5;
-			}
-			fixed_bd = 5;
-
-			h = new HuftBuild(l, 30, 0, cpdist, cpdext, fixed_bd);
-			if (h.status > 1) {
-				fixed_tl = null;
-				console.error("HufBuild error: " + h.status);
-				return -1;
-			}
-			fixed_td = h.root;
-			fixed_bd = h.m;
-		}
-
-		tl = fixed_tl;
-		td = fixed_td;
-		bl = fixed_bl;
-		bd = fixed_bd;
-		return inflate_codes(buff, off, size);
-	}
-
-	function inflate_dynamic(buff, off, size) {
-		// decompress an inflated type 2 (dynamic Huffman codes) block.
-		var i; // temporary variables
-		var j;
-		var l; // last length
-		var n; // number of lengths to get
-		var t; // (HuftNode) literal/length code table
-		var nb; // number of bit length codes
-		var nl; // number of literal/length codes
-		var nd; // number of distance codes
-		var ll = [];
-		var h; // (HuftBuild)
-
-		// literal/length and distance code lengths
-		for (i = 0; i < 286 + 30; i++) {
-			ll[i] = 0;
-		}
-
-		// read in table lengths
-		NEEDBITS(5);
-		nl = 257 + GETBITS(5); // number of literal/length codes
-		DUMPBITS(5);
-		NEEDBITS(5);
-		nd = 1 + GETBITS(5); // number of distance codes
-		DUMPBITS(5);
-		NEEDBITS(4);
-		nb = 4 + GETBITS(4); // number of bit length codes
-		DUMPBITS(4);
-		if (nl > 286 || nd > 30) {
-			return -1; // bad lengths
-		}
-
-		// read in bit-length-code lengths
-		for (j = 0; j < nb; j++) {
-			NEEDBITS(3);
-			ll[border[j]] = GETBITS(3);
-			DUMPBITS(3);
-		}
-		for (null; j < 19; j++) {
-			ll[border[j]] = 0;
-		}
-
-		// build decoding table for trees--single level, 7 bit lookup
-		bl = 7;
-		h = new HuftBuild(ll, 19, 19, null, null, bl);
-		if (h.status !== 0) {
-			return -1; // incomplete code set
-		}
-
-		tl = h.root;
-		bl = h.m;
-
-		// read in literal and distance code lengths
-		n = nl + nd;
-		i = l = 0;
-		while (i < n) {
-			NEEDBITS(bl);
-			t = tl.list[GETBITS(bl)];
-			j = t.b;
-			DUMPBITS(j);
-			j = t.n;
-			if (j < 16) { // length of code in bits (0..15)
-				ll[i++] = l = j; // save last length in l
-			} else if (j === 16) { // repeat last length 3 to 6 times
-				NEEDBITS(2);
-				j = 3 + GETBITS(2);
-				DUMPBITS(2);
-				if (i + j > n) {
-					return -1;
-				}
-				while (j-- > 0) {
-					ll[i++] = l;
-				}
-			} else if (j === 17) { // 3 to 10 zero length codes
-				NEEDBITS(3);
-				j = 3 + GETBITS(3);
-				DUMPBITS(3);
-				if (i + j > n) {
-					return -1;
-				}
-				while (j-- > 0) {
-					ll[i++] = 0;
-				}
-				l = 0;
-			} else { // j === 18: 11 to 138 zero length codes
-				NEEDBITS(7);
-				j = 11 + GETBITS(7);
-				DUMPBITS(7);
-				if (i + j > n) {
-					return -1;
-				}
-				while (j-- > 0) {
-					ll[i++] = 0;
-				}
-				l = 0;
-			}
-		}
-
-		// build the decoding tables for literal/length and distance codes
-		bl = lbits;
-		h = new HuftBuild(ll, nl, 257, cplens, cplext, bl);
-		if (bl === 0) { // no literals or lengths
-			h.status = 1;
-		}
-		if (h.status !== 0) {
-			if (h.status !== 1) {
-				return -1; // incomplete code set
-			}
-			// **incomplete literal tree**
-		}
-		tl = h.root;
-		bl = h.m;
-
-		for (i = 0; i < nd; i++) {
-			ll[i] = ll[i + nl];
-		}
-		bd = dbits;
-		h = new HuftBuild(ll, nd, 0, cpdist, cpdext, bd);
-		td = h.root;
-		bd = h.m;
-
-		if (bd === 0 && nl > 257) { // lengths but no distances
-			// **incomplete distance tree**
-			return -1;
-		}
-/*
-		if (h.status === 1) {
-			// **incomplete distance tree**
-		}
-*/
-		if (h.status !== 0) {
-			return -1;
-		}
-
-		// decompress until an end-of-block code
-		return inflate_codes(buff, off, size);
-	}
-
-	function inflate_start() {
-		if (!slide) {
-			slide = []; // new Array(2 * WSIZE); // slide.length is never called
-		}
-		wp = 0;
-		bit_buf = 0;
-		bit_len = 0;
-		method = -1;
-		eof = false;
-		copy_leng = copy_dist = 0;
-		tl = null;
-	}
-
-	function inflate_internal(buff, off, size) {
-		// decompress an inflated entry
-		var n, i;
-
-		n = 0;
-		while (n < size) {
-			if (eof && method === -1) {
-				return n;
-			}
-
-			if (copy_leng > 0) {
-				if (method !== STORED_BLOCK) {
-					// STATIC_TREES or DYN_TREES
-					while (copy_leng > 0 && n < size) {
-						copy_leng--;
-						copy_dist &= WSIZE - 1;
-						wp &= WSIZE - 1;
-						buff[off + n++] = slide[wp++] = slide[copy_dist++];
-					}
-				} else {
-					while (copy_leng > 0 && n < size) {
-						copy_leng--;
-						wp &= WSIZE - 1;
-						NEEDBITS(8);
-						buff[off + n++] = slide[wp++] = GETBITS(8);
-						DUMPBITS(8);
-					}
-					if (copy_leng === 0) {
-						method = -1; // done
-					}
-				}
-				if (n === size) {
-					return n;
-				}
-			}
-
-			if (method === -1) {
-				if (eof) {
-					break;
-				}
-
-				// read in last block bit
-				NEEDBITS(1);
-				if (GETBITS(1) !== 0) {
-					eof = true;
-				}
-				DUMPBITS(1);
-
-				// read in block type
-				NEEDBITS(2);
-				method = GETBITS(2);
-				DUMPBITS(2);
-				tl = null;
-				copy_leng = 0;
-			}
-
-			switch (method) {
-			case STORED_BLOCK:
-				i = inflate_stored(buff, off + n, size - n);
-				break;
-
-			case STATIC_TREES:
-				if (tl) {
-					i = inflate_codes(buff, off + n, size - n);
-				} else {
-					i = inflate_fixed(buff, off + n, size - n);
-				}
-				break;
-
-			case DYN_TREES:
-				if (tl) {
-					i = inflate_codes(buff, off + n, size - n);
-				} else {
-					i = inflate_dynamic(buff, off + n, size - n);
-				}
-				break;
-
-			default: // error
-				i = -1;
-				break;
-			}
-
-			if (i === -1) {
-				if (eof) {
-					return 0;
-				}
-				return -1;
-			}
-			n += i;
-		}
-		return n;
-	}
-
-	function inflate(arr) {
-		var buff = [], i;
-
-		inflate_start();
-		inflate_data = arr;
-		inflate_pos = 0;
-
-		do {
-			i = inflate_internal(buff, buff.length, 1024);
-		} while (i > 0);
-		inflate_data = null; // G.C.
-		return buff;
-	}
-
-	module.exports = inflate;
-}());
-	this.modules['deflate-js'].inflate = module.exports;
-
-	const require = function (module) {
-		return this.modules[module]
-	}.bind(this);
-
-	module = {};
-(function () {
-	'use strict';
-
-	var crc32 = require('crc32'),
-		deflate = require('deflate-js'),
-		// magic numbers marking this file as GZIP
-		ID1 = 0x1F,
-		ID2 = 0x8B,
-		compressionMethods = {
-			'deflate': 8
-		},
-		possibleFlags = {
-			'FTEXT': 0x01,
-			'FHCRC': 0x02,
-			'FEXTRA': 0x04,
-			'FNAME': 0x08,
-			'FCOMMENT': 0x10
-		},
-		osMap = {
-			'fat': 0, // FAT file system (DOS, OS/2, NT) + PKZIPW 2.50 VFAT, NTFS
-			'amiga': 1, // Amiga
-			'vmz': 2, // VMS (VAX or Alpha AXP)
-			'unix': 3, // Unix
-			'vm/cms': 4, // VM/CMS
-			'atari': 5, // Atari
-			'hpfs': 6, // HPFS file system (OS/2, NT 3.x)
-			'macintosh': 7, // Macintosh
-			'z-system': 8, // Z-System
-			'cplm': 9, // CP/M
-			'tops-20': 10, // TOPS-20
-			'ntfs': 11, // NTFS file system (NT)
-			'qdos': 12, // SMS/QDOS
-			'acorn': 13, // Acorn RISC OS
-			'vfat': 14, // VFAT file system (Win95, NT)
-			'vms': 15, // MVS (code also taken for PRIMOS)
-			'beos': 16, // BeOS (BeBox or PowerMac)
-			'tandem': 17, // Tandem/NSK
-			'theos': 18 // THEOS
-		},
-		os = 'unix',
-		DEFAULT_LEVEL = 6;
-
-	function putByte(n, arr) {
-		arr.push(n & 0xFF);
-	}
-
-	// LSB first
-	function putShort(n, arr) {
-		arr.push(n & 0xFF);
-		arr.push(n >>> 8);
-	}
-
-	// LSB first
-	function putLong(n, arr) {
-		putShort(n & 0xffff, arr);
-		putShort(n >>> 16, arr);
-	}
-
-	function putString(s, arr) {
-		var i, len = s.length;
-		for (i = 0; i < len; i += 1) {
-			putByte(s.charCodeAt(i), arr);
-		}
-	}
-
-	function readByte(arr) {
-		return arr.shift();
-	}
-
-	function readShort(arr) {
-		return arr.shift() | (arr.shift() << 8);
-	}
-
-	function readLong(arr) {
-		var n1 = readShort(arr),
-			n2 = readShort(arr);
-
-		// JavaScript can't handle bits in the position 32
-		// we'll emulate this by removing the left-most bit (if it exists)
-		// and add it back in via multiplication, which does work
-		if (n2 > 32768) {
-			n2 -= 32768;
-
-			return ((n2 << 16) | n1) + 32768 * Math.pow(2, 16);
-		}
-
-		return (n2 << 16) | n1;
-	}
-
-	function readString(arr) {
-		var charArr = [];
-
-		// turn all bytes into chars until the terminating null
-		while (arr[0] !== 0) {
-			charArr.push(String.fromCharCode(arr.shift()));
-		}
-
-		// throw away terminating null
-		arr.shift();
-
-		// join all characters into a cohesive string
-		return charArr.join('');
-	}
-
-	/*
-	 * Reads n number of bytes and return as an array.
-	 *
-	 * @param arr- Array of bytes to read from
-	 * @param n- Number of bytes to read
-	 */
-	function readBytes(arr, n) {
-		var i, ret = [];
-		for (i = 0; i < n; i += 1) {
-			ret.push(arr.shift());
-		}
-
-		return ret;
-	}
-
-	/*
-	 * ZIPs a file in GZIP format. The format is as given by the spec, found at:
-	 * http://www.gzip.org/zlib/rfc-gzip.html
-	 *
-	 * Omitted parts in this implementation:
-	 */
-	function zip(data, options) {
-		var flags = 0,
-			level,
-			crc, out = [];
-
-		if (!options) {
-			options = {};
-		}
-		level = options.level || DEFAULT_LEVEL;
-
-		if (typeof data === 'string') {
-			data = Array.prototype.map.call(data, function (char) {
-				return char.charCodeAt(0);
-			});
-		}
-
-		// magic number marking this file as GZIP
-		putByte(ID1, out);
-		putByte(ID2, out);
-
-		putByte(compressionMethods['deflate'], out);
-
-		if (options.name) {
-			flags |= possibleFlags['FNAME'];
-		}
-
-		putByte(flags, out);
-		putLong(options.timestamp || parseInt(Date.now() / 1000, 10), out);
-
-		// put deflate args (extra flags)
-		if (level === 1) {
-			// fastest algorithm
-			putByte(4, out);
-		} else if (level === 9) {
-			// maximum compression (fastest algorithm)
-			putByte(2, out);
+		let deflateJS = libs.require('deflate-js');
+		if (deflateJS) {
+			deflateJS.deflate = module.exports;
 		} else {
-			putByte(0, out);
+			deflateJS = {
+				deflate: module.exports
+			};
 		}
 
-		// OS identifier
-		putByte(osMap[os], out);
-
-		if (options.name) {
-			// ignore the directory part
-			putString(options.name.substring(options.name.lastIndexOf('/') + 1), out);
-
-			// terminating null
-			putByte(0, out);
-		}
-
-		deflate.deflate(data, level).forEach(function (byte) {
-			putByte(byte, out);
-		});
-
-		putLong(parseInt(crc32(data), 16), out);
-		putLong(data.length, out);
-
-		return out;
-	}
-
-	function unzip(data) {
-		// start with a copy of the array
-		var arr = Array.prototype.slice.call(data, 0),
-			t,
-			compressionMethod,
-			flags,
-			mtime,
-			xFlags,
-			key,
-			os,
-			crc,
-			size,
-			res;
-
-		// check the first two bytes for the magic numbers
-		if (readByte(arr) !== ID1 || readByte(arr) !== ID2) {
-			throw 'Not a GZIP file';
-		}
-
-		t = readByte(arr);
-		t = Object.keys(compressionMethods).some(function (key) {
-			compressionMethod = key;
-			return compressionMethods[key] === t;
-		});
-
-		if (!t) {
-			throw 'Unsupported compression method';
-		}
-
-		flags = readByte(arr);
-		mtime = readLong(arr);
-		xFlags = readByte(arr);
-		t = readByte(arr);
-		Object.keys(osMap).some(function (key) {
-			if (osMap[key] === t) {
-				os = key;
-				return true;
-			}
-		});
-
-		// just throw away the bytes for now
-		if (flags & possibleFlags['FEXTRA']) {
-			t = readShort(arr);
-			readBytes(arr, t);
-		}
-
-		// just throw away for now
-		if (flags & possibleFlags['FNAME']) {
-			readString(arr);
-		}
-
-		// just throw away for now
-		if (flags & possibleFlags['FCOMMENT']) {
-			readString(arr);
-		}
-
-		// just throw away for now
-		if (flags & possibleFlags['FHCRC']) {
-			readShort(arr);
-		}
-
-		if (compressionMethod === 'deflate') {
-			// give deflate everything but the last 8 bytes
-			// the last 8 bytes are for the CRC32 checksum and filesize
-			res = deflate.inflate(arr.splice(0, arr.length - 8));
-		}
-
-		if (flags & possibleFlags['FTEXT']) {
-			res = Array.prototype.map.call(res, function (byte) {
-				return String.fromCharCode(byte);
-			}).join('');
-		}
-
-		crc = readLong(arr) >>> 0;
-		if (crc !== parseInt(crc32(res), 16)) {
-			throw 'Checksum does not match';
-		}
-
-		size = readLong(arr);
-		if (size !== res.length) {
-			throw 'Size of decompressed file not correct';
-		}
-
-		return res;
-	}
-
-	module.exports = {
-		zip: zip,
-		unzip: unzip,
-		get DEFAULT_LEVEL() {
-			return DEFAULT_LEVEL;
-		}
-	};
-}());
-		this.modules['gzip'] = module.exports;
-
-		const self = {};
-(function (global, factory) {
-    typeof exports === 'object' && typeof module !== 'undefined'
-        ? module.exports = factory()
-        : typeof define === 'function' && define.amd
-            ? define(factory) :
-            // cf. https://github.com/dankogai/js-base64/issues/119
-            (function () {
-                // existing version for noConflict()
-                var _Base64 = global.Base64;
-                var gBase64 = factory();
-                gBase64.noConflict = function () {
-                    global.Base64 = _Base64;
-                    return gBase64;
-                };
-                if (global.Meteor) { // Meteor.js
-                    Base64 = gBase64;
-                }
-                global.Base64 = gBase64;
-            })();
-}((typeof self !== 'undefined' ? self
-    : typeof window !== 'undefined' ? window
-        : typeof global !== 'undefined' ? global
-            : this), function () {
-    'use strict';
-    /**
-     *  base64.ts
-     *
-     *  Licensed under the BSD 3-Clause License.
-     *    http://opensource.org/licenses/BSD-3-Clause
-     *
-     *  References:
-     *    http://en.wikipedia.org/wiki/Base64
-     *
-     * @author Dan Kogai (https://github.com/dankogai)
-     */
-    var version = '3.7.7';
-    /**
-     * @deprecated use lowercase `version`.
-     */
-    var VERSION = version;
-    var _hasBuffer = typeof Buffer === 'function';
-    var _TD = typeof TextDecoder === 'function' ? new TextDecoder() : undefined;
-    var _TE = typeof TextEncoder === 'function' ? new TextEncoder() : undefined;
-    var b64ch = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=';
-    var b64chs = Array.prototype.slice.call(b64ch);
-    var b64tab = (function (a) {
-        var tab = {};
-        a.forEach(function (c, i) { return tab[c] = i; });
-        return tab;
-    })(b64chs);
-    var b64re = /^(?:[A-Za-z\d+\/]{4})*?(?:[A-Za-z\d+\/]{2}(?:==)?|[A-Za-z\d+\/]{3}=?)?$/;
-    var _fromCC = String.fromCharCode.bind(String);
-    var _U8Afrom = typeof Uint8Array.from === 'function'
-        ? Uint8Array.from.bind(Uint8Array)
-        : function (it) { return new Uint8Array(Array.prototype.slice.call(it, 0)); };
-    var _mkUriSafe = function (src) { return src
-        .replace(/=/g, '').replace(/[+\/]/g, function (m0) { return m0 == '+' ? '-' : '_'; }); };
-    var _tidyB64 = function (s) { return s.replace(/[^A-Za-z0-9\+\/]/g, ''); };
-    /**
-     * polyfill version of `btoa`
-     */
-    var btoaPolyfill = function (bin) {
-        // console.log('polyfilled');
-        var u32, c0, c1, c2, asc = '';
-        var pad = bin.length % 3;
-        for (var i = 0; i < bin.length;) {
-            if ((c0 = bin.charCodeAt(i++)) > 255 ||
-                (c1 = bin.charCodeAt(i++)) > 255 ||
-                (c2 = bin.charCodeAt(i++)) > 255)
-                throw new TypeError('invalid character found');
-            u32 = (c0 << 16) | (c1 << 8) | c2;
-            asc += b64chs[u32 >> 18 & 63]
-                + b64chs[u32 >> 12 & 63]
-                + b64chs[u32 >> 6 & 63]
-                + b64chs[u32 & 63];
-        }
-        return pad ? asc.slice(0, pad - 3) + "===".substring(pad) : asc;
-    };
-    /**
-     * does what `window.btoa` of web browsers do.
-     * @param {String} bin binary string
-     * @returns {string} Base64-encoded string
-     */
-    var _btoa = typeof btoa === 'function' ? function (bin) { return btoa(bin); }
-        : _hasBuffer ? function (bin) { return Buffer.from(bin, 'binary').toString('base64'); }
-            : btoaPolyfill;
-    var _fromUint8Array = _hasBuffer
-        ? function (u8a) { return Buffer.from(u8a).toString('base64'); }
-        : function (u8a) {
-            // cf. https://stackoverflow.com/questions/12710001/how-to-convert-uint8-array-to-base64-encoded-string/12713326#12713326
-            var maxargs = 0x1000;
-            var strs = [];
-            for (var i = 0, l = u8a.length; i < l; i += maxargs) {
-                strs.push(_fromCC.apply(null, u8a.subarray(i, i + maxargs)));
-            }
-            return _btoa(strs.join(''));
-        };
-    /**
-     * converts a Uint8Array to a Base64 string.
-     * @param {boolean} [urlsafe] URL-and-filename-safe a la RFC4648 §5
-     * @returns {string} Base64 string
-     */
-    var fromUint8Array = function (u8a, urlsafe) {
-        if (urlsafe === void 0) { urlsafe = false; }
-        return urlsafe ? _mkUriSafe(_fromUint8Array(u8a)) : _fromUint8Array(u8a);
-    };
-    // This trick is found broken https://github.com/dankogai/js-base64/issues/130
-    // const utob = (src: string) => unescape(encodeURIComponent(src));
-    // reverting good old fationed regexp
-    var cb_utob = function (c) {
-        if (c.length < 2) {
-            var cc = c.charCodeAt(0);
-            return cc < 0x80 ? c
-                : cc < 0x800 ? (_fromCC(0xc0 | (cc >>> 6))
-                    + _fromCC(0x80 | (cc & 0x3f)))
-                    : (_fromCC(0xe0 | ((cc >>> 12) & 0x0f))
-                        + _fromCC(0x80 | ((cc >>> 6) & 0x3f))
-                        + _fromCC(0x80 | (cc & 0x3f)));
-        }
-        else {
-            var cc = 0x10000
-                + (c.charCodeAt(0) - 0xD800) * 0x400
-                + (c.charCodeAt(1) - 0xDC00);
-            return (_fromCC(0xf0 | ((cc >>> 18) & 0x07))
-                + _fromCC(0x80 | ((cc >>> 12) & 0x3f))
-                + _fromCC(0x80 | ((cc >>> 6) & 0x3f))
-                + _fromCC(0x80 | (cc & 0x3f)));
-        }
-    };
-    var re_utob = /[\uD800-\uDBFF][\uDC00-\uDFFFF]|[^\x00-\x7F]/g;
-    /**
-     * @deprecated should have been internal use only.
-     * @param {string} src UTF-8 string
-     * @returns {string} UTF-16 string
-     */
-    var utob = function (u) { return u.replace(re_utob, cb_utob); };
-    //
-    var _encode = _hasBuffer
-        ? function (s) { return Buffer.from(s, 'utf8').toString('base64'); }
-        : _TE
-            ? function (s) { return _fromUint8Array(_TE.encode(s)); }
-            : function (s) { return _btoa(utob(s)); };
-    /**
-     * converts a UTF-8-encoded string to a Base64 string.
-     * @param {boolean} [urlsafe] if `true` make the result URL-safe
-     * @returns {string} Base64 string
-     */
-    var encode = function (src, urlsafe) {
-        if (urlsafe === void 0) { urlsafe = false; }
-        return urlsafe
-            ? _mkUriSafe(_encode(src))
-            : _encode(src);
-    };
-    /**
-     * converts a UTF-8-encoded string to URL-safe Base64 RFC4648 §5.
-     * @returns {string} Base64 string
-     */
-    var encodeURI = function (src) { return encode(src, true); };
-    // This trick is found broken https://github.com/dankogai/js-base64/issues/130
-    // const btou = (src: string) => decodeURIComponent(escape(src));
-    // reverting good old fationed regexp
-    var re_btou = /[\xC0-\xDF][\x80-\xBF]|[\xE0-\xEF][\x80-\xBF]{2}|[\xF0-\xF7][\x80-\xBF]{3}/g;
-    var cb_btou = function (cccc) {
-        switch (cccc.length) {
-            case 4:
-                var cp = ((0x07 & cccc.charCodeAt(0)) << 18)
-                    | ((0x3f & cccc.charCodeAt(1)) << 12)
-                    | ((0x3f & cccc.charCodeAt(2)) << 6)
-                    | (0x3f & cccc.charCodeAt(3)), offset = cp - 0x10000;
-                return (_fromCC((offset >>> 10) + 0xD800)
-                    + _fromCC((offset & 0x3FF) + 0xDC00));
-            case 3:
-                return _fromCC(((0x0f & cccc.charCodeAt(0)) << 12)
-                    | ((0x3f & cccc.charCodeAt(1)) << 6)
-                    | (0x3f & cccc.charCodeAt(2)));
-            default:
-                return _fromCC(((0x1f & cccc.charCodeAt(0)) << 6)
-                    | (0x3f & cccc.charCodeAt(1)));
-        }
-    };
-    /**
-     * @deprecated should have been internal use only.
-     * @param {string} src UTF-16 string
-     * @returns {string} UTF-8 string
-     */
-    var btou = function (b) { return b.replace(re_btou, cb_btou); };
-    /**
-     * polyfill version of `atob`
-     */
-    var atobPolyfill = function (asc) {
-        // console.log('polyfilled');
-        asc = asc.replace(/\s+/g, '');
-        if (!b64re.test(asc))
-            throw new TypeError('malformed base64.');
-        asc += '=='.slice(2 - (asc.length & 3));
-        var u24, bin = '', r1, r2;
-        for (var i = 0; i < asc.length;) {
-            u24 = b64tab[asc.charAt(i++)] << 18
-                | b64tab[asc.charAt(i++)] << 12
-                | (r1 = b64tab[asc.charAt(i++)]) << 6
-                | (r2 = b64tab[asc.charAt(i++)]);
-            bin += r1 === 64 ? _fromCC(u24 >> 16 & 255)
-                : r2 === 64 ? _fromCC(u24 >> 16 & 255, u24 >> 8 & 255)
-                    : _fromCC(u24 >> 16 & 255, u24 >> 8 & 255, u24 & 255);
-        }
-        return bin;
-    };
-    /**
-     * does what `window.atob` of web browsers do.
-     * @param {String} asc Base64-encoded string
-     * @returns {string} binary string
-     */
-    var _atob = typeof atob === 'function' ? function (asc) { return atob(_tidyB64(asc)); }
-        : _hasBuffer ? function (asc) { return Buffer.from(asc, 'base64').toString('binary'); }
-            : atobPolyfill;
-    //
-    var _toUint8Array = _hasBuffer
-        ? function (a) { return _U8Afrom(Buffer.from(a, 'base64')); }
-        : function (a) { return _U8Afrom(_atob(a).split('').map(function (c) { return c.charCodeAt(0); })); };
-    /**
-     * converts a Base64 string to a Uint8Array.
-     */
-    var toUint8Array = function (a) { return _toUint8Array(_unURI(a)); };
-    //
-    var _decode = _hasBuffer
-        ? function (a) { return Buffer.from(a, 'base64').toString('utf8'); }
-        : _TD
-            ? function (a) { return _TD.decode(_toUint8Array(a)); }
-            : function (a) { return btou(_atob(a)); };
-    var _unURI = function (a) { return _tidyB64(a.replace(/[-_]/g, function (m0) { return m0 == '-' ? '+' : '/'; })); };
-    /**
-     * converts a Base64 string to a UTF-8 string.
-     * @param {String} src Base64 string.  Both normal and URL-safe are supported
-     * @returns {string} UTF-8 string
-     */
-    var decode = function (src) { return _decode(_unURI(src)); };
-    /**
-     * check if a value is a valid Base64 string
-     * @param {String} src a value to check
-      */
-    var isValid = function (src) {
-        if (typeof src !== 'string')
-            return false;
-        var s = src.replace(/\s+/g, '').replace(/={0,2}$/, '');
-        return !/[^\s0-9a-zA-Z\+/]/.test(s) || !/[^\s0-9a-zA-Z\-_]/.test(s);
-    };
-    //
-    var _noEnum = function (v) {
-        return {
-            value: v, enumerable: false, writable: true, configurable: true
-        };
-    };
-    /**
-     * extend String.prototype with relevant methods
-     */
-    var extendString = function () {
-        var _add = function (name, body) { return Object.defineProperty(String.prototype, name, _noEnum(body)); };
-        _add('fromBase64', function () { return decode(this); });
-        _add('toBase64', function (urlsafe) { return encode(this, urlsafe); });
-        _add('toBase64URI', function () { return encode(this, true); });
-        _add('toBase64URL', function () { return encode(this, true); });
-        _add('toUint8Array', function () { return toUint8Array(this); });
-    };
-    /**
-     * extend Uint8Array.prototype with relevant methods
-     */
-    var extendUint8Array = function () {
-        var _add = function (name, body) { return Object.defineProperty(Uint8Array.prototype, name, _noEnum(body)); };
-        _add('toBase64', function (urlsafe) { return fromUint8Array(this, urlsafe); });
-        _add('toBase64URI', function () { return fromUint8Array(this, true); });
-        _add('toBase64URL', function () { return fromUint8Array(this, true); });
-    };
-    /**
-     * extend Builtin prototypes with relevant methods
-     */
-    var extendBuiltins = function () {
-        extendString();
-        extendUint8Array();
-    };
-    var gBase64 = {
-        version: version,
-        VERSION: VERSION,
-        atob: _atob,
-        atobPolyfill: atobPolyfill,
-        btoa: _btoa,
-        btoaPolyfill: btoaPolyfill,
-        fromBase64: decode,
-        toBase64: encode,
-        encode: encode,
-        encodeURI: encodeURI,
-        encodeURL: encodeURI,
-        utob: utob,
-        btou: btou,
-        decode: decode,
-        isValid: isValid,
-        fromUint8Array: fromUint8Array,
-        toUint8Array: toUint8Array,
-        extendString: extendString,
-        extendUint8Array: extendUint8Array,
-        extendBuiltins: extendBuiltins
-    };
-    //
-    // export Base64 to the namespace
-    //
-    // ES5 is yet to have Object.assign() that may make transpilers unhappy.
-    // gBase64.Base64 = Object.assign({}, gBase64);
-    gBase64.Base64 = {};
-    Object.keys(gBase64).forEach(function (k) { return gBase64.Base64[k] = gBase64[k]; });
-    return gBase64;
-}));
-		this.modules['Base64'] = self.Base64;
-	},
-	
-	require: function (module) {
-		return this.modules[module];
+		return deflateJS;
 	},
 
-	type: 'JSLibs'
+	type: 'deflate-js'
 };]]></script>
         <sys_class_name>sys_script_include</sys_class_name>
         <sys_created_by>markus.kraus</sys_created_by>
-        <sys_created_on>2024-08-10 06:27:36</sys_created_on>
-        <sys_id>8fd4c43b93ff0610e02873718bba10de</sys_id>
-        <sys_mod_count>11</sys_mod_count>
-        <sys_name>JSLibs</sys_name>
+        <sys_created_on>2024-08-11 07:08:31</sys_created_on>
+        <sys_id>5839514493c01210e02873718bba10f2</sys_id>
+        <sys_mod_count>3</sys_mod_count>
+        <sys_name>JSLibDeflate</sys_name>
         <sys_package display_value="Marketplace Client" source="x_376096_mplc">2fe28b4497bf39103c2d3f56f053af4e</sys_package>
         <sys_policy/>
         <sys_scope display_value="Marketplace Client">2fe28b4497bf39103c2d3f56f053af4e</sys_scope>
-        <sys_update_name>sys_script_include_8fd4c43b93ff0610e02873718bba10de</sys_update_name>
+        <sys_update_name>sys_script_include_5839514493c01210e02873718bba10f2</sys_update_name>
         <sys_updated_by>markus.kraus</sys_updated_by>
-        <sys_updated_on>2024-08-11 07:42:28</sys_updated_on>
+        <sys_updated_on>2024-08-11 07:37:43</sys_updated_on>
     </sys_script_include>
 </record_update>

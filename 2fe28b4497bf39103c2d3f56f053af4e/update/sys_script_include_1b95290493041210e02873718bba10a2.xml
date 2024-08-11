@@ -1,0 +1,300 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sys_script_include">
+    <sys_script_include action="INSERT_OR_UPDATE">
+        <access>package_private</access>
+        <active>true</active>
+        <api_name>x_376096_mplc.MPLCImport</api_name>
+        <caller_access/>
+        <client_callable>false</client_callable>
+        <description/>
+        <name>MPLCImport</name>
+        <script><![CDATA[/* global Uint8Array, Class, GlideScriptedExtensionPoint, GlideSysAttachment, GlideRecord, sn_ws */
+/* global x_376096_mplc */
+/* eslint no-undef: "error" */
+var MPLCImport = Class.create();
+MPLCImport.prototype = {
+	initialize: function () {
+
+	},
+
+	importNOWApps: function () {
+		const pageSchema = {
+			"result": {
+				"data": {
+					"pagination": {
+						"page": 1
+					},
+					"projects": [
+						{
+							"author": "First Last",
+							"category": "Integrations",
+							"categoryURL": "/connect.do#!/share/contents?category=Integrations",
+							"created_on": "Aug 09, 2024",
+							"description": "Testing Project",
+							"downloads": 2,
+							"overall_rating": 0,
+							"owner_last_updated_on": "2024-08-09 12:34:50",
+							"product": "IT Service Management",
+							"thumbnailImageURL": "",
+							"title": "API Testing",
+							"total_ratings": "0",
+							"url": "/connect.do#!/share/contents/123456_api_testing?v=1&t=PRODUCT_DETAILS"
+						}
+					]
+				},
+				"message": "successfully retrieved projects",
+				"status": "success"
+			}
+		};
+
+		const NOWShareConnAlias = '1dcce07f93ff4610e02873718bba10e8';
+		const conn = initConn();
+		if (conn) {
+			let page = 1;
+			while (page < 10) {
+				const pageData = conn.data({
+					action: "share.all.apps.list",
+					data: {
+						page: page
+					}
+				});
+
+				if (pageData.result.status != 'success') {
+					break;
+				}
+
+				const resultData = pageData.result.data;
+				resultData.projects.forEach(project => {
+					const projectID = project.url.match(/contents\/(\d+)_/)[1];
+					const appGr = new GlideRecord('x_376096_mplc_app');
+					appGr.addQuery('source', NOWShareConnAlias);
+					appGr.addQuery('source_id', projectID);
+					appGr.setLimit(1);
+					appGr.query();
+					if (appGr.next()) {
+						// use existing app
+					} else {
+						appGr.newRecord();
+						appGr.source = NOWShareConnAlias;
+						appGr.source_id = projectID;
+					}
+
+					//updateLogo(jsLibs, eps, gsa, appGr, appData);
+
+					appGr.name = project.title;
+					appGr.description = project.description.replaceAll('&nbsp;', ' ');
+					appGr.url = 'https://developer.servicenow.com' + project.url;
+					appGr.metadata = JSON.stringify({
+						created: project.created_on,
+						category: project.category,
+						product: project.product,
+						downloads: project.downloads,
+						overall_rating: project.overall_rating,
+						total_ratings: project.total_ratings,
+						updated: project.owner_last_updated_on
+					});
+
+					if (appGr.isNewRecord()) {
+						appGr.insert();
+					} else {
+						appGr.update();
+					}
+				});
+
+				if (page == resultData.pagination.total_pages) {
+					break;
+				}
+
+				page++;
+			}
+		}
+
+		function initConn() {
+			const userTokenReq = new sn_ws.RESTMessageV2();
+			userTokenReq.setHttpMethod('get');
+			userTokenReq.setEndpoint('https://developer.servicenow.com/login.do');
+			const userTokenResp = userTokenReq.execute();
+			if (userTokenResp.getStatusCode() == 200) {
+				const userToken = getUserToken(userTokenResp);
+				if (userToken) {
+					const cookies = {};
+					parseCookies(cookies, userTokenResp);
+
+
+					const DevConn = function () { };
+					DevConn.prototype.data = function (jsonData) {
+						const dataReq = new sn_ws.RESTMessageV2();
+						dataReq.setHttpMethod('get');
+						setCookie(cookies, dataReq);
+						dataReq.setRequestHeader('X-UserToken', userToken);
+						dataReq.setEndpoint('https://developer.servicenow.com/devportal.do?sysparm_data=' + encodeURI(JSON.stringify(jsonData)));
+						const dataResp = dataReq.execute();
+						if (dataResp.getStatusCode() == 200) {
+							return JSON.parse(dataResp.getBody());
+						}
+					};
+
+					return new DevConn();
+				}
+			}
+
+			function parseCookies(cookies, resp) {
+				const filterCookies = ['JSESSIONID', 'glide_user_route', 'glide_user', 'glide_user_session', 'glide_node_id_for_js'];
+				resp.getAllHeaders()
+					.filter(header => header.name == 'Set-Cookie')
+					.forEach(header => {
+						const value = header.value.substring(0, header.value.indexOf(';')).split('=');
+						if (filterCookies.includes(value[0]) || value[0].startsWith('BIGipServerpool')) {
+							cookies[value[0]] = value[1];
+						}
+					});
+			}
+
+			function setCookie(cookies, req) {
+				req.setRequestHeader('Cookie',
+					Object.entries(cookies)
+						.map(([name, value]) => name + '=' + value)
+						.join(';')
+				);
+			}
+
+			function getUserToken(resp) {
+				const formHeader = resp.getHeader('X-UserToken');
+				if (formHeader) {
+					return formHeader;
+				}
+
+				const body = resp.getBody();
+				const singleQuotes = body.match(/var g_ck = '(.*?)';/);
+				if (singleQuotes) {
+					return singleQuotes[1];
+				}
+
+				const doubleQuotes = body.match(/var g_ck = "(.*?)";/);
+				if (doubleQuotes) {
+					return doubleQuotes[1];
+				}
+			}
+		}
+	},
+
+	importGITApps: function () {
+		const eps = new GlideScriptedExtensionPoint().getExtensions('MPLCExt');
+		if (eps.length) {
+			eps[0].initialize();
+		}
+
+		const jsLibs = new x_376096_mplc.JSLibs();
+		const gsa = new GlideSysAttachment();
+		const mplUtil = new x_376096_mplc.MPLCUtil();
+		const aliasGr = new GlideRecord('sys_alias');
+		aliasGr.addQuery('parent', mplUtil.CONN_ALIAS);
+		aliasGr.query();
+		while (aliasGr.next()) {
+			const appResult = mplUtil.getGitRepos(aliasGr.sys_id);
+			if (appResult.status != 'success') {
+				continue;
+			}
+
+			appResult.repositories.forEach(appData => {
+				const appGr = new GlideRecord('x_376096_mplc_app');
+				appGr.addQuery('source', aliasGr.sys_id);
+				appGr.addQuery('source_id', appData.git.id);
+				appGr.setLimit(1);
+				appGr.query();
+				if (appGr.next()) {
+					// use existing app
+				} else {
+					appGr.newRecord();
+					appGr.source = aliasGr.sys_id;
+					appGr.source_id = appData.git.id;
+				}
+
+				updateLogo(jsLibs, eps, gsa, appGr, appData);
+
+				appGr.name = appData.app.name;
+				appGr.description = appData.app.short_description;
+				appGr.url = appData.git.html_url;
+				appGr.app_scope = appData.app.scope;
+				appGr.metadata = JSON.stringify({
+					version: appData.app.version,
+					created: appData.app.created,
+					updated: appData.app.updated,
+					store_url: appData.app.store_url
+				});
+
+				if (appGr.isNewRecord()) {
+					appGr.insert();
+				} else {
+					appGr.update();
+				}
+			});
+		}
+
+		function updateLogo(jsLibs, eps, gsa, appGr, appData) {
+			const logoData = appData.app.logo;
+			if (logoData) {
+				const attGr = new GlideRecord('sys_attachment');
+				attGr.addQuery('sys_id', appGr.logo);
+				attGr.setLimit(1);
+				attGr.query();
+				if (attGr.next()) {
+					if (attGr.hash == logoData.hash) {
+						// logo didn't change
+						return;
+					}
+
+					gsa.deleteAttachment(attGr.sys_id);
+				}
+			}
+
+			appGr.logo = '';
+
+			if (eps.length && logoData) {
+				const Base64 = jsLibs.require('Base64');
+
+				const data = [];
+				logoData.content_base64.forEach(str => Base64.atob(str).split('').forEach(x => data.push(x.charCodeAt(0))));
+				const bytes = new Uint8Array(data);
+				
+				let logoBase64 = '';
+				if (logoData.compressed) {
+					const gzip = jsLibs.require('gzip');
+					const decompressed = new Uint8Array(gzip.unzip(bytes));
+					logoBase64 = Base64.fromUint8Array(decompressed);
+				} else {
+					logoBase64 = Base64.fromUint8Array(bytes);
+				}
+
+				let attSysID = gsa.writeBase64(appGr, 'logo', logoData.content_type, logoBase64);
+				if (attSysID) {
+					const success = eps[0].updateAttachment(attSysID, {
+						table_name: 'ZZ_YY' + appGr.getTableName(),
+						content_type: logoData.content_type
+					});
+
+					if (success) {
+						appGr.logo = attSysID;
+					} else {
+						gsa.deleteAttachment(attSysID);
+					}
+				}
+			}
+		}
+	},
+
+	type: 'MPLCImport'
+};]]></script>
+        <sys_class_name>sys_script_include</sys_class_name>
+        <sys_created_by>markus.kraus</sys_created_by>
+        <sys_created_on>2024-08-11 08:03:57</sys_created_on>
+        <sys_id>1b95290493041210e02873718bba10a2</sys_id>
+        <sys_mod_count>10</sys_mod_count>
+        <sys_name>MPLCImport</sys_name>
+        <sys_package display_value="Marketplace Client" source="x_376096_mplc">2fe28b4497bf39103c2d3f56f053af4e</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="Marketplace Client">2fe28b4497bf39103c2d3f56f053af4e</sys_scope>
+        <sys_update_name>sys_script_include_1b95290493041210e02873718bba10a2</sys_update_name>
+        <sys_updated_by>markus.kraus</sys_updated_by>
+        <sys_updated_on>2024-08-11 17:33:40</sys_updated_on>
+    </sys_script_include>
+</record_update>

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sys_extension_point">
+    <sys_extension_point action="INSERT_OR_UPDATE">
+        <api_name>x_376096_mplc.JSLibFactory</api_name>
+        <description/>
+        <example><![CDATA[/* global Class */
+/* eslint no-undef: "error" */
+var JSLibFactory = Class.create();
+JSLibFactory.prototype = {
+	initialize: function () {
+
+	},
+
+	factory: function (libs) {
+		/**
+		 * This example's outcome:
+		 * var libs = new JSLibs();
+		 * var myLib = libs.require('JSLibFactory');
+		 * var x = new myLib();
+		 * assert('hello world' == x.myFunc('hello world'));
+		 */
+		var require = libs.require;
+		return function () {
+			this.myFunc = function (arg1) {
+				return arg1;
+			};
+		};
+	},
+
+	type: 'JSLibFactory'
+};]]></example>
+        <name>JSLibFactory</name>
+        <restrict_scope>false</restrict_scope>
+        <sys_class_name>sys_extension_point</sys_class_name>
+        <sys_created_by>markus.kraus</sys_created_by>
+        <sys_created_on>2024-08-11 06:54:51</sys_created_on>
+        <sys_id>c624154893401210e02873718bba1025</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name>JSLibFactory</sys_name>
+        <sys_package display_value="Marketplace Client" source="x_376096_mplc">2fe28b4497bf39103c2d3f56f053af4e</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="Marketplace Client">2fe28b4497bf39103c2d3f56f053af4e</sys_scope>
+        <sys_update_name>sys_extension_point_c624154893401210e02873718bba1025</sys_update_name>
+        <sys_updated_by>markus.kraus</sys_updated_by>
+        <sys_updated_on>2024-08-11 06:54:51</sys_updated_on>
+    </sys_extension_point>
+</record_update>

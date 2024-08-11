@@ -11,16 +11,16 @@
 /* eslint no-undef: "error" */
 var MPLCUtil = Class.create();
 MPLCUtil.prototype = {
-	initialize: function() {
+	initialize: function () {
 		this.CONN_ALIAS = 'ce0f535697fbf1503c2d3f56f053afee'; // x_376096_mplc.GitHub_Marketplace
 	},
-	
+
 	getGitRepos: function (aliasSysID) {
 		const result = {
 			status: 'error',
 			error_message: 'unknown error'
 		};
-		
+
 		const aliasGr = new GlideRecord('sys_alias');
 		aliasGr.addQuery('parent', this.CONN_ALIAS);
 		aliasGr.addQuery('sys_id', aliasSysID);
@@ -29,8 +29,8 @@ MPLCUtil.prototype = {
 		if (aliasGr.next()) {
 			const provider = new sn_cc.ConnectionInfoProvider();
 			const connInfo = provider.getConnectionInfo(aliasGr.sys_id);
-			const sourceExtAttrs = connInfo && connInfo.getExtendedAttributes(); 
-			if (sourceExtAttrs && sourceExtAttrs.source) {				
+			const sourceExtAttrs = connInfo && connInfo.getExtendedAttributes();
+			if (sourceExtAttrs && sourceExtAttrs.source) {
 				const sm = new sn_ws.RESTMessageV2();
 				sm.setRequestHeader('Accept', 'application/vnd.github+json');
 				const token = connInfo.getCredentialAttribute('api_key') || connInfo.getCredentialAttribute('password');
@@ -42,14 +42,14 @@ MPLCUtil.prototype = {
 				if (!baseURL.endsWith('/')) {
 					baseURL += '/';
 				}
-				
+
 				let endpoint = baseURL;
 				if (sourceExtAttrs.github_type == 'organization') {
 					endpoint += 'orgs';
 				} else {
 					endpoint += 'users';
 				}
-				
+
 				endpoint += '/' + sourceExtAttrs.github_name + '/repos?sort=pushed';
 
 				sm.setHttpMethod('get');
@@ -60,7 +60,7 @@ MPLCUtil.prototype = {
 					const targetExtAttrs = targetConn && targetConn.getExtendedAttributes();
 					result.can_install = targetExtAttrs && !!targetExtAttrs.target;
 					result.repositories = [];
-					
+
 					let hasNextPage = false;
 					do {
 						const json = JSON.parse(response.getBody());
@@ -69,23 +69,23 @@ MPLCUtil.prototype = {
 							if (!folder) {
 								return;
 							}
-							
+
 							const appFile = getAppFile(token, r.url, folder);
 							if (!appFile) {
 								return;
 							}
-							
+
 							const app = getAppMetadata(token, r.url, folder, appFile);
 							if (!app) {
 								return;
 							}
-							
+
 							const status = {
 								state: 'unknown',
 								message: ''
 							};
-							
-							let repoConfig = null;						
+
+							let repoConfig = null;
 							const appGr = new GlideRecord('sys_app');
 							appGr.addQuery('sys_id', app.sys_id);
 							appGr.setLimit(1);
@@ -100,13 +100,13 @@ MPLCUtil.prototype = {
 										credential_sys_id: configGr.getValue('credential'),
 										current_branch: configGr.current_branch.toString()
 									};
-									
+
 									if (targetConn) {
 										let repoURL = configGr.url.toString();
 										if (!repoURL.endsWith('.git')) {
 											repoURL += '.git';
 										}
-										
+
 										// there is no easy way to check if repo-config is actually a cloned/forked from the source
 										// (the specified URL in the repo config must be first transformed GitHub-API compatible)
 										// we use a "good-enough" solution instead
@@ -136,7 +136,7 @@ MPLCUtil.prototype = {
 							} else {
 								status.state = 'not_installed';
 							}
-							
+
 							if (status.state == 'unknown') {
 								status.state = { value: 'unknown', label: 'Unknown' };
 							} else if (status.state == 'invalid') {
@@ -194,7 +194,7 @@ MPLCUtil.prototype = {
 									}
 								}
 							}
-						}						
+						}
 					} while (hasNextPage);
 					result.status = 'success';
 				} else {
@@ -206,9 +206,9 @@ MPLCUtil.prototype = {
 		} else {
 			result.error = 'Unknown GitHub Source!';
 		}
-		
+
 		return result;
-		
+
 		function getAppFolder(token, url) {
 			const sm = new sn_ws.RESTMessageV2();
 			sm.setRequestHeader('Accept', 'application/vnd.github+json');
@@ -228,10 +228,10 @@ MPLCUtil.prototype = {
 					}
 				}
 			}
-			
+
 			return null;
 		}
-		
+
 		function getAppFile(token, url, folder) {
 			const sm = new sn_ws.RESTMessageV2();
 			sm.setRequestHeader('Accept', 'application/vnd.github+json');
@@ -250,10 +250,10 @@ MPLCUtil.prototype = {
 					}
 				}
 			}
-			
+
 			return null;
 		}
-		
+
 		function getAppMetadata(token, url, folder, appFile) {
 			const sm = new sn_ws.RESTMessageV2();
 			sm.setRequestHeader('Accept', 'application/vnd.github+json');
@@ -268,10 +268,10 @@ MPLCUtil.prototype = {
 				if (GlideStringUtil.isBase64(body.content)) {
 					const xml = new XMLDocument2();
 					xml.parseXML(gs.base64Decode(body.content));
-					
-					let logo = null;					
+
+					let logo = null;
 					const logoSysID = xml.getNodeText('//sys_app/logo');
-					if (logoSysID) {						
+					if (logoSysID) {
 						const attContentBlocks = [];
 						const docXPath = '//sys_attachment_doc[./sys_attachment="' + logoSysID + '"]';
 						for (let attDocNode = xml.getFirstNode(docXPath); attDocNode; attDocNode = xml.getNextNode(attDocNode)) {
@@ -282,7 +282,7 @@ MPLCUtil.prototype = {
 								data: messageDoc.getNodeText('//data')
 							});
 						}
-						
+
 						logo = {
 							hash: xml.getNodeText('//sys_attachment[./sys_id="' + logoSysID + '"]/hash'),
 							compressed: xml.getNodeText('//sys_attachment[./sys_id="' + logoSysID + '"]/compressed') == 'true',
@@ -290,7 +290,7 @@ MPLCUtil.prototype = {
 							content_base64: attContentBlocks.sort((a, b) => a.position - b.position).map(b => b.data)
 						};
 					}
-					
+
 					return {
 						name: xml.getNodeText('//sys_app/name'),
 						short_description: xml.getNodeText('//sys_app/short_description'),
@@ -304,25 +304,25 @@ MPLCUtil.prototype = {
 					};
 				}
 			}
-			
+
 			return null;
 		}
 	},
-	
-	getGitHubSources: function () {		
+
+	getGitHubSources: function () {
 		const provider = new sn_cc.ConnectionInfoProvider();
 		const gitHubSources = [];
-		
+
 		const aliasGr = new GlideRecord('sys_alias');
 		aliasGr.addQuery('parent', this.CONN_ALIAS);
 		aliasGr.query();
 		while (aliasGr.next()) {
 			const connInfo = provider.getConnectionInfo(aliasGr.sys_id);
-			const extendedAttributes = connInfo && connInfo.getExtendedAttributes(); 
+			const extendedAttributes = connInfo && connInfo.getExtendedAttributes();
 			if (extendedAttributes && extendedAttributes.source == 'true') {
 				let status = 'unknown';
 				let statusMessage = '';
-				
+
 				// check if the target is present and if it is configured properly
 				if (provider.getConnectionInfo(extendedAttributes.target)) {
 					status = 'ok';
@@ -330,10 +330,10 @@ MPLCUtil.prototype = {
 				} else {
 					statusMessage = 'No target or no target connection configured!';
 				}
-				
+
 				const sm = new sn_ws.RESTMessageV2();
 				sm.setRequestHeader('Accept', 'application/vnd.github+json');
-				
+
 				const token = connInfo.getCredentialAttribute('api_key') || connInfo.getCredentialAttribute('password');
 				if (token) {
 					sm.setRequestHeader('Authorization', 'Bearer ' + token);
@@ -343,25 +343,25 @@ MPLCUtil.prototype = {
 				if (!endpoint.endsWith('/')) {
 					endpoint += '/';
 				}
-				
+
 				if (extendedAttributes.github_type == 'organization') {
 					endpoint += 'orgs';
 				} else {
 					endpoint += 'users';
 				}
-				
+
 				endpoint += '/' + extendedAttributes.github_name;
 
 				sm.setHttpMethod('get');
 				sm.setEndpoint(endpoint);
 				const response = sm.execute();
-				
+
 				let logoURL = '';
 				let description = '';
 				if (response.getStatusCode() == 200) {
 					const json = JSON.parse(response.getBody());
 					logoURL = json.avatar_url;
-					
+
 					if (extendedAttributes.github_type == 'organization') {
 						description = json.description;
 					} else {
@@ -370,10 +370,10 @@ MPLCUtil.prototype = {
 				} else {
 					status = 'error';
 					description = 'Could not retrieve repo information:\n' + response.getErrorMessage();
-				}				
-			
+				}
+
 				gitHubSources.push({
-					sys_id: aliasGr.getUniqueValue(), 
+					sys_id: aliasGr.getUniqueValue(),
 					name: connInfo.getAttribute('name'),
 					description: description,
 					logo_url: logoURL,
@@ -382,7 +382,7 @@ MPLCUtil.prototype = {
 				});
 			}
 		}
-		
+
 		return gitHubSources;
 	},
 
@@ -392,13 +392,13 @@ MPLCUtil.prototype = {
         <sys_created_by>markus.kraus</sys_created_by>
         <sys_created_on>2024-01-21 20:59:27</sys_created_on>
         <sys_id>e53bb6fe973f75503c2d3f56f053af5d</sys_id>
-        <sys_mod_count>108</sys_mod_count>
+        <sys_mod_count>135</sys_mod_count>
         <sys_name>MPLCUtil</sys_name>
         <sys_package display_value="Marketplace Client" source="x_376096_mplc">2fe28b4497bf39103c2d3f56f053af4e</sys_package>
         <sys_policy/>
         <sys_scope display_value="Marketplace Client">2fe28b4497bf39103c2d3f56f053af4e</sys_scope>
         <sys_update_name>sys_script_include_e53bb6fe973f75503c2d3f56f053af5d</sys_update_name>
         <sys_updated_by>markus.kraus</sys_updated_by>
-        <sys_updated_on>2024-08-10 09:13:19</sys_updated_on>
+        <sys_updated_on>2024-08-11 17:13:42</sys_updated_on>
     </sys_script_include>
 </record_update>
