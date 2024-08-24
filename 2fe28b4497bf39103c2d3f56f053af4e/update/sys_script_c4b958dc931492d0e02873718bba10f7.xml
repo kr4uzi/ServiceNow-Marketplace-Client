@@ -15,8 +15,7 @@
         <condition/>
         <description/>
         <execute_function>false</execute_function>
-        <filter_condition table="sys_update_set">x_376096_mplc_hashISEMPTY^ORstateCHANGESTOcomplete^EQ<item endquery="false" field="x_376096_mplc_hash" goto="false" newquery="false" operator="ISEMPTY" or="false" value=""/>
-            <item display_value="Complete" endquery="false" field="state" goto="false" newquery="false" operator="CHANGESTO" or="true" value="complete"/>
+        <filter_condition table="sys_update_set">state=complete^EQ<item display_value="Complete" endquery="false" field="state" goto="false" newquery="false" operator="=" or="false" value="complete"/>
             <item endquery="true" field="" goto="false" newquery="false" operator="=" or="false" value=""/>
         </filter_condition>
         <is_rest>false</is_rest>
@@ -47,7 +46,7 @@
         <sys_domain>global</sys_domain>
         <sys_domain_path>/</sys_domain_path>
         <sys_id>c4b958dc931492d0e02873718bba10f7</sys_id>
-        <sys_mod_count>1</sys_mod_count>
+        <sys_mod_count>2</sys_mod_count>
         <sys_name>MPLC Update Set - Calculate Cash</sys_name>
         <sys_overrides/>
         <sys_package display_value="Marketplace Client" source="x_376096_mplc">2fe28b4497bf39103c2d3f56f053af4e</sys_package>
@@ -55,7 +54,7 @@
         <sys_scope display_value="Marketplace Client">2fe28b4497bf39103c2d3f56f053af4e</sys_scope>
         <sys_update_name>sys_script_c4b958dc931492d0e02873718bba10f7</sys_update_name>
         <sys_updated_by>markus.kraus</sys_updated_by>
-        <sys_updated_on>2024-08-24 07:30:03</sys_updated_on>
+        <sys_updated_on>2024-08-24 11:42:27</sys_updated_on>
         <template/>
         <when>before</when>
     </sys_script>
