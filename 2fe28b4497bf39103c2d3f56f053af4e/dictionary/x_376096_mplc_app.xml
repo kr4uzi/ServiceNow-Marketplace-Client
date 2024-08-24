@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?><database>
     <element db_object_id="3a1ea52b93f38210e02873718bba107d" label="App" max_length="40" name="x_376096_mplc_app" type="collection">
+        <element attributes="readonly_clickthrough=true" label="Installed Version" max_length="32" name="installed_version" reference="x_376096_mplc_app_version" type="reference"/>
         <element label="App Sys ID" max_length="32" name="app_sys_id" type="string"/>
         <element label="App Scope" max_length="18" name="app_scope" type="string"/>
         <element label="Source ID" max_length="512" name="source_id" type="string"/>
@@ -7,9 +8,16 @@
         <element attributes="readonly_clickthrough=true" label="Source" max_length="32" name="source" reference="sys_alias" reference_qual="parent=ce0f535697fbf1503c2d3f56f053afee^ORid=x_376096_mplc.NOW_Share^EQ" reference_qual_condition="parent=ce0f535697fbf1503c2d3f56f053afee^ORid=x_376096_mplc.NOW_Share^EQ" type="reference"/>
         <element label="Name" max_length="100" name="name" type="string"/>
         <element label="Logo" max_length="40" name="logo" type="user_image"/>
+        <element attributes="readonly_clickthrough=true" label="Latest Version" max_length="32" name="latest_version" reference="x_376096_mplc_app_version" type="reference"/>
         <element label="URL" max_length="1024" name="url" type="url"/>
         <element label="Description" max_length="500" name="description" type="html"/>
         <index name="index">
+            <element name="installed_version"/>
+        </index>
+        <index name="index2">
+            <element name="latest_version"/>
+        </index>
+        <index name="index3">
             <element name="source"/>
         </index>
     </element>

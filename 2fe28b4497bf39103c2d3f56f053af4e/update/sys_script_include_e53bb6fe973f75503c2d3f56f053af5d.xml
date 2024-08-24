@@ -12,7 +12,10 @@
 var MPLCUtil = Class.create();
 MPLCUtil.prototype = {
 	initialize: function () {
-		this.CONN_ALIAS = 'ce0f535697fbf1503c2d3f56f053afee'; // x_376096_mplc.GitHub_Marketplace
+		this.CONN_ALIAS = {
+			NOW_SHARE: '1dcce07f93ff4610e02873718bba10e8', // x_376096_mplc.NOW_Share
+			GIT: 'ce0f535697fbf1503c2d3f56f053afee' // x_376096_mplc.GitHub_Marketplace
+		};
 	},
 
 	getGitRepos: function (aliasSysID) {
@@ -22,7 +25,7 @@ MPLCUtil.prototype = {
 		};
 
 		const aliasGr = new GlideRecord('sys_alias');
-		aliasGr.addQuery('parent', this.CONN_ALIAS);
+		aliasGr.addQuery('parent', this.CONN_ALIAS.GIT);
 		aliasGr.addQuery('sys_id', aliasSysID);
 		aliasGr.setLimit(1);
 		aliasGr.query();
@@ -75,7 +78,7 @@ MPLCUtil.prototype = {
 								return;
 							}
 
-							const app = getAppMetadata(token, r.url, folder, appFile);
+							const app = this._getAppMetadata(token, r.url, folder, appFile);
 							if (!app) {
 								return;
 							}
@@ -253,60 +256,60 @@ MPLCUtil.prototype = {
 
 			return null;
 		}
+	},
 
-		function getAppMetadata(token, url, folder, appFile) {
-			const sm = new sn_ws.RESTMessageV2();
-			sm.setRequestHeader('Accept', 'application/vnd.github+json');
-			if (token) {
-				sm.setRequestHeader('Authorization', 'Bearer ' + token);
-			}
-			sm.setHttpMethod('get');
-			sm.setEndpoint(url + '/contents/' + folder + '/' + appFile);
-			const response = sm.execute();
-			if (response.getStatusCode() == 200) {
-				const body = JSON.parse(response.getBody());
-				if (GlideStringUtil.isBase64(body.content)) {
-					const xml = new XMLDocument2();
-					xml.parseXML(gs.base64Decode(body.content));
+	_getAppMetadata: function (token, url, folder, appFile) {
+		const sm = new sn_ws.RESTMessageV2();
+		sm.setRequestHeader('Accept', 'application/vnd.github+json');
+		if (token) {
+			sm.setRequestHeader('Authorization', 'Bearer ' + token);
+		}
+		sm.setHttpMethod('get');
+		sm.setEndpoint(url + '/contents/' + folder + '/' + appFile);
+		const response = sm.execute();
+		if (response.getStatusCode() == 200) {
+			const body = JSON.parse(response.getBody());
+			if (GlideStringUtil.isBase64(body.content)) {
+				const xml = new XMLDocument2();
+				xml.parseXML(gs.base64Decode(body.content));
 
-					let logo = null;
-					const logoSysID = xml.getNodeText('//sys_app/logo');
-					if (logoSysID) {
-						const attContentBlocks = [];
-						const docXPath = '//sys_attachment_doc[./sys_attachment="' + logoSysID + '"]';
-						for (let attDocNode = xml.getFirstNode(docXPath); attDocNode; attDocNode = xml.getNextNode(attDocNode)) {
-							const messageDoc = new XMLDocument2();
-							messageDoc.parseXML(attDocNode.toString());
-							attContentBlocks.push({
-								position: messageDoc.getNodeText('//position'),
-								data: messageDoc.getNodeText('//data')
-							});
-						}
-
-						logo = {
-							hash: xml.getNodeText('//sys_attachment[./sys_id="' + logoSysID + '"]/hash'),
-							compressed: xml.getNodeText('//sys_attachment[./sys_id="' + logoSysID + '"]/compressed') == 'true',
-							content_type: xml.getNodeText('//sys_attachment[./sys_id="' + logoSysID + '"]/content_type'),
-							content_base64: attContentBlocks.sort((a, b) => a.position - b.position).map(b => b.data)
-						};
+				let logo = null;
+				const logoSysID = xml.getNodeText('//sys_app/logo');
+				if (logoSysID) {
+					const attContentBlocks = [];
+					const docXPath = '//sys_attachment_doc[./sys_attachment="' + logoSysID + '"]';
+					for (let attDocNode = xml.getFirstNode(docXPath); attDocNode; attDocNode = xml.getNextNode(attDocNode)) {
+						const messageDoc = new XMLDocument2();
+						messageDoc.parseXML(attDocNode.toString());
+						attContentBlocks.push({
+							position: messageDoc.getNodeText('//position'),
+							data: messageDoc.getNodeText('//data')
+						});
 					}
 
-					return {
-						name: xml.getNodeText('//sys_app/name'),
-						short_description: xml.getNodeText('//sys_app/short_description'),
-						logo: logo,
-						version: xml.getNodeText('//sys_app/version'),
-						scope: xml.getNodeText('//sys_app/scope'),
-						sys_id: xml.getNodeText('//sys_app/sys_id'),
-						created: xml.getNodeText('//sys_app/sys_created_on'),
-						updated: xml.getNodeText('//sys_app/sys_updated_on'),
-						store_url: xml.getNodeText('//sys_app/store_url')
+					logo = {
+						hash: xml.getNodeText('//sys_attachment[./sys_id="' + logoSysID + '"]/hash'),
+						compressed: xml.getNodeText('//sys_attachment[./sys_id="' + logoSysID + '"]/compressed') == 'true',
+						content_type: xml.getNodeText('//sys_attachment[./sys_id="' + logoSysID + '"]/content_type'),
+						content_base64: attContentBlocks.sort((a, b) => a.position - b.position).map(b => b.data)
 					};
 				}
-			}
 
-			return null;
+				return {
+					name: xml.getNodeText('//sys_app/name'),
+					short_description: xml.getNodeText('//sys_app/short_description'),
+					logo: logo,
+					version: xml.getNodeText('//sys_app/version'),
+					scope: xml.getNodeText('//sys_app/scope'),
+					sys_id: xml.getNodeText('//sys_app/sys_id'),
+					created: xml.getNodeText('//sys_app/sys_created_on'),
+					updated: xml.getNodeText('//sys_app/sys_updated_on'),
+					store_url: xml.getNodeText('//sys_app/store_url')
+				};
+			}
 		}
+
+		return null;
 	},
 
 	getGitHubSources: function () {
@@ -314,7 +317,7 @@ MPLCUtil.prototype = {
 		const gitHubSources = [];
 
 		const aliasGr = new GlideRecord('sys_alias');
-		aliasGr.addQuery('parent', this.CONN_ALIAS);
+		aliasGr.addQuery('parent', this.CONN_ALIAS.GIT);
 		aliasGr.query();
 		while (aliasGr.next()) {
 			const connInfo = provider.getConnectionInfo(aliasGr.sys_id);
@@ -386,19 +389,44 @@ MPLCUtil.prototype = {
 		return gitHubSources;
 	},
 
+	getLogoFromXMLDoc: function (xmlDoc) {
+		const logoSysID = xmlDoc.getNodeText('//sys_app/logo');
+		if (logoSysID) {
+			const attContentBlocks = [];
+			const docXPath = '//sys_attachment_doc[./sys_attachment="' + logoSysID + '"]';
+			for (let attDocNode = xmlDoc.getFirstNode(docXPath); attDocNode; attDocNode = xmlDoc.getNextNode(attDocNode)) {
+				const messageDoc = new XMLDocument2();
+				messageDoc.parseXML(attDocNode.toString());
+				attContentBlocks.push({
+					position: messageDoc.getNodeText('//position'),
+					data: messageDoc.getNodeText('//data')
+				});
+			}
+
+			return {
+				hash: xmlDoc.getNodeText('//sys_attachment[./sys_id="' + logoSysID + '"]/hash'),
+				compressed: xmlDoc.getNodeText('//sys_attachment[./sys_id="' + logoSysID + '"]/compressed') == 'true',
+				content_type: xmlDoc.getNodeText('//sys_attachment[./sys_id="' + logoSysID + '"]/content_type'),
+				content_base64: attContentBlocks.sort((a, b) => a.position - b.position).map(b => b.data)
+			};
+		}
+
+		return null;
+	},
+
 	type: 'MPLCUtil'
 };]]></script>
         <sys_class_name>sys_script_include</sys_class_name>
         <sys_created_by>markus.kraus</sys_created_by>
         <sys_created_on>2024-01-21 20:59:27</sys_created_on>
         <sys_id>e53bb6fe973f75503c2d3f56f053af5d</sys_id>
-        <sys_mod_count>135</sys_mod_count>
+        <sys_mod_count>138</sys_mod_count>
         <sys_name>MPLCUtil</sys_name>
         <sys_package display_value="Marketplace Client" source="x_376096_mplc">2fe28b4497bf39103c2d3f56f053af4e</sys_package>
         <sys_policy/>
         <sys_scope display_value="Marketplace Client">2fe28b4497bf39103c2d3f56f053af4e</sys_scope>
         <sys_update_name>sys_script_include_e53bb6fe973f75503c2d3f56f053af5d</sys_update_name>
         <sys_updated_by>markus.kraus</sys_updated_by>
-        <sys_updated_on>2024-08-11 17:13:42</sys_updated_on>
+        <sys_updated_on>2024-08-24 10:20:15</sys_updated_on>
     </sys_script_include>
 </record_update>

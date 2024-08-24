@@ -4,13 +4,13 @@
             <element>.begin_split</element>
             <position>0</position>
             <sys_created_by>markus.kraus</sys_created_by>
-            <sys_created_on>2024-08-11 17:30:47</sys_created_on>
-            <sys_id>eb9767449340d210e02873718bba10c9</sys_id>
+            <sys_created_on>2024-08-24 09:35:10</sys_created_on>
+            <sys_id>db67bc5c939c92d0e02873718bba1026</sys_id>
             <sys_mod_count>0</sys_mod_count>
             <sys_ui_formatter/>
             <sys_ui_section caption="NULL" display_value="" name="x_376096_mplc_app" sys_domain="global" view="Default view">b23639e793378210e02873718bba10e7</sys_ui_section>
             <sys_updated_by>markus.kraus</sys_updated_by>
-            <sys_updated_on>2024-08-11 17:30:47</sys_updated_on>
+            <sys_updated_on>2024-08-24 09:35:10</sys_updated_on>
             <sys_user/>
             <type>.begin_split</type>
         </sys_ui_element>
@@ -18,13 +18,13 @@
             <element>name</element>
             <position>1</position>
             <sys_created_by>markus.kraus</sys_created_by>
-            <sys_created_on>2024-08-11 17:30:47</sys_created_on>
-            <sys_id>639767449340d210e02873718bba10ca</sys_id>
+            <sys_created_on>2024-08-24 09:35:10</sys_created_on>
+            <sys_id>d367bc5c939c92d0e02873718bba1027</sys_id>
             <sys_mod_count>0</sys_mod_count>
             <sys_ui_formatter/>
             <sys_ui_section caption="NULL" display_value="" name="x_376096_mplc_app" sys_domain="global" view="Default view">b23639e793378210e02873718bba10e7</sys_ui_section>
             <sys_updated_by>markus.kraus</sys_updated_by>
-            <sys_updated_on>2024-08-11 17:30:47</sys_updated_on>
+            <sys_updated_on>2024-08-24 09:35:10</sys_updated_on>
             <sys_user/>
             <type/>
         </sys_ui_element>
@@ -32,13 +32,13 @@
             <element>app_scope</element>
             <position>2</position>
             <sys_created_by>markus.kraus</sys_created_by>
-            <sys_created_on>2024-08-11 17:30:47</sys_created_on>
-            <sys_id>e79767449340d210e02873718bba10ca</sys_id>
+            <sys_created_on>2024-08-24 09:35:11</sys_created_on>
+            <sys_id>db67bc5c939c92d0e02873718bba1027</sys_id>
             <sys_mod_count>0</sys_mod_count>
             <sys_ui_formatter/>
             <sys_ui_section caption="NULL" display_value="" name="x_376096_mplc_app" sys_domain="global" view="Default view">b23639e793378210e02873718bba10e7</sys_ui_section>
             <sys_updated_by>markus.kraus</sys_updated_by>
-            <sys_updated_on>2024-08-11 17:30:47</sys_updated_on>
+            <sys_updated_on>2024-08-24 09:35:11</sys_updated_on>
             <sys_user/>
             <type/>
         </sys_ui_element>
@@ -46,97 +46,125 @@
             <element>source</element>
             <position>3</position>
             <sys_created_by>markus.kraus</sys_created_by>
-            <sys_created_on>2024-08-11 17:30:47</sys_created_on>
-            <sys_id>6f9767449340d210e02873718bba10ca</sys_id>
+            <sys_created_on>2024-08-24 09:35:11</sys_created_on>
+            <sys_id>d367bc5c939c92d0e02873718bba1028</sys_id>
             <sys_mod_count>0</sys_mod_count>
             <sys_ui_formatter/>
             <sys_ui_section caption="NULL" display_value="" name="x_376096_mplc_app" sys_domain="global" view="Default view">b23639e793378210e02873718bba10e7</sys_ui_section>
             <sys_updated_by>markus.kraus</sys_updated_by>
-            <sys_updated_on>2024-08-11 17:30:47</sys_updated_on>
+            <sys_updated_on>2024-08-24 09:35:11</sys_updated_on>
+            <sys_user/>
+            <type/>
+        </sys_ui_element>
+        <sys_ui_element action="INSERT_OR_UPDATE">
+            <element>installed_version</element>
+            <position>4</position>
+            <sys_created_by>markus.kraus</sys_created_by>
+            <sys_created_on>2024-08-24 09:35:11</sys_created_on>
+            <sys_id>db67bc5c939c92d0e02873718bba1028</sys_id>
+            <sys_mod_count>0</sys_mod_count>
+            <sys_ui_formatter/>
+            <sys_ui_section caption="NULL" display_value="" name="x_376096_mplc_app" sys_domain="global" view="Default view">b23639e793378210e02873718bba10e7</sys_ui_section>
+            <sys_updated_by>markus.kraus</sys_updated_by>
+            <sys_updated_on>2024-08-24 09:35:11</sys_updated_on>
+            <sys_user/>
+            <type/>
+        </sys_ui_element>
+        <sys_ui_element action="INSERT_OR_UPDATE">
+            <element>latest_version</element>
+            <position>5</position>
+            <sys_created_by>markus.kraus</sys_created_by>
+            <sys_created_on>2024-08-24 09:35:11</sys_created_on>
+            <sys_id>d367bc5c939c92d0e02873718bba1029</sys_id>
+            <sys_mod_count>0</sys_mod_count>
+            <sys_ui_formatter/>
+            <sys_ui_section caption="NULL" display_value="" name="x_376096_mplc_app" sys_domain="global" view="Default view">b23639e793378210e02873718bba10e7</sys_ui_section>
+            <sys_updated_by>markus.kraus</sys_updated_by>
+            <sys_updated_on>2024-08-24 09:35:11</sys_updated_on>
             <sys_user/>
             <type/>
         </sys_ui_element>
         <sys_ui_element action="INSERT_OR_UPDATE">
             <element>.split</element>
-            <position>4</position>
+            <position>6</position>
             <sys_created_by>markus.kraus</sys_created_by>
-            <sys_created_on>2024-08-11 17:30:47</sys_created_on>
-            <sys_id>e39767449340d210e02873718bba10cb</sys_id>
+            <sys_created_on>2024-08-24 09:35:11</sys_created_on>
+            <sys_id>db67bc5c939c92d0e02873718bba1029</sys_id>
             <sys_mod_count>0</sys_mod_count>
             <sys_ui_formatter/>
             <sys_ui_section caption="NULL" display_value="" name="x_376096_mplc_app" sys_domain="global" view="Default view">b23639e793378210e02873718bba10e7</sys_ui_section>
             <sys_updated_by>markus.kraus</sys_updated_by>
-            <sys_updated_on>2024-08-11 17:30:47</sys_updated_on>
+            <sys_updated_on>2024-08-24 09:35:11</sys_updated_on>
             <sys_user/>
             <type>.split</type>
         </sys_ui_element>
         <sys_ui_element action="INSERT_OR_UPDATE">
             <element>logo</element>
-            <position>5</position>
+            <position>7</position>
             <sys_created_by>markus.kraus</sys_created_by>
-            <sys_created_on>2024-08-11 17:30:47</sys_created_on>
-            <sys_id>6b9767449340d210e02873718bba10cb</sys_id>
+            <sys_created_on>2024-08-24 09:35:11</sys_created_on>
+            <sys_id>d367bc5c939c92d0e02873718bba102a</sys_id>
             <sys_mod_count>0</sys_mod_count>
             <sys_ui_formatter/>
             <sys_ui_section caption="NULL" display_value="" name="x_376096_mplc_app" sys_domain="global" view="Default view">b23639e793378210e02873718bba10e7</sys_ui_section>
             <sys_updated_by>markus.kraus</sys_updated_by>
-            <sys_updated_on>2024-08-11 17:30:47</sys_updated_on>
+            <sys_updated_on>2024-08-24 09:35:11</sys_updated_on>
             <sys_user/>
             <type/>
         </sys_ui_element>
         <sys_ui_element action="INSERT_OR_UPDATE">
             <element>.end_split</element>
-            <position>6</position>
+            <position>8</position>
             <sys_created_by>markus.kraus</sys_created_by>
-            <sys_created_on>2024-08-11 17:30:47</sys_created_on>
-            <sys_id>ab972b489340d210e02873718bba1080</sys_id>
+            <sys_created_on>2024-08-24 09:35:11</sys_created_on>
+            <sys_id>db67bc5c939c92d0e02873718bba102a</sys_id>
             <sys_mod_count>0</sys_mod_count>
             <sys_ui_formatter/>
             <sys_ui_section caption="NULL" display_value="" name="x_376096_mplc_app" sys_domain="global" view="Default view">b23639e793378210e02873718bba10e7</sys_ui_section>
             <sys_updated_by>markus.kraus</sys_updated_by>
-            <sys_updated_on>2024-08-11 17:30:47</sys_updated_on>
+            <sys_updated_on>2024-08-24 09:35:11</sys_updated_on>
             <sys_user/>
             <type>.end_split</type>
         </sys_ui_element>
         <sys_ui_element action="INSERT_OR_UPDATE">
             <element>description</element>
-            <position>7</position>
+            <position>9</position>
             <sys_created_by>markus.kraus</sys_created_by>
-            <sys_created_on>2024-08-11 17:30:47</sys_created_on>
-            <sys_id>23972b489340d210e02873718bba1081</sys_id>
+            <sys_created_on>2024-08-24 09:35:11</sys_created_on>
+            <sys_id>d367bc5c939c92d0e02873718bba102b</sys_id>
             <sys_mod_count>0</sys_mod_count>
             <sys_ui_formatter/>
             <sys_ui_section caption="NULL" display_value="" name="x_376096_mplc_app" sys_domain="global" view="Default view">b23639e793378210e02873718bba10e7</sys_ui_section>
             <sys_updated_by>markus.kraus</sys_updated_by>
-            <sys_updated_on>2024-08-11 17:30:47</sys_updated_on>
+            <sys_updated_on>2024-08-24 09:35:11</sys_updated_on>
             <sys_user/>
             <type/>
         </sys_ui_element>
         <sys_ui_element action="INSERT_OR_UPDATE">
             <element>url</element>
-            <position>8</position>
+            <position>10</position>
             <sys_created_by>markus.kraus</sys_created_by>
-            <sys_created_on>2024-08-11 17:30:47</sys_created_on>
-            <sys_id>a7972b489340d210e02873718bba1081</sys_id>
+            <sys_created_on>2024-08-24 09:35:11</sys_created_on>
+            <sys_id>db67bc5c939c92d0e02873718bba102b</sys_id>
             <sys_mod_count>0</sys_mod_count>
             <sys_ui_formatter/>
             <sys_ui_section caption="NULL" display_value="" name="x_376096_mplc_app" sys_domain="global" view="Default view">b23639e793378210e02873718bba10e7</sys_ui_section>
             <sys_updated_by>markus.kraus</sys_updated_by>
-            <sys_updated_on>2024-08-11 17:30:47</sys_updated_on>
+            <sys_updated_on>2024-08-24 09:35:11</sys_updated_on>
             <sys_user/>
             <type/>
         </sys_ui_element>
         <sys_ui_element action="INSERT_OR_UPDATE">
             <element>metadata</element>
-            <position>9</position>
+            <position>11</position>
             <sys_created_by>markus.kraus</sys_created_by>
-            <sys_created_on>2024-08-11 17:30:47</sys_created_on>
-            <sys_id>2f972b489340d210e02873718bba1081</sys_id>
+            <sys_created_on>2024-08-24 09:35:11</sys_created_on>
+            <sys_id>9b67bc5c939c92d0e02873718bba1038</sys_id>
             <sys_mod_count>0</sys_mod_count>
             <sys_ui_formatter/>
             <sys_ui_section caption="NULL" display_value="" name="x_376096_mplc_app" sys_domain="global" view="Default view">b23639e793378210e02873718bba10e7</sys_ui_section>
             <sys_updated_by>markus.kraus</sys_updated_by>
-            <sys_updated_on>2024-08-11 17:30:47</sys_updated_on>
+            <sys_updated_on>2024-08-24 09:35:11</sys_updated_on>
             <sys_user/>
             <type/>
         </sys_ui_element>
