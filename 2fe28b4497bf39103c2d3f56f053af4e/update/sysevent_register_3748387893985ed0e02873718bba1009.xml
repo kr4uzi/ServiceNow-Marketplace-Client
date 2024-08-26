@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sysevent_register">
+    <sysevent_register action="INSERT_OR_UPDATE">
+        <caller_access/>
+        <derived_priority>100</derived_priority>
+        <description>Used to trigger the refresh of the NOW Share (developer portal) access tokens</description>
+        <event_name>x_376096_mplc.oauth_token_refresh</event_name>
+        <fired_by>BR 'MPLC NOW Share - Refresh OAuth Tokens'</fired_by>
+        <priority>100</priority>
+        <queue/>
+        <suffix>oauth_token_refresh</suffix>
+        <sys_class_name>sysevent_register</sys_class_name>
+        <sys_created_by>markus.kraus</sys_created_by>
+        <sys_created_on>2024-08-25 23:00:11</sys_created_on>
+        <sys_id>3748387893985ed0e02873718bba1009</sys_id>
+        <sys_mod_count>3</sys_mod_count>
+        <sys_name>x_376096_mplc.oauth_token_refresh</sys_name>
+        <sys_package display_value="Marketplace Client" source="x_376096_mplc">2fe28b4497bf39103c2d3f56f053af4e</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="Marketplace Client">2fe28b4497bf39103c2d3f56f053af4e</sys_scope>
+        <sys_update_name>sysevent_register_3748387893985ed0e02873718bba1009</sys_update_name>
+        <sys_updated_by>markus.kraus</sys_updated_by>
+        <sys_updated_on>2024-08-25 23:26:58</sys_updated_on>
+        <table>api_key_credentials</table>
+    </sysevent_register>
+</record_update>

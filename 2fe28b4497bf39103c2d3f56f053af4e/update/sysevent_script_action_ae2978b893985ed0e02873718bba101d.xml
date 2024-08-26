@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update sys_domain="global" table="sysevent_script_action">
+    <sysevent_script_action action="INSERT_OR_UPDATE">
+        <active>false</active>
+        <condition_script/>
+        <description/>
+        <event_name>x_376096_mplc.oauth_token_refresh</event_name>
+        <name>MPLC NOW Share Refresh Access Token</name>
+        <order>100</order>
+        <script><![CDATA[(function (eventGr, apiKeyGr) {
+
+	/* global event, current, sn_cc, sn_ws, GlideDateTime */
+	/* eslint no-undef: "error" */
+	if (!apiKeyGr.active || !eventGr.parm1) {
+		return;
+	}
+
+	let context = JSON.parse(eventGr.parm1);
+	if (context.update != apiKeyGr.sys_mod_count) {
+		return;
+	}
+
+	const credentials = new sn_cc.StandardCredentialsProvider().getCredentialByID(apiKeyGr.sys_id);
+	const refreshToken = credentials?.getAttribute('authentication_key');
+	if (!refreshToken) {
+		return;
+	}
+
+	const msg = new sn_ws.RESTMessageV2();
+	msg.setHttpMethod('post');
+	msg.setEndpoint('https://developer.servicenow.com/oauth_token.do');
+	msg.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+	msg.setRequestHeader('Accept', 'application/json');
+	msg.setRequestBody(Object.entries({
+		grant_type: 'refresh_token',
+		client_id: 'ff97fbb4da3313004591cc3a291b47fd',
+		client_secret: '',
+		refresh_token: refreshToken
+	}).map(([key, value]) => key + '=' + encodeURIComponent(value)).join('&'));
+	const resp = msg.execute();
+	if (!resp.haveError()) {
+		try {
+			const result = JSON.parse(resp.getBody());
+			apiKeyGr.api_key = result.access_token;
+			apiKeyGr.authentication_key = result.refresh_token;
+			apiKeyGr.order = result.expires_in;
+			apiKeyGr.update();
+		} catch (e) {
+
+		}
+	}
+
+})(event, current);]]></script>
+        <synchronous>false</synchronous>
+        <sys_class_name>sysevent_script_action</sys_class_name>
+        <sys_created_by>markus.kraus</sys_created_by>
+        <sys_created_on>2024-08-25 23:00:52</sys_created_on>
+        <sys_domain>global</sys_domain>
+        <sys_domain_path>/</sys_domain_path>
+        <sys_id>ae2978b893985ed0e02873718bba101d</sys_id>
+        <sys_mod_count>7</sys_mod_count>
+        <sys_name>MPLC NOW Share Refresh Access Token</sys_name>
+        <sys_overrides/>
+        <sys_package display_value="Marketplace Client" source="x_376096_mplc">2fe28b4497bf39103c2d3f56f053af4e</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="Marketplace Client">2fe28b4497bf39103c2d3f56f053af4e</sys_scope>
+        <sys_update_name>sysevent_script_action_ae2978b893985ed0e02873718bba101d</sys_update_name>
+        <sys_updated_by>markus.kraus</sys_updated_by>
+        <sys_updated_on>2024-08-25 23:46:48</sys_updated_on>
+    </sysevent_script_action>
+</record_update>

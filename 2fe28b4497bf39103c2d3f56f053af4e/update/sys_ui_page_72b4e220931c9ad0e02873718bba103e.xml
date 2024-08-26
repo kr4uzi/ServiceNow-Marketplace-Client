@@ -1,0 +1,302 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sys_ui_page">
+    <sys_ui_page action="INSERT_OR_UPDATE">
+        <category>general</category>
+        <client_script><![CDATA[/* global document, GlideUI, FormData, URLSearchParams */
+/* eslint no-undef: "error" */
+(function () {
+	var oAuthForm = document.querySelector('form');
+	var pageForm = document.querySelector('form[id^=form]');
+
+	var iframe = oAuthForm.querySelector('iframe');
+	var codeNode = oAuthForm.querySelector('form input[name=code]');
+	codeNode.closest('div.row').style.display = 'none';
+
+
+	oAuthForm.querySelector('button[type=submit]').addEventListener('click', function (event) {
+		event.preventDefault(); // prevent submit
+		this.setAttribute('disabled', '');
+
+		oAuthForm.querySelector('input[name=state]').setAttribute('readonly', '');
+		oAuthForm.querySelector('.code-instructions').style.display = 'block';
+		codeNode.closest('div.row').style.display = 'block';
+	});
+
+	oAuthForm.querySelector('a#oauth-code-ref').addEventListener('click', function (event) {
+		this.setAttribute('disabled', '');
+		this.closest('.instructions').style.color = 'lightgrey';
+
+		var srcData = new FormData(this.closest('form'));
+		var data = new FormData();
+		data.set('response_type', 'code');
+		['code_challenge', 'client_id', 'client_secret', 'state', 'redirect_uri'].forEach(function (attr) {
+			data.set(attr, srcData.get(attr));
+		});
+
+		iframe.src = 'https://developer.servicenow.com/oauth_auth.do?' + new URLSearchParams(data);
+		
+		codeNode.removeAttribute('readonly');
+		oAuthForm.querySelector('.token-instructions').style.display = 'block';
+	});
+
+	oAuthForm.querySelector('a#oauth-token-ref').addEventListener('click', function (event) {
+		var srcData = new FormData(this.closest('form'));
+		var data = new FormData();
+		data.set('grant_type', 'authorization_code');
+		['code', 'code_verifier', 'client_id', 'client_secret', 'state', 'redirect_uri'].forEach(function (attr) {
+			data.set(attr, srcData.get(attr));
+		});
+
+		if (!data.get('code')) {
+			GlideUI.get().addOutputMessage({
+				type: 'error',
+				msg: 'Code value is mandatory'
+			});
+
+			return;
+		}
+
+		this.setAttribute('disabled', '');
+		codeNode.setAttribute('readonly', '');
+
+		iframe.src = 'about:blank';
+		var form = iframe.contentDocument.createElement('FORM');
+		form.method = 'post';
+		form.action = 'https://developer.servicenow.com/oauth_token.do';
+
+		var entries = data.entries();
+		for (var entry = entries.next(); !entry.done; entry = entries.next()) {
+			var input = iframe.contentDocument.createElement('INPUT');
+			input.name = entry.value[0];
+			input.value = entry.value[1];
+			form.append(input);
+		}
+
+		iframe.contentDocument.body.append(form);
+		iframe.style.display = 'block';
+		form.submit();
+
+		pageForm.style.display = 'block';
+	});
+})();]]></client_script>
+        <description/>
+        <direct>false</direct>
+        <endpoint>x_376096_mplc_devportal_oauth.do</endpoint>
+        <html><![CDATA[<?xml version="1.0" encoding="utf-8" ?>
+<j:jelly trim="false" xmlns:j="jelly:core" xmlns:g="glide" xmlns:j2="null" xmlns:g2="null">
+	<g:evaluate>
+		// https://www.oauth.com/oauth2-servers/pkce/authorization-code-exchange/
+		
+		// Note: getSecureRandomString is alphanumeric only!
+		// OAuth allows [A-Za-z0-9-._~]{43,128}
+		const codeVerifier = GlideSecureRandomUtil.getSecureRandomString(43);
+
+		// "base64_urlencode"
+		const codeChallenge = new GlideDigest()
+			.getSHA256Base64(codeVerifier)
+			.replace(/\+/g, '-')
+     		.replace(/\//g, '_')
+      		.replace(/=+$/, '');
+
+		const state = GlideSecureRandomUtil.getSecureRandomString(4);
+	</g:evaluate>
+	<style>
+	.instructions {
+		display: none;
+	}
+	iframe#oauth-frame {
+		display: none;
+		border: none;
+		width: 100%;
+	}
+	form[id^=form] {
+		display: none;
+	}
+	</style>
+	<h3>Welcome to the Marketplace OAuth Setup Page</h3>
+	<hr />
+	<p>Connecting this Instance to the ServiceNow Developer Portal enables the Marketplace Client to:
+		<ul>
+			<li>check for updates</li>
+			<li>scan installed packages</li>
+		</ul>
+	</p>
+	<hr />
+	<p>Before you continue, please login to the$[SP]<a target="_blank" href="https://developer.servicenow.com">Developer Portal ➚</a>.</p>
+	<p>Note: The public OAuth Client for the ServiceNow Agent (phone) app is used here.
+	Just like the phone app uses the generated to access the NOW API, the Marketplace Client can use the token to download the NOW Share Update Sets
+	</p>
+	<form>
+		<div class="row">
+			<div class="col-md-6 form-group">
+				<label for="code_verifier" class="col-xs-12 col-md-3 col-lg-4 control-label">Code Verifier</label>
+				<div class="col-xs-10 col-sm-9 col-md-6 col-lg-5 form-field input_controls">
+					<input id="code_verifier" type="text" name="code_verifier" value="${codeVerifier}" readonly="" class="form-control" />
+				</div>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-md-6 form-group">
+				<label for="code_challenge" class="col-xs-12 col-md-3 col-lg-4 control-label">Code Challenge</label>
+				<div class="col-xs-10 col-sm-9 col-md-6 col-lg-5 form-field input_controls">
+					<input id="code_challenge" type="text" name="code_challenge" value="${codeChallenge}" readonly="" class="form-control" />
+				</div>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-md-6 form-group">
+				<label for="client_id" class="col-xs-12 col-md-3 col-lg-4 control-label">Client ID</label>
+				<div class="col-xs-10 col-sm-9 col-md-6 col-lg-5 form-field input_controls">
+					<input id="client_id" type="text" name="client_id" value="ff97fbb4da3313004591cc3a291b47fd" readonly="" class="form-control" />
+				</div>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-md-6 form-group">
+				<label for="client_secret" class="col-xs-12 col-md-3 col-lg-4 control-label">Client Secret</label>
+				<div class="col-xs-10 col-sm-9 col-md-6 col-lg-5 form-field input_controls">
+					<input id="client_secret" type="text" name="client_secret" value="" readonly="" class="form-control" />
+				</div>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-md-6 form-group">
+				<label for="state" class="col-xs-12 col-md-3 col-lg-4 control-label">State</label>
+				<div class="col-xs-10 col-sm-9 col-md-6 col-lg-5 form-field input_controls">
+					<input id="state" type="text" name="state" value="${state}" class="form-control" />
+				</div>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-md-6 form-group">
+				<label for="redirect_uri" class="col-xs-12 col-md-3 col-lg-4 control-label">Redirect URL</label>
+				<div class="col-xs-10 col-sm-9 col-md-6 col-lg-5 form-field input_controls">
+					<input id="redirect_uri" type="text" name="redirect_uri" value="snappauth://" readonly="" class="form-control" />
+				</div>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-md-6 form-group">
+				<button type="submit" class="pull-right">Start</button>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-md-6 form-group">
+				<div class="instructions code-instructions">
+					<ol>
+						<li>Open the browser$[SP]<b>console</b>$[SP]</li>
+						<li>Click$[SP]<a href="javascript:void(0)" id="oauth-code-ref">here</a>$[SP]to request the oauth</li>
+						<li>In the browser$[SP]<b>console</b>$[SP]open the$[SP]<b>[Network]</b>$[SP]tab and select the last (failed) request</li>
+						<li>Find the OAuth$[SP]<b>Code</b>$[SP]in the$[SP]<b>[Payload]</b>$[SP]section and copy the value into the field above</li>
+					</ol>
+					<hr />
+						<p>Note: You need to be already logged into the$[SP]<a target="_blank" href="https://developer.servicenow.com">developer portal ➚</a>.</p>
+						<p>This is because the oauth redirect doesn't work for the developer portal due to the way it has been set up.</p>
+					<hr/>
+				</div>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-md-6 form-group">
+				<label for="code" class="col-xs-12 col-md-3 col-lg-4 control-label">Code</label>
+				<div class="col-xs-10 col-sm-9 col-md-6 col-lg-5 form-field input_controls">
+					<input id="code" type="text" name="code" value="" class="form-control" readonly="" />
+				</div>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-md-6 form-group">
+				<div class="instructions token-instructions">
+					<ol>
+						<li>Click$[SP]<a href="javascript:void(0)" id="oauth-token-ref">here</a>$[SP]to request the access token</li>
+						<li>The access token should be visible in frame below</li>
+					</ol>
+				</div>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-md-6 form-group">
+				<iframe id="oauth-frame" />
+			</div>
+		</div>
+	</form>
+	<g:ui_form>
+		<textarea name="oauth_data" rows="7" cols="100" />
+		<button type="submit">Save OAuth Token</button>
+	</g:ui_form>
+</j:jelly>]]></html>
+        <name>devportal_oauth</name>
+        <processing_script><![CDATA[/* global gs, x_376096_mplc */
+/* global request, response */
+/* global GlideRecordSecure */
+/* eslint no-undef: "error" */
+(function (request, response) {
+	// request [GlideServletRequest]
+	// https://developer.servicenow.com/dev.do#!/reference/api/latest/server/no-namespace/c_GlideServletRequestScopedAPI
+	
+	// response [GlideServletResponse]
+	// https://developer.servicenow.com/dev.do#!/reference/api/latest/server/no-namespace/c_GlideServletResponseScopedAPI
+	
+	// this
+	// [represents the values from the <g:ui_form>]
+	
+	const oAuthSchemaMessage = 'JSON input of type { access_token: string, refresh_token: string, expires_in: number, token_type: "Bearer" } expected';
+	try {
+		const oauthData = JSON.parse(this.oauth_data);
+		if (!oauthData.access_token || !oauthData.refresh_token || !oauthData.expires_in || oauthData.token_type != 'Bearer') {
+			throw new Error();
+		}
+
+		const shareAlias = new x_376096_mplc.MPLCUtil().CONN_ALIAS.NOW_SHARE;
+		const tokenName = `NOW Share (${gs.getUser().getName()})`;
+		const credGr = new GlideRecordSecure('api_key_credentials');
+		credGr.addQuery('name', tokenName);
+		credGr.addQuery('tag', 'CONTAINS', shareAlias);
+		credGr.orderByDesc('active'); // prefer active token if one exists
+		credGr.setLimit(1);
+		credGr.query();
+		if (credGr.next()) {
+			credGr.active = true;
+		} else {
+			credGr.newRecord();
+			credGr.name = tokenName;
+			credGr.tag = shareAlias;
+		}
+
+		credGr.api_key = oauthData.access_token;
+		credGr.authentication_key = oauthData.refresh_token;
+		credGr.order = oauthData.expires_in;
+		
+		let success = false;
+		if (credGr.isNewRecord()) {
+			success = credGr.insert() != null;
+		} else {
+			success = credGr.update() != null;
+		}
+
+		if (success) {
+			gs.addInfoMessage(gs.getMessage('OAuth Token saved'));
+			response.sendRedirect('sysauto_script.do?sys_id=75d62fcc9300d210e02873718bba1014');
+		} else {
+			gs.addErrorMessage('Failed to insert/update OAuth Token');
+			response.sendRedirect('x_376096_mplc_devportal_oauth.do');
+		}
+	} catch (e) {
+		gs.addErrorMessage(oAuthSchemaMessage);
+		response.sendRedirect('x_376096_mplc_devportal_oauth.do');
+	}
+
+}).call(this, request, response);]]></processing_script>
+        <sys_class_name>sys_ui_page</sys_class_name>
+        <sys_created_by>markus.kraus</sys_created_by>
+        <sys_created_on>2024-08-25 12:20:17</sys_created_on>
+        <sys_id>72b4e220931c9ad0e02873718bba103e</sys_id>
+        <sys_mod_count>59</sys_mod_count>
+        <sys_name>devportal_oauth</sys_name>
+        <sys_package display_value="Marketplace Client" source="x_376096_mplc">2fe28b4497bf39103c2d3f56f053af4e</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="Marketplace Client">2fe28b4497bf39103c2d3f56f053af4e</sys_scope>
+        <sys_update_name>sys_ui_page_72b4e220931c9ad0e02873718bba103e</sys_update_name>
+        <sys_updated_by>markus.kraus</sys_updated_by>
+        <sys_updated_on>2024-08-26 00:28:00</sys_updated_on>
+    </sys_ui_page>
+</record_update>

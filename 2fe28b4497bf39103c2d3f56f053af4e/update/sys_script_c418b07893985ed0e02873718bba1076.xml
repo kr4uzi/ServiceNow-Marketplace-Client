@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update sys_domain="global" table="sys_script">
+    <sys_script action="INSERT_OR_UPDATE">
+        <abort_action>false</abort_action>
+        <access>package_private</access>
+        <action_delete>false</action_delete>
+        <action_insert>true</action_insert>
+        <action_query>false</action_query>
+        <action_update>true</action_update>
+        <active>true</active>
+        <add_message>false</add_message>
+        <advanced>true</advanced>
+        <change_fields>false</change_fields>
+        <client_callable>false</client_callable>
+        <collection>api_key_credentials</collection>
+        <condition/>
+        <description/>
+        <execute_function>false</execute_function>
+        <filter_condition table="api_key_credentials">orderISNOTEMPTY^order!=100^authentication_keyANYTHING^active=true^tagLIKE1dcce07f93ff4610e02873718bba10e8^EQ<item endquery="false" field="order" goto="false" newquery="false" operator="ISNOTEMPTY" or="false" value=""/>
+            <item endquery="false" field="order" goto="false" newquery="false" operator="!=" or="false" value="100"/>
+            <item endquery="false" field="authentication_key" goto="false" newquery="false" operator="ANYTHING" or="false" value=""/>
+            <item endquery="false" field="active" goto="false" newquery="false" operator="=" or="false" value="true"/>
+            <item endquery="false" field="tag" goto="false" newquery="false" operator="LIKE" or="false" value="1dcce07f93ff4610e02873718bba10e8"/>
+            <item endquery="true" field="" goto="false" newquery="false" operator="=" or="false" value=""/>
+        </filter_condition>
+        <is_rest>false</is_rest>
+        <message/>
+        <name>MPLC NOW Share - Refresh OAuth Tokens</name>
+        <order>100</order>
+        <priority>100</priority>
+        <rest_method/>
+        <rest_method_text/>
+        <rest_service/>
+        <rest_service_text/>
+        <rest_variables/>
+        <role_conditions/>
+        <script><![CDATA[(function executeRule(current, previous /*null when async*/) {
+
+	// This Business Rule is either triggered by manually setting:
+	// - the refresh token (via Authentication Key = authentication_key)
+	// - the lifespan (via Order = order)
+	// - the access token itself (API Key = api_key)
+
+	const refreshDate = new GlideDateTime();
+	refreshDate.addSeconds(+current.order);
+	refreshDate.addSeconds(-5 * 60);
+
+	// Only the last update should cause a token refresh
+	gs.eventQueueScheduled('x_376096_mplc.oauth_token_refresh', current, JSON.stringify({
+		update: current.sys_mod_count.toString()
+	}), '', refreshDate);
+
+})(current, previous);]]></script>
+        <sys_class_name>sys_script</sys_class_name>
+        <sys_created_by>markus.kraus</sys_created_by>
+        <sys_created_on>2024-08-25 23:03:17</sys_created_on>
+        <sys_domain>global</sys_domain>
+        <sys_domain_path>/</sys_domain_path>
+        <sys_id>c418b07893985ed0e02873718bba1076</sys_id>
+        <sys_mod_count>4</sys_mod_count>
+        <sys_name>MPLC NOW Share - Refresh OAuth Tokens</sys_name>
+        <sys_overrides/>
+        <sys_package display_value="Marketplace Client" source="x_376096_mplc">2fe28b4497bf39103c2d3f56f053af4e</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="Marketplace Client">2fe28b4497bf39103c2d3f56f053af4e</sys_scope>
+        <sys_update_name>sys_script_c418b07893985ed0e02873718bba1076</sys_update_name>
+        <sys_updated_by>markus.kraus</sys_updated_by>
+        <sys_updated_on>2024-08-25 23:34:58</sys_updated_on>
+        <template/>
+        <when>after</when>
+    </sys_script>
+    <sys_translated_text action="delete_multiple" query="documentkey=c418b07893985ed0e02873718bba1076"/>
+</record_update>
