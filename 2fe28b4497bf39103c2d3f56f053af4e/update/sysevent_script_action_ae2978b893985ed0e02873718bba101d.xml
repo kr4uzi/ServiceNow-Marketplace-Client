@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?><record_update sys_domain="global" table="sysevent_script_action">
     <sysevent_script_action action="INSERT_OR_UPDATE">
-        <active>false</active>
+        <active>true</active>
         <condition_script/>
         <description/>
         <event_name>x_376096_mplc.oauth_token_refresh</event_name>
@@ -10,7 +10,7 @@
 
 	/* global event, current, sn_cc, sn_ws, GlideDateTime */
 	/* eslint no-undef: "error" */
-	if (!apiKeyGr.active || !eventGr.parm1) {
+	if (!apiKeyGr.isValidRecord() || !apiKeyGr.active || !eventGr.parm1) {
 		return;
 	}
 
@@ -36,18 +36,22 @@
 		client_secret: '',
 		refresh_token: refreshToken
 	}).map(([key, value]) => key + '=' + encodeURIComponent(value)).join('&'));
+	
 	const resp = msg.execute();
-	if (!resp.haveError()) {
+	if (resp.haveError()) {
+		apiKeyGr.active = false;
+	} else {
 		try {
 			const result = JSON.parse(resp.getBody());
 			apiKeyGr.api_key = result.access_token;
 			apiKeyGr.authentication_key = result.refresh_token;
 			apiKeyGr.order = result.expires_in;
-			apiKeyGr.update();
 		} catch (e) {
-
+			apiKeyGr.active = false;
 		}
 	}
+
+	apiKeyGr.update();
 
 })(event, current);]]></script>
         <synchronous>false</synchronous>
@@ -57,7 +61,7 @@
         <sys_domain>global</sys_domain>
         <sys_domain_path>/</sys_domain_path>
         <sys_id>ae2978b893985ed0e02873718bba101d</sys_id>
-        <sys_mod_count>7</sys_mod_count>
+        <sys_mod_count>10</sys_mod_count>
         <sys_name>MPLC NOW Share Refresh Access Token</sys_name>
         <sys_overrides/>
         <sys_package display_value="Marketplace Client" source="x_376096_mplc">2fe28b4497bf39103c2d3f56f053af4e</sys_package>
@@ -65,6 +69,6 @@
         <sys_scope display_value="Marketplace Client">2fe28b4497bf39103c2d3f56f053af4e</sys_scope>
         <sys_update_name>sysevent_script_action_ae2978b893985ed0e02873718bba101d</sys_update_name>
         <sys_updated_by>markus.kraus</sys_updated_by>
-        <sys_updated_on>2024-08-25 23:46:48</sys_updated_on>
+        <sys_updated_on>2024-08-27 19:43:33</sys_updated_on>
     </sysevent_script_action>
 </record_update>

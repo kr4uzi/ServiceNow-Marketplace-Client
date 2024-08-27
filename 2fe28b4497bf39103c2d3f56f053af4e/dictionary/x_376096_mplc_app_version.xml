@@ -2,6 +2,7 @@
     <element db_object_id="c93d1c58935492d0e02873718bba10c8" label="App Version" max_length="40" name="x_376096_mplc_app_version" type="collection">
         <element attributes="readonly_clickthrough=true" label="App" max_length="32" name="app" reference="x_376096_mplc_app" type="reference"/>
         <element display="true" label="Version" max_length="40" name="version" type="string"/>
+        <element label="Hash" max_length="64" name="hash" type="string"/>
         <element label="Description" max_length="8000" name="description" type="html"/>
         <element attributes="readonly_clickthrough=true" label="Update Set" max_length="32" name="update_set" reference="sys_update_set" type="reference"/>
         <element label="Metadata" max_length="4000" name="metadata" type="simple_name_values"/>

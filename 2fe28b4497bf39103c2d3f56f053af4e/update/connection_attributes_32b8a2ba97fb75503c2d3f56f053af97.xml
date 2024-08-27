@@ -38,7 +38,7 @@
         <label>Target</label>
         <mandatory>false</mandatory>
         <max_length>32</max_length>
-        <model display_value="x_376096_mplc.GitHub">ce0f535697fbf1503c2d3f56f053afee</model>
+        <model display_value="x_376096_mplc.GitHub_Marketplace">ce0f535697fbf1503c2d3f56f053afee</model>
         <model_id>ce0f535697fbf1503c2d3f56f053afee</model_id>
         <model_table/>
         <name>var__m_connection_attributes_ce0f535697fbf1503c2d3f56f053afee</name>
@@ -52,7 +52,7 @@
         <reference_floats>false</reference_floats>
         <reference_key/>
         <reference_qual>parent=ce0f535697fbf1503c2d3f56f053afee^EQ</reference_qual>
-        <reference_qual_condition table="sys_alias">parent=ce0f535697fbf1503c2d3f56f053afee^EQ<item display_table="sys_alias" display_value="x_376096_mplc.GitHub" endquery="false" field="parent" goto="false" newquery="false" operator="=" or="false" value="ce0f535697fbf1503c2d3f56f053afee"/>
+        <reference_qual_condition table="sys_alias">parent=ce0f535697fbf1503c2d3f56f053afee^EQ<item display_table="sys_alias" display_value="x_376096_mplc.GitHub_Marketplace" endquery="false" field="parent" goto="false" newquery="false" operator="=" or="false" value="ce0f535697fbf1503c2d3f56f053afee"/>
             <item endquery="true" field="" goto="false" newquery="false" operator="=" or="false" value=""/>
         </reference_qual_condition>
         <reference_type/>

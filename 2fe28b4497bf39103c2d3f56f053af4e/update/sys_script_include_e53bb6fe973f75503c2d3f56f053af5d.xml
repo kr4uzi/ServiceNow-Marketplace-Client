@@ -7,15 +7,83 @@
         <client_callable>false</client_callable>
         <description/>
         <name>MPLCUtil</name>
-        <script><![CDATA[/* global Class, GlideRecord, sn_cc, sn_ws, gs, x_376096_mplc, GlideStringUtil, XMLDocument2, GlideScriptedHierarchicalWorker, GlideScopedEvaluator */
+        <script><![CDATA[/* global Class, sn_cc, sn_ws, gs, x_376096_mplc, GlideStringUtil, XMLDocument2, GlideScriptedHierarchicalWorker, GlideScopedEvaluator */
+/* global GlideRecord, GlideRecordSecure */
 /* eslint no-undef: "error" */
 var MPLCUtil = Class.create();
 MPLCUtil.prototype = {
 	initialize: function () {
 		this.CONN_ALIAS = {
 			NOW_SHARE: '1dcce07f93ff4610e02873718bba10e8', // x_376096_mplc.NOW_Share
+			NOW_STORE: '9672909193d0d614e02873718bba10ae', // x_376096_mplc.NOW_Store
 			GIT: 'ce0f535697fbf1503c2d3f56f053afee' // x_376096_mplc.GitHub_Marketplace
 		};
+	},
+
+	/**
+	 * @param {x_376096_mplc_app & GlideRecordGenerated} appGr
+	 * @returns {{status: ("error"|"success"), messages: Array.<string>}}
+	 */
+	syncApp: function (appGr) {
+		const errorMessages = [];
+		if (appGr.canRead()) {
+			const importUtil = new x_376096_mplc.MPLCImport();
+			const sourceID = appGr.source_id.toString();
+			if (sourceID) {
+				if (appGr.source == this.CONN_ALIAS.NOW_SHARE) {
+					const conn = importUtil.initNOWShareConn();
+					return importUtil.importNOWShareApp(conn, sourceID);
+				} else if (appGr.source == this.CONN_ALIAS.NOW_STORE) {
+					const conn = importUtil.initNOWStoreConn();
+					const logoPath = 'keep';
+					return importUtil.importNOWStoreApp(conn, logoPath, sourceID);
+				} else {
+					errorMessages.push('Sync only implemented for Share and Store apps');
+				}	
+			} else {
+				errorMessages.push('Source ID is missing');
+			}		
+		} else {
+			errorMessages.push('Insufficient privileges');
+		}
+		
+		return {
+			status: 'error',
+			messages: errorMessages
+		};
+	},
+
+	/**
+	 * @param {x_376096_mplc_app & GlideRecordGenerated} appGr
+	 * @returns {boolean}
+	 */
+	canSync: function (appGr) {
+		if (appGr.canRead() && (appGr.source == this.CONN_ALIAS.NOW_SHARE || appGr.source == this.CONN_ALIAS.NOW_STORE)) {
+			return true;
+		}
+
+		return false;
+	},
+
+	/**
+	 * @param {x_376096_mplc_app_version & GlideRecordGenerated} appVerGr
+	 * @returns {boolean}
+	 */
+	canImport: function (appVerGr) {
+		if (appVerGr.canRead() && appVerGr.app.source == this.CONN_ALIAS.NOW_SHARE && !appVerGr.update_set) {
+			const attGr = new GlideRecordSecure('sys_attachment');
+			attGr.addQuery('content_type', 'application/xml');
+			attGr.addQuery('table_name', appVerGr.getTableName());
+			attGr.addQuery('table_sys_id', appVerGr.getUniqueValue());
+			attGr.setLimit(2);
+			attGr.query();
+			if (attGr.next()) {
+				// installation is only possible if there is exactly one update set!
+				return !attGr.hasNext();
+			}
+		}
+
+		return false;
 	},
 
 	getGitRepos: function (aliasSysID) {
@@ -331,6 +399,7 @@ MPLCUtil.prototype = {
 					status = 'ok';
 					statusMessage = 'Source properly configured';
 				} else {
+					status = 'incomplete';
 					statusMessage = 'No target or no target connection configured!';
 				}
 
@@ -420,13 +489,13 @@ MPLCUtil.prototype = {
         <sys_created_by>markus.kraus</sys_created_by>
         <sys_created_on>2024-01-21 20:59:27</sys_created_on>
         <sys_id>e53bb6fe973f75503c2d3f56f053af5d</sys_id>
-        <sys_mod_count>138</sys_mod_count>
+        <sys_mod_count>151</sys_mod_count>
         <sys_name>MPLCUtil</sys_name>
         <sys_package display_value="Marketplace Client" source="x_376096_mplc">2fe28b4497bf39103c2d3f56f053af4e</sys_package>
         <sys_policy/>
         <sys_scope display_value="Marketplace Client">2fe28b4497bf39103c2d3f56f053af4e</sys_scope>
         <sys_update_name>sys_script_include_e53bb6fe973f75503c2d3f56f053af5d</sys_update_name>
         <sys_updated_by>markus.kraus</sys_updated_by>
-        <sys_updated_on>2024-08-24 10:20:15</sys_updated_on>
+        <sys_updated_on>2024-08-27 22:15:58</sys_updated_on>
     </sys_script_include>
 </record_update>

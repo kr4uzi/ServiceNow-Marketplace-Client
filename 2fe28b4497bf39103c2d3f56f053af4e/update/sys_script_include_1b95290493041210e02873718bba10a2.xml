@@ -5,529 +5,7 @@
         <api_name>x_376096_mplc.MPLCImport</api_name>
         <caller_access/>
         <client_callable>false</client_callable>
-        <description>const pageSchema = {&#13;
-			"result": {&#13;
-				"data": {&#13;
-					"pagination": {&#13;
-						"page": 1&#13;
-					},&#13;
-					"projects": [&#13;
-						{&#13;
-							"author": "First Last",&#13;
-							"category": "Integrations",&#13;
-							"categoryURL": "/connect.do#!/share/contents?category=Integrations",&#13;
-							"created_on": "Aug 09, 2024",&#13;
-							"description": "Testing Project",&#13;
-							"downloads": 2,&#13;
-							"overall_rating": 0,&#13;
-							"owner_last_updated_on": "2024-08-09 12:34:50",&#13;
-							"product": "IT Service Management",&#13;
-							"thumbnailImageURL": "",&#13;
-							"title": "API Testing",&#13;
-							"total_ratings": "0",&#13;
-							"url": "/connect.do#!/share/contents/123456_api_testing?v=1&amp;t=PRODUCT_DETAILS"&#13;
-						}&#13;
-					]&#13;
-				},&#13;
-				"message": "successfully retrieved projects",&#13;
-				"status": "success"&#13;
-			}&#13;
-		};&#13;
-&#13;
-		const detailSchema = {&#13;
-			"result": {&#13;
-				"data": {&#13;
-					"discussions": {&#13;
-						"all_versions": {&#13;
-							"comments_count": 5,&#13;
-							"is_last_minus_one_page": true,&#13;
-							"last_page": true,&#13;
-							"no_discussion": "This version of the project currently does not have any discussions. Try selecting another version or \"view all versions\"",&#13;
-							"page": 1,&#13;
-							"posts": [&#13;
-								{&#13;
-									"content": "Hello,\nI really like your Barcode App, but at the moment I am not able to download it via NowShare. \nCan you send it to me or update the xml at Share or GitHub?\nThanks a lot!",&#13;
-									"created_by": "Nils Stukenbrok",&#13;
-									"notify_me": false,&#13;
-									"post_id": "DSP000002435",&#13;
-									"replies": [&#13;
-										{&#13;
-											"content": "This app is now available in ServiceNow Store. You should be able to download it from there.\n\nhttps://store.servicenow.com/sn_appstore_store.do#!/store/application/024cfef4db86a4100ced64b813961994/1.0.2?sl=sh",&#13;
-											"created_by": "Probir Das",&#13;
-											"notify_me": false,&#13;
-											"post_id": "DSC000001166",&#13;
-											"replies": [],&#13;
-											"reply_to": "DSP000002435",&#13;
-											"reply_to_user": "Nils Stukenbrok",&#13;
-											"reply_to_when": "2022-10-28 07:18:27",&#13;
-											"reset_indentation": false,&#13;
-											"submit_post": {&#13;
-												"content": "",&#13;
-												"notify": false&#13;
-											},&#13;
-											"version": "1.0",&#13;
-											"when": "2022-10-31 15:50:44"&#13;
-										}&#13;
-									],&#13;
-									"reply_to": null,&#13;
-									"reply_to_user": null,&#13;
-									"reset_indentation": false,&#13;
-									"submit_post": {&#13;
-										"content": "",&#13;
-										"notify": false&#13;
-									},&#13;
-									"version": "1.0",&#13;
-									"when": "2022-10-28 07:18:27"&#13;
-								},&#13;
-								{&#13;
-									"content": "Amazing APP",&#13;
-									"created_by": "Sam kumar",&#13;
-									"notify_me": false,&#13;
-									"post_id": "DSP000002323",&#13;
-									"replies": [],&#13;
-									"reply_to": null,&#13;
-									"reply_to_user": null,&#13;
-									"reset_indentation": false,&#13;
-									"submit_post": {&#13;
-										"content": "",&#13;
-										"notify": false&#13;
-									},&#13;
-									"version": "1.0",&#13;
-									"when": "2022-05-22 08:04:12"&#13;
-								},&#13;
-								{&#13;
-									"content": "It's a fantastic app! Just a question, how can I add/change items? For instance, I need a new conference room with a name provided by the customer. if I want to add a new conference room what should I do?",&#13;
-									"created_by": "Gianmario Marongiu",&#13;
-									"notify_me": false,&#13;
-									"post_id": "DSP000001985",&#13;
-									"replies": [],&#13;
-									"reply_to": null,&#13;
-									"reply_to_user": null,&#13;
-									"reset_indentation": false,&#13;
-									"submit_post": {&#13;
-										"content": "",&#13;
-										"notify": false&#13;
-									},&#13;
-									"version": "1.0",&#13;
-									"when": "2021-07-12 14:54:40"&#13;
-								},&#13;
-								{&#13;
-									"content": "This looks great. We've been looking for a companion app to Yansa Labs' Barcode/QR Code Generator app on the Store, and this might be the best solution out. Thanks for doing this!",&#13;
-									"created_by": "Ben Hollifield",&#13;
-									"notify_me": false,&#13;
-									"post_id": "DSP000001266",&#13;
-									"replies": [],&#13;
-									"reply_to": null,&#13;
-									"reply_to_user": null,&#13;
-									"reset_indentation": false,&#13;
-									"submit_post": {&#13;
-										"content": "",&#13;
-										"notify": false&#13;
-									},&#13;
-									"version": "1.0",&#13;
-									"when": "2020-05-28 14:27:55"&#13;
-								}&#13;
-							]&#13;
-						},&#13;
-						"discussion_content_length": 10000,&#13;
-						"is_post_id_valid": false,&#13;
-						"not_logged_in": false,&#13;
-						"post_disabled_msg": "&lt;span class=\"log-in-link\"  data-ng-click=\"goToSignIn()\"&gt;please log in to participate in this discussion&lt;/span&gt;",&#13;
-						"post_focus_msg": "&lt;p&gt;&lt;span&gt;You are starting a discussion thread on version &lt;/span&gt;\n\t&lt;span data-ng-bind=\"shareDetailsVM.currentVersionValue\"&gt;&lt;/span&gt;\n\t&lt;span&gt; of this project. If you wish to start the thread on a different version, use the version selector above.&lt;/span&gt;\n&lt;/p&gt;",&#13;
-						"post_id_invalid_msg": "&lt;p&gt;Whoops! Looks like the discussion post id in the url is invalid.&lt;/p&gt;",&#13;
-						"v1_0": {&#13;
-							"comments_count": 5,&#13;
-							"is_last_minus_one_page": true,&#13;
-							"last_page": true,&#13;
-							"no_discussion": "This version of the project currently does not have any discussions. Try selecting another version or \"view all versions\"",&#13;
-							"page": 1,&#13;
-							"posts": [&#13;
-								{&#13;
-									"content": "Hello,\nI really like your Barcode App, but at the moment I am not able to download it via NowShare. \nCan you send it to me or update the xml at Share or GitHub?\nThanks a lot!",&#13;
-									"created_by": "Nils Stukenbrok",&#13;
-									"notify_me": false,&#13;
-									"post_id": "DSP000002435",&#13;
-									"replies": [&#13;
-										{&#13;
-											"content": "This app is now available in ServiceNow Store. You should be able to download it from there.\n\nx",&#13;
-											"created_by": "Probir Das",&#13;
-											"notify_me": false,&#13;
-											"post_id": "DSC000001166",&#13;
-											"replies": [],&#13;
-											"reply_to": "DSP000002435",&#13;
-											"reply_to_user": "Nils Stukenbrok",&#13;
-											"reply_to_when": "2022-10-28 07:18:27",&#13;
-											"reset_indentation": false,&#13;
-											"submit_post": {&#13;
-												"content": "",&#13;
-												"notify": false&#13;
-											},&#13;
-											"version": "1.0",&#13;
-											"when": "2022-10-31 15:50:44"&#13;
-										}&#13;
-									],&#13;
-									"reply_to": null,&#13;
-									"reply_to_user": null,&#13;
-									"reset_indentation": false,&#13;
-									"submit_post": {&#13;
-										"content": "",&#13;
-										"notify": false&#13;
-									},&#13;
-									"version": "1.0",&#13;
-									"when": "2022-10-28 07:18:27"&#13;
-								},&#13;
-								{&#13;
-									"content": "Amazing APP",&#13;
-									"created_by": "Sam kumar",&#13;
-									"notify_me": false,&#13;
-									"post_id": "DSP000002323",&#13;
-									"replies": [],&#13;
-									"reply_to": null,&#13;
-									"reply_to_user": null,&#13;
-									"reset_indentation": false,&#13;
-									"submit_post": {&#13;
-										"content": "",&#13;
-										"notify": false&#13;
-									},&#13;
-									"version": "1.0",&#13;
-									"when": "2022-05-22 08:04:12"&#13;
-								},&#13;
-								{&#13;
-									"content": "It's a fantastic app! Just a question, how can I add/change items? For instance, I need a new conference room with a name provided by the customer. if I want to add a new conference room what should I do?",&#13;
-									"created_by": "Gianmario Marongiu",&#13;
-									"notify_me": false,&#13;
-									"post_id": "DSP000001985",&#13;
-									"replies": [],&#13;
-									"reply_to": null,&#13;
-									"reply_to_user": null,&#13;
-									"reset_indentation": false,&#13;
-									"submit_post": {&#13;
-										"content": "",&#13;
-										"notify": false&#13;
-									},&#13;
-									"version": "1.0",&#13;
-									"when": "2021-07-12 14:54:40"&#13;
-								},&#13;
-								{&#13;
-									"content": "This looks great. We've been looking for a companion app to Yansa Labs' Barcode/QR Code Generator app on the Store, and this might be the best solution out. Thanks for doing this!",&#13;
-									"created_by": "Ben Hollifield",&#13;
-									"notify_me": false,&#13;
-									"post_id": "DSP000001266",&#13;
-									"replies": [],&#13;
-									"reply_to": null,&#13;
-									"reply_to_user": null,&#13;
-									"reset_indentation": false,&#13;
-									"submit_post": {&#13;
-										"content": "",&#13;
-										"notify": false&#13;
-									},&#13;
-									"version": "1.0",&#13;
-									"when": "2020-05-28 14:27:55"&#13;
-								}&#13;
-							]&#13;
-						}&#13;
-					},&#13;
-					"product_details": {&#13;
-						"all_app_files": [&#13;
-							{&#13;
-								"name": "yTW_hYU2X_w",&#13;
-								"share_product_gallery_sys_id": "0042d5ad1b0d9c10cd0e62c4bd4bcb6d",&#13;
-								"thumbnail_url": "https://i.ytimg.com/vi/yTW_hYU2X_w/hqdefault.jpg",&#13;
-								"type": "video",&#13;
-								"url": "https://youtu.be/yTW_hYU2X_w",&#13;
-								"versions": [&#13;
-									"1.0"&#13;
-								]&#13;
-							},&#13;
-							{&#13;
-								"name": "IMG_1051.PNG",&#13;
-								"share_product_gallery_sys_id": "0d01196d1b0d9c10cd0e62c4bd4bcbf3",&#13;
-								"sys_id": "0501d56d1b0d9c10cd0e62c4bd4bcb8a",&#13;
-								"type": "image",&#13;
-								"url": "7815211_qr_scan_IMG_1051.PNG",&#13;
-								"versions": [&#13;
-									"1.0"&#13;
-								]&#13;
-							},&#13;
-							{&#13;
-								"name": "IMG_1052.PNG",&#13;
-								"share_product_gallery_sys_id": "48111d6d1b0d9c10cd0e62c4bd4bcb9a",&#13;
-								"sys_id": "1c11996d1b0d9c10cd0e62c4bd4bcba1",&#13;
-								"type": "image",&#13;
-								"url": "7815211_qr_scan_IMG_1052.PNG",&#13;
-								"versions": [&#13;
-									"1.0"&#13;
-								]&#13;
-							},&#13;
-							{&#13;
-								"name": "IMG_1053.PNG",&#13;
-								"share_product_gallery_sys_id": "5021996d1b0d9c10cd0e62c4bd4bcba5",&#13;
-								"sys_id": "d821596d1b0d9c10cd0e62c4bd4bcbc2",&#13;
-								"type": "image",&#13;
-								"url": "7815211_qr_scan_1_IMG_1053.PNG",&#13;
-								"versions": [&#13;
-									"1.0"&#13;
-								]&#13;
-							}&#13;
-						],&#13;
-						"documents_files_specs": {&#13;
-							"accept": [&#13;
-								"text/xml",&#13;
-								"application/vnd.openxmlformats-officedocument.wordprocessingml.document",&#13;
-								"application/msword",&#13;
-								"application/pdf"&#13;
-							],&#13;
-							"file_name_length": 100,&#13;
-							"file_name_length_error": "File must not exceed 50MB. File names must not exceed 100 characters and must be one of the following file types: .pdf,.docx,.doc,.xml,.json",&#13;
-							"max_files": 10,&#13;
-							"max_size": "50MB",&#13;
-							"pattern": ".pdf,.docx,.doc,.xml,.json"&#13;
-						},&#13;
-						"product_gallery_files_specs": {&#13;
-							"accept": [&#13;
-								"image/*"&#13;
-							],&#13;
-							"max_files": 10,&#13;
-							"max_size": "10MB",&#13;
-							"pattern": ".jpg,.png,.jpeg,.bmp,.gif"&#13;
-						},&#13;
-						"v1_0": {&#13;
-							"app_files_info": {&#13;
-								"compatibility": "New York, Orlando",&#13;
-								"files": [&#13;
-									{&#13;
-										"name": "yTW_hYU2X_w",&#13;
-										"share_product_gallery_sys_id": "0042d5ad1b0d9c10cd0e62c4bd4bcb6d",&#13;
-										"thumbnail_url": "https://i.ytimg.com/vi/yTW_hYU2X_w/hqdefault.jpg",&#13;
-										"type": "video",&#13;
-										"url": "https://youtu.be/yTW_hYU2X_w"&#13;
-									},&#13;
-									{&#13;
-										"name": "IMG_1051.PNG",&#13;
-										"share_product_gallery_sys_id": "0d01196d1b0d9c10cd0e62c4bd4bcbf3",&#13;
-										"type": "image",&#13;
-										"url": "7815211_qr_scan_IMG_1051.PNG"&#13;
-									},&#13;
-									{&#13;
-										"name": "IMG_1052.PNG",&#13;
-										"share_product_gallery_sys_id": "48111d6d1b0d9c10cd0e62c4bd4bcb9a",&#13;
-										"type": "image",&#13;
-										"url": "7815211_qr_scan_IMG_1052.PNG"&#13;
-									},&#13;
-									{&#13;
-										"name": "IMG_1053.PNG",&#13;
-										"share_product_gallery_sys_id": "5021996d1b0d9c10cd0e62c4bd4bcba5",&#13;
-										"type": "image",&#13;
-										"url": "7815211_qr_scan_1_IMG_1053.PNG"&#13;
-									}&#13;
-								],&#13;
-								"total_downloads": "96"&#13;
-							},&#13;
-							"documents": [&#13;
-								{&#13;
-									"artifact_sys_id": "ca153e65db859090a732a345ca961954",&#13;
-									"download_link": "sys_attachment.do?sys_id=1e15fe65db859090a732a345ca961995",&#13;
-									"name": "Employee Experience Pack - QR Scan - Documentation.pdf",&#13;
-									"size": "2.27 MB",&#13;
-									"status": "updateset_upload_validation_complete",&#13;
-									"sys_id": "1e15fe65db859090a732a345ca961995",&#13;
-									"type": "DOWNLOADABLE_DOCUMENT"&#13;
-								},&#13;
-								{&#13;
-									"artifact_sys_id": "1fa0556d1b0d9c10cd0e62c4bd4bcb31",&#13;
-									"download_link": "sys_attachment.do?sys_id=57a0956d1b0d9c10cd0e62c4bd4bcb8a",&#13;
-									"name": "Employee Experience Pack - Example Data - QR Codes.pdf",&#13;
-									"size": "160 KB",&#13;
-									"status": "updateset_upload_validation_complete",&#13;
-									"sys_id": "57a0956d1b0d9c10cd0e62c4bd4bcb8a",&#13;
-									"type": "DOWNLOADABLE_DOCUMENT"&#13;
-								},&#13;
-								{&#13;
-									"artifact_sys_id": "e9a0156d1b0d9c10cd0e62c4bd4bcb87",&#13;
-									"download_link": "sys_attachment.do?sys_id=b5a0916d1b0d9c10cd0e62c4bd4bcb8b",&#13;
-									"name": "Employee Experience Pack - Example Data - Scan Actions.xml",&#13;
-									"size": "68 KB",&#13;
-									"status": "updateset_upload_validation_complete",&#13;
-									"sys_id": "b5a0916d1b0d9c10cd0e62c4bd4bcb8b",&#13;
-									"type": "DOWNLOADABLE_DOCUMENT"&#13;
-								},&#13;
-								{&#13;
-									"artifact_sys_id": "1f90d16d1b0d9c10cd0e62c4bd4bcb65",&#13;
-									"download_link": "sys_attachment.do?sys_id=5790156d1b0d9c10cd0e62c4bd4bcb74",&#13;
-									"name": "Employee Experience Pack - Example Data - Scan Definitions.xml",&#13;
-									"size": "8 KB",&#13;
-									"status": "updateset_upload_validation_complete",&#13;
-									"sys_id": "5790156d1b0d9c10cd0e62c4bd4bcb74",&#13;
-									"type": "DOWNLOADABLE_DOCUMENT"&#13;
-								}&#13;
-							],&#13;
-							"download_update_set": {&#13;
-								"content_type": "application/xml",&#13;
-								"file_name": "Update Set - QR Scan v1.0.xml",&#13;
-								"link": "sys_attachment.do?sys_id=b1bf492d1b0d9c10cd0e62c4bd4bcb0d"&#13;
-							},&#13;
-							"release_notes": "&lt;p&gt;Initial Release: 1.0&lt;/p&gt;&lt;p&gt;QR Scan application consists of a Mobile list screen, sample scan definitions and scan actions&lt;/p&gt;&lt;p&gt;Please note that version 1.0 of this Experience Pack is compatible with New York and Orlando release only. Click the \"follow project\" button at the top of this page to get updates including new versions with enhancements or compatibility with other releases.&amp;nbsp;&lt;br&gt;&lt;/p&gt;&lt;p&gt;Included content:&lt;/p&gt;&lt;ul&gt;&lt;li&gt;Scoped Application: Get Help - Scan&lt;/li&gt;&lt;li&gt;Custom tables: Scan Definitions, Scan Actions and Scanned URL (Remote table)&lt;/li&gt;&lt;li&gt;Get Help Section in Now Mobile App&lt;/li&gt;&lt;li&gt;Parameterized list screen to scan QR / Barcode and show list of applicable actions&lt;/li&gt;&lt;li&gt;Multiple functions to support opening catalog item, viewing knowledge article, reporting an issue and opening external URL&lt;/li&gt;&lt;li&gt;Example of Scan Definitions and Scan Actions&lt;/li&gt;&lt;/ul&gt;",&#13;
-							"release_notes_md": "Initial Release: 1.0\n\nQR Scan application consists of a Mobile list screen, sample scan definitions and scan actions\n\nPlease note that version 1.0 of this Experience Pack is compatible with New York and Orlando release only. Click the \"follow project\" button at the top of this page to get updates including new versions with enhancements or compatibility with other releases.   \n\nIncluded content:\n\n*   Scoped Application: Get Help - Scan\n*   Custom tables: Scan Definitions, Scan Actions and Scanned URL (Remote table)\n*   Get Help Section in Now Mobile App\n*   Parameterized list screen to scan QR / Barcode and show list of applicable actions\n*   Multiple functions to support opening catalog item, viewing knowledge article, reporting an issue and opening external URL\n*   Example of Scan Definitions and Scan Actions",&#13;
-							"update_set_preview": [&#13;
-								{&#13;
-									"is_open": false,&#13;
-									"remote_table": [&#13;
-										{&#13;
-											"copy_text": "copy to clipboard",&#13;
-											"name": "Scanned URL",&#13;
-											"sys_id": "9ebf812d1b0d9c10cd0e62c4bd4bcb12"&#13;
-										}&#13;
-									],&#13;
-									"snc_object_name": "Remote Table",&#13;
-									"type": "remote_table"&#13;
-								}&#13;
-							]&#13;
-						}&#13;
-					},&#13;
-					"project": {&#13;
-						"active_version": "v1_0",&#13;
-						"author": "",&#13;
-						"can_edit": false,&#13;
-						"category": [&#13;
-							"Employee Experience Packs"&#13;
-						],&#13;
-						"completion_status": true,&#13;
-						"description": "&lt;p&gt;Employees within an organization can quickly report an issue or get help using the Now Mobile's QR Scan application.&lt;/p&gt;&lt;p&gt;Laptop not working, printer out of paper or spill in the conference room? Simply scan to report an issue or get help using our knowledge bases and catalogs.&lt;/p&gt;&lt;p&gt;Sometime, the speediness and timeliness of reporting an issue is paramount. An employee no longer has to open the laptop and navigate to the portal to report an issue. With the QR Scan application, it is now simple. Tap, scan and get help.&lt;/p&gt;&lt;p&gt;QR Scan application allows&lt;/p&gt;&lt;ul&gt;&lt;li&gt;An employee to report an issue by creating incident using pre-defined template specific to the item scanned&lt;/li&gt;&lt;li&gt;An employee to get help regarding the item scanned with the help of existing knowledge articles&lt;/li&gt;&lt;li&gt;An employee to place order regarding the item scanned using the existing catalogs&lt;/li&gt;&lt;li&gt;A system administrator to configure targeted actions for specific item. This ensures that the employees have the right set of actions related to the item scanned&lt;/li&gt;&lt;/ul&gt;&lt;p&gt;For full instructions and troubleshooting, please refer the document &lt;i&gt;Employee&amp;nbsp;Experience Pack -&amp;nbsp;QR Scan - Documentation.pdf &lt;/i&gt;available under Related Files section.&lt;br&gt;&lt;/p&gt;",&#13;
-						"is_domain_verified": false,&#13;
-						"is_servicenow_user": false,&#13;
-						"legal_agreement": {&#13;
-							"dont_show_again_label": "Don't warn me again",&#13;
-							"share_legal": {&#13;
-								"agreement_text": "Dont show legal agreement",&#13;
-								"modal_title": "Download Warning",&#13;
-								"show_legal_agreement": false&#13;
-							}&#13;
-						},&#13;
-						"permalink": "7815211_qr_scan",&#13;
-						"product": [&#13;
-							"Now Platform"&#13;
-						],&#13;
-						"project_urls": {&#13;
-							"modal_title": "Share Project",&#13;
-							"show_share_button": true,&#13;
-							"urls": {&#13;
-								"latest_version": "https://developer.servicenow.com/connect.do#!/share/contents/7815211_qr_scan?t=PRODUCT_DETAILS",&#13;
-								"v1_0": "https://developer.servicenow.com/connect.do#!/share/contents/7815211_qr_scan?v=1.0&amp;t=PRODUCT_DETAILS"&#13;
-							},&#13;
-							"versions": [&#13;
-								{&#13;
-									"key": "latest_version",&#13;
-									"name": "Always latest"&#13;
-								},&#13;
-								{&#13;
-									"key": "v1_0",&#13;
-									"name": "1.0"&#13;
-								}&#13;
-							]&#13;
-						},&#13;
-						"report_problem": {&#13;
-							"blurb": "Use this form only if you feel this items violates our terms of use",&#13;
-							"field_help_texts": {&#13;
-								"description": "Please describe the abuse with sufficient detail for us to investigate this matter",&#13;
-								"reason": "",&#13;
-								"version": ""&#13;
-							},&#13;
-							"reasons": [&#13;
-								{&#13;
-									"name": "This project caused my instance to be unstable",&#13;
-									"value": "This project caused my instance to be unstable"&#13;
-								},&#13;
-								{&#13;
-									"name": "This project contains malicious code",&#13;
-									"value": "This project contains malicious code"&#13;
-								},&#13;
-								{&#13;
-									"name": "This project contains offensive material",&#13;
-									"value": "This project contains offensive material"&#13;
-								}&#13;
-							],&#13;
-							"versions": [&#13;
-								{&#13;
-									"key": "v1_0",&#13;
-									"name": "1.0"&#13;
-								}&#13;
-							]&#13;
-						},&#13;
-						"review_ratings_star_type": 0,&#13;
-						"subscription": {&#13;
-							"following": false,&#13;
-							"following_message": "you are following this project",&#13;
-							"not_logged_in_message": "&lt;span class=\"log-in-link\" data-ng-click=\"goToSignIn()\"&gt;follow project&lt;/span&gt;",&#13;
-							"unfollowing_message": "follow project"&#13;
-						},&#13;
-						"title": "Now Mobile - QR Scan",&#13;
-						"total_comments": 5,&#13;
-						"total_reviews": 0,&#13;
-						"versions": [&#13;
-							{&#13;
-								"key": "v1_0",&#13;
-								"name": "1.0"&#13;
-							}&#13;
-						]&#13;
-					},&#13;
-					"review_ratings": {&#13;
-						"all_versions": {&#13;
-							"app_downloaded": false,&#13;
-							"can_not_review": true,&#13;
-							"invalid_page_for_current_version": false,&#13;
-							"no_review_ratings_message": "This version of the project does not have any reviews. Select \"view all versions\" to see all reviews for this project or select a different version to see other reviews.",&#13;
-							"post_disabled_msg": "Only users who have downloaded this version of the project can leave a rating and review for it. Use the version selector to pick another version to provide a review for it.",&#13;
-							"review_count": 0,&#13;
-							"review_posted": false,&#13;
-							"reviews": [],&#13;
-							"reviews_pagination": {&#13;
-								"current_page": 1,&#13;
-								"reviews_per_page": 5,&#13;
-								"total_pages": 0&#13;
-							},&#13;
-							"stars_progress": {&#13;
-								"five_star": 0,&#13;
-								"four_star": 0,&#13;
-								"one_star": 0,&#13;
-								"three_star": 0,&#13;
-								"two_star": 0&#13;
-							}&#13;
-						},&#13;
-						"invalid_page_number_message": "Invalid page number ",&#13;
-						"is_owner": false,&#13;
-						"no_reviews_for_all_versions": false,&#13;
-						"not_logged_in": false,&#13;
-						"review_content_length": 2000,&#13;
-						"total_reviews": 0,&#13;
-						"v1_0": {&#13;
-							"app_downloaded": false,&#13;
-							"can_not_review": true,&#13;
-							"invalid_page_for_current_version": false,&#13;
-							"no_review_ratings_message": "This version of the project does not have any reviews. Select \"view all versions\" to see all reviews for this project or select a different version to see other reviews.",&#13;
-							"post_disabled_msg": "Only users who have downloaded this version of the project can leave a rating and review for it. Use the version selector to pick another version to provide a review for it.",&#13;
-							"review_count": 0,&#13;
-							"review_posted": false,&#13;
-							"reviews": [],&#13;
-							"reviews_pagination": {&#13;
-								"current_page": 1,&#13;
-								"reviews_per_page": 5,&#13;
-								"total_pages": 0&#13;
-							},&#13;
-							"stars_progress": {&#13;
-								"five_star": 0,&#13;
-								"four_star": 0,&#13;
-								"one_star": 0,&#13;
-								"three_star": 0,&#13;
-								"two_star": 0&#13;
-							},&#13;
-							"total_downloads": "96"&#13;
-						}&#13;
-					}&#13;
-				},&#13;
-				"message": "returning project details",&#13;
-				"status": "success"&#13;
-			}&#13;
-		};</description>
+        <description/>
         <name>MPLCImport</name>
         <script><![CDATA[/* global Uint8Array, Class, GlideScriptedExtensionPoint, GlideSysAttachment, GlideRecord, GlideStringUtil, XMLDocument2 */
 /* global sn_ws, gs, sn_cc */
@@ -546,237 +24,412 @@ MPLCImport.prototype = {
 		}
 	},
 
-	importNOWApps: function () {
-		const conn = this.initNOWShareConn();
-		if (conn) {
-			// Access Token is optional but enables Update Set Download
-			let accessToken = new sn_cc.StandardCredentialsProvider()
-				.getCredentialByAliasID(this.mplUtil.CONN_ALIAS.NOW_SHARE)
-				?.getAttribute('api_key');
+	importNOWStoreApp: function (conn, logoPath, sourceID) {
+		const result = {
+			status: 'error',
+			messages: []
+		};
 
-			let page = 1;
-			while (page < 2) {
-				const pageData = conn.data({
-					action: 'share.all.apps.list',
-					data: {
-						page: page
-					}
+		const details = conn.data({
+			action: 'store.Application.GetById',
+			application_id: sourceID
+		}).result;
+
+		if (details.error) {
+			result.messages.push(details.error);
+			return result;
+		}
+
+		const appGr = new GlideRecord('x_376096_mplc_app');
+		appGr.addQuery('source', this.mplUtil.CONN_ALIAS.NOW_STORE);
+		appGr.addQuery('source_id', sourceID);
+		appGr.setLimit(1);
+		appGr.query();
+		if (appGr.next()) {
+			// use existing app
+		} else {
+			appGr.newRecord();
+			appGr.source = this.mplUtil.CONN_ALIAS.NOW_STORE;
+			appGr.source_id = sourceID;
+		}
+
+		const appSysID = appGr.getUniqueValue();
+		if (logoPath && logoPath != 'keep' && this.ext) {
+			const logoReq = new sn_ws.RESTMessageV2();
+			logoReq.setHttpMethod('get');
+			logoReq.setEndpoint(conn.baseURL + '/' + logoPath);
+			logoReq.saveResponseBodyAsAttachment(appGr.getTableName(), appSysID, 'logo');
+			const logoResp = logoReq.execute();
+			if (logoResp.haveError()) {
+				result.messages.push(`Failed to download ${logoPath}: ${logoResp.getErrorMessage()} (${logoResp.getErrorCode})`);
+			} else {
+				const attSysID = logoResp.getResponseAttachmentSysid();
+				const success = this.ext.updateAttachment(attSysID, {
+					table_name: 'ZZ_YY' + appGr.getTableName()
 				});
 
-				if (pageData.result.status != 'success') {
-					break;
-				}
-
-				const resultData = pageData.result.data;
-				if (page++ == resultData.pagination.total_pages) {
-					break;
-				}
-
-				resultData.projects.forEach(project => {
-					// URLSearchParams isn't available in NOW at the moment, so we have to rely on a regex
-					const detailReqData = {
-						permalink: project.url.match(/contents\/(.+)\?/)[1],
-						v: project.url.match(/[?&]v=(.+)[&$]/)[1],
-						t: 'PRODUCT_DETAILS'
-					};
-					const details = conn.data({
-						action: 'share.project.details',
-						data: detailReqData
-					});
-
-					const appGr = new GlideRecord('x_376096_mplc_app');
-					appGr.addQuery('source', this.mplUtil.CONN_ALIAS.NOW_SHARE);
-					appGr.addQuery('source_id', detailReqData.permalink);
-					appGr.setLimit(1);
-					appGr.query();
-					if (appGr.next()) {
-						// use existing app
-					} else {
-						appGr.newRecord();
-						appGr.source = this.mplUtil.CONN_ALIAS.NOW_SHARE;
-						appGr.source_id = detailReqData.permalink;
+				if (success) {
+					if (appGr.logo) {
+						// cleanup the previous logo
+						// note: for security reasons the NOW Store implementation of this app does not offer a OAuth integration
+						// because of this, we cannot get the logo's hash (via the now attachment api metadata endpoint)
+						// this means that we re-download the application logos every time a app is synced
+						this.gsa.deleteAttachment(appGr.logo);	
 					}
 
-					appGr.name = project.title;
-					appGr.description = GlideStringUtil.unescapeHTML(details.result.data.project.description);
-					appGr.url = 'https://developer.servicenow.com' + project.url;
-					const metaData = {
-						created: project.created_on,
-						category: project.category,
-						product: project.product,
-						downloads: project.downloads,
-						overall_rating: project.overall_rating,
-						total_ratings: project.total_ratings,
-						updated: project.owner_last_updated_on
-					};
+					appGr.logo = attSysID;
+				} else {
+					this.gsa.deleteAttachment(attSysID);
+					result.messages.push('Failed to set logo (please check for MPLCExt failure)');
+				}
+			}
+		} else if (!logoPath && appGr.logo) {
+			// remove and delete the logo if it doesn't exist in the store anymore
+			this.gsa.deleteAttachment(appGr.logo);
+			appGr.logo = '';
+		}
 
-					appGr.metadata = JSON.stringify(metaData);
+		appGr.name = details.title;
+		appGr.description = details.store_description;
+		appGr.url = conn.baseURL + '/sn_appstore_store.do#!/store/application/' + details.source_app_id;
+		appGr.app_scope = details.scope;
 
-					if (appGr.isNewRecord()) {
-						appGr.insert();
-					}
+		appGr.metadata = JSON.stringify({
+			downloads: details.trialCount || '?',
+			purchases: details.purchaseCount || '?',
+			custom_tables: details.apprepo_custom_table_count || '?',
+			application_type: details.application_type
+		});
 
-					const appSysID = appGr.getUniqueValue();
-					const activeVersionID = details.result.data.project.active_version;
-					details.result.data.project.versions.forEach(version => {
-						const versionGr = new GlideRecord('x_376096_mplc_app_version');
-						versionGr.addQuery('app', appSysID);
-						versionGr.addQuery('version', version.name);
-						versionGr.setLimit(1);
-						versionGr.query();
-						if (versionGr.next()) {
-							// use existing app
-						} else {
-							versionGr.newRecord();
-							versionGr.app = appSysID;
-							versionGr.version = version.name;
+		if (appGr.isNewRecord()) {
+			appGr.insert();
+		} else if (appGr.getElements().some(e => e.changes())) {
+			appGr.update();
+		}
+
+		details.versionsData.forEach(version => {
+			const versionGr = new GlideRecord('x_376096_mplc_app_version');
+			versionGr.addQuery('app', appSysID);
+			versionGr.addQuery('version', version.store_version);
+			versionGr.setLimit(1);
+			versionGr.query();
+			if (versionGr.next()) {
+				// use existing app
+			} else if (version.isWithdrawn) {
+				// do not create new app version records for withdrawn versions
+				return;
+			} else {
+				versionGr.newRecord();
+				versionGr.app = appSysID;
+				versionGr.version = version.store_version;
+			}
+
+			versionGr.description = version.release_notes;
+
+			versionGr.metadata = JSON.stringify({
+				withdrawn: version.isWithdrawn,
+				release_type: version.releaseType,
+				publish_date: version.publish_date,
+				is_latest: version.store_version == details.version
+			});
+			
+			if (versionGr.isNewRecord()) {
+				versionGr.insert();
+			} else if (versionGr.getElements().some(e => e.changes())) {
+				versionGr.update();
+			}
+		});
+
+		result.status = result.messages.length == 0 ? 'success' : 'error';
+		return result;
+	},
+
+	importNOWStoreApps: function () {
+		const conn = this.initNOWStoreConn();
+		const apps = conn.data({
+			action: 'store.Search.GetLatestListing',
+			app_type: 'scoped_app'
+		}).result;
+
+		let count = 0;
+		apps.forEach(base => {
+			const res = this.importNOWStoreApp(conn, base.logo, base.source_app_id);
+			if (res.status != 'success') {
+				gs.error(`Failed to import Store App '${base.source_app_id}: ${res.messages.join('\n')}`);
+			}
+		});
+	},
+
+	importNOWShareApp: function (conn, sourceID, metadata) {
+		const result = {
+			status: 'error',
+			messages: []
+		};
+
+		const details = conn.data({
+			action: 'share.project.details',
+			data: {
+				permalink: sourceID,
+				t: 'PRODUCT_DETAILS'
+			}
+		}).result.data;
+
+		if (details.error_message) {
+			result.messages.push(details.error_message);
+			return result;
+		}
+
+		const appGr = new GlideRecord('x_376096_mplc_app');
+		appGr.addQuery('source', this.mplUtil.CONN_ALIAS.NOW_SHARE);
+		appGr.addQuery('source_id', details.permalink);
+		appGr.setLimit(1);
+		appGr.query();
+		if (appGr.next()) {
+			// use existing app
+		} else {
+			appGr.newRecord();
+			appGr.source = this.mplUtil.CONN_ALIAS.NOW_SHARE;
+			appGr.source_id = details.permalink;
+		}
+
+		appGr.name = details.project.title;
+		appGr.description = GlideStringUtil.unescapeHTML(details.project.description);
+		appGr.url = 'https://developer.servicenow.com' + details.project.project_urls.urls.latest_version;
+		if (metadata) {
+			appGr.metadata = JSON.stringify(metadata);
+		}
+
+		const appSysID = appGr.getUniqueValue();
+		const activeVersionID = details.project.active_version;
+		details.project.versions.forEach(version => {
+			const versionGr = new GlideRecord('x_376096_mplc_app_version');
+			versionGr.addQuery('app', appSysID);
+			versionGr.addQuery('version', version.name);
+			versionGr.setLimit(1);
+			versionGr.query();
+			if (versionGr.next()) {
+				// use existing app
+			} else {
+				versionGr.newRecord();
+				versionGr.app = appSysID;
+				versionGr.version = version.name;
+			}
+
+			versionGr.description = GlideStringUtil.unescapeHTML(details.product_details[version.key].release_notes);
+			const metaData = {
+				is_latest: version.key == activeVersionID
+			};
+
+			versionGr.metadata = JSON.stringify(metaData);
+
+			const updateSet = details.product_details[version.key].download_update_set;
+			const hasError = result.messages.length > 0;
+			if (!hasError && updateSet && conn.accessToken) {
+				const attDataReq = new sn_ws.RESTMessageV2();
+				attDataReq.setEndpoint(conn.baseURL + '/api/now/attachment/' + updateSet.link.match(/[?&]sys_id=([^&]+).*$/)[1]);
+				attDataReq.setHttpMethod('get');
+				attDataReq.setRequestHeader('Authorization', 'Bearer ' + conn.accessToken);
+				attDataReq.setRequestHeader('Accept', 'application/json');
+				const attDataResp = attDataReq.execute();
+				if (attDataResp.haveError()) {
+					result.messages.push(`Failed to retrieve Update Set Metadata for App Version ${version.name}: ${attDataResp.getErrorMessage()} (${attDataResp.getErrorCode()})`);
+					conn.accessToken = '';
+				} else {
+					const attData = JSON.parse(attDataResp.getBody()).result;
+					let attSysID = '';
+					if (attData.hash) {
+						const attGr = new GlideRecord('sys_attachment');
+						attGr.addQuery('table_name', versionGr.getTableName());
+						attGr.addQuery('table_sys_id', versionGr.getUniqueValue());
+						attGr.addQuery('hash', attData.hash);
+						attGr.setLimit(1);
+						attGr.query();
+						if (attGr.next()) {
+							attSysID = attGr.getUniqueValue();
 						}
+					}
 
-						versionGr.description = GlideStringUtil.unescapeHTML(details.result.data.product_details[version.key].release_notes);
-						const metaData = {
-							is_latest: version.key == activeVersionID
-						};
+					if (!attSysID) {
+						const attReq = new sn_ws.RESTMessageV2();
+						attReq.setEndpoint(attData.download_link);
+						attReq.setHttpMethod('get');
+						attReq.setRequestHeader('Authorization', 'Bearer ' + conn.getAccessToken());
 
-						versionGr.metadata = JSON.stringify(metaData);
 						if (versionGr.isNewRecord()) {
+							// the insert needs to happend now, otherwise saveResponseBodyAsAttachment will throw
 							versionGr.insert();
-						} else if (versionGr.getElements().some(e => e.changes())) {
-							versionGr.update();
 						}
 
-						const updateSet = details.result.data.product_details[version.key].download_update_set;
-						if (updateSet && accessToken) {
-							const attDataReq = new sn_ws.RESTMessageV2();
-							attDataReq.setEndpoint(conn.baseURL + 'api/now/attachment/' + updateSet.link.match(/[?&]sys_id=([^&]+).*$/)[1]);
-							attDataReq.setHttpMethod('get');
-							attDataReq.setRequestHeader('Authorization', 'Bearer ' + accessToken);
-							attDataReq.setRequestHeader('Accept', 'application/json');
-							const attDataResp = attDataReq.execute();
-							if (attDataResp.haveError()) {
-								gs.error(`Failed to retrieve Metadata for Update Set for ${project.title} ${version.name}: ${attDataResp.getErrorMessage()}`);
-								accessToken = '';
-							} else {
-								const attData = JSON.parse(attDataResp.getBody()).result;
-								let attSysID = '';
-								if (attData.hash) {
-									const attGr = new GlideRecord('sys_attachment');
-									attGr.addQuery('table_name', versionGr.getTableName());
-									attGr.addQuery('table_sys_id', versionGr.getUniqueValue());
-									attGr.addQuery('hash', attData.hash);
-									attGr.setLimit(1);
-									attGr.query();
-									if (attGr.next()) {
-										attSysID = attGr.getUniqueValue();
-									}
-								}
+						attReq.saveResponseBodyAsAttachment(versionGr.getTableName(), versionGr.getUniqueValue(), updateSet.file_name);
+						
+						const attResp = attReq.execute();
+						if (attResp.haveError()) {
+							result.messages.push(`Failed to retrieve Update Set Metadata for App Version ${version.name}: ${attResp.getErrorMessage()} (${attResp.getErrorCode()})`);
+						} else {
+							attSysID = attResp.getResponseAttachmentSysid();
+						}
+					}
 
-								if (!attSysID) {
-									const attReq = new sn_ws.RESTMessageV2();
-									attReq.setEndpoint(attData.download_link);
-									attReq.setHttpMethod('get');
-									attReq.setRequestHeader('Authorization', 'Bearer ' + accessToken);
-									attReq.saveResponseBodyAsAttachment(versionGr.getTableName(), versionGr.getUniqueValue(), updateSet.file_name);
-									const attResp = attReq.execute();
-									if (attResp.haveError()) {
-										gs.error(`Failed to download Update Set for ${project.title} ${version.name}: ${attResp.getErrorMessage()}`);
-										accessToken = '';
-									} else {
-										attSysID = attResp.getResponseAttachmentSysid();
-									}
-								}
+					if (attSysID) {
+						const doc = new XMLDocument2(this.gsa.getContentStream(attSysID));
+						if (version.key == activeVersionID) {
+							const logo = this.mplUtil.getLogoFromXMLDoc(doc);
+							this.updateLogo(appGr, logo);
 
-								if (attSysID) {
-									const doc = new XMLDocument2(this.gsa.getContentStream(attSysID));
-									if (version.key == activeVersionID) {
-										const logo = this.mplUtil.getLogoFromXMLDoc(doc);
-										this.updateLogo(appGr, logo);
+							appGr.app_sys_id = doc.getNodeText('/unload/sys_remote_update_set/application') || '';
+							appGr.app_scope = doc.getNodeText('/unload/sys_remote_update_set/application_scope') || '';
 
-										appGr.app_sys_id = doc.getNodeText('/unload/sys_remote_update_set/application') || '';
-										appGr.app_scope = doc.getNodeText('/unload/sys_remote_update_set/application_scope') || '';
-
-										// todo: verify if overriding the name makes sense
-										if (appGr.app_sys_id.startsWith('x_')) {
-											// in case this is a custom app, we override the app's name (which by default is the project title for share-content)
-											appGr.name = doc.getNodeText('/unload/sys_remote_update_set/application_name');
-										}
-									}
-
-									let hash = 0;
-									for (let node = doc.getFirstNode('/unload/sys_update_xml/payload_hash'); node; node = doc.getNextNode(node)) {
-										hash += parseInt(node.getTextContent());
-									}
-
-									if (hash) {
-										const updateSetGr = new GlideRecord('sys_update_set');
-										updateSetGr.addQuery('x_376096_mplc_hash', hash);
-										updateSetGr.addQuery('state', 'complete');
-										updateSetGr.setLimit(1);
-										updateSetGr.query();
-										if (updateSetGr.next()) {
-											versionGr.update_set = updateSetGr.getUniqueValue();
-										}
-
-										versionGr.metadata.hash = String(hash);
-										if (versionGr.getElements().some(e => e.changes())) {
-											versionGr.update();
-										}
-									}
-								}
+							// todo: verify if overriding the name makes sense
+							if (appGr.app_sys_id.startsWith('x_')) {
+								// in case this is a custom app, we override the app's name (which by default is the project title for share-content)
+								appGr.name = doc.getNodeText('/unload/sys_remote_update_set/application_name');
 							}
 						}
 
-						// given (which is typically the case) the versions are in ascending orders,
-						// the "installed version" of the app record is overwritten with the latest
-						if (versionGr.metadata.is_installed) {
-							appGr.installed_version = versionGr.getUniqueValue();
+						let hash = 0;
+						for (let node = doc.getFirstNode('/unload/sys_update_xml/payload_hash'); node; node = doc.getNextNode(node)) {
+							hash += parseInt(node.getTextContent());
 						}
 
-						if (version.key == activeVersionID) {
-							appGr.latest_version = versionGr.getUniqueValue();
-						}
-					});
+						if (hash) {
+							const updateSetGr = new GlideRecord('sys_update_set');
+							updateSetGr.addQuery('x_376096_mplc_hash', hash);
+							updateSetGr.addQuery('state', 'complete');
+							updateSetGr.setLimit(1);
+							updateSetGr.query();
+							if (updateSetGr.next()) {
+								versionGr.update_set = updateSetGr.getUniqueValue();
+							}
 
-					if (appGr.getElements().some(e => e.changes())) {
-						appGr.update();
+							versionGr.metadata.hash = String(hash);
+						}
 					}
-				});
+				}
 			}
+
+			// given the versions are in ascending orders (which is typically the case),
+			// the "installed_version" of the app record is overwritten with the latest
+			// note: if this assumptions turns out to not be true, a simple glidequery after
+			// this loop can identify and set latest_version
+			if (versionGr.metadata.is_installed) {
+				appGr.installed_version = versionGr.getUniqueValue();
+			}
+
+			if (version.key == activeVersionID) {
+				appGr.latest_version = versionGr.getUniqueValue();
+			}
+
+			if (versionGr.isNewRecord()) {
+				versionGr.insert();
+			} else if (versionGr.getElements().some(e => e.changes())) {
+				versionGr.update();
+			}
+		});
+
+		if (appGr.isNewRecord()) {
+			appGr.insert();
+		} else if (appGr.getElements().some(e => e.changes())) {
+			appGr.update();
+		}
+
+		result.status = result.messages.length == 0 ? 'success' : 'error';
+		return result;
+	},
+
+	importNOWShareApps: function () {
+		const conn = this.initNOWShareConn();
+		// Access Token is optional but enables Update Set Download
+		let accessToken = new sn_cc.StandardCredentialsProvider()
+			.getCredentialByAliasID(this.mplUtil.CONN_ALIAS.NOW_SHARE)
+			?.getAttribute('api_key');
+
+		let page = 1;
+		while (page < 40) {
+			const pageData = conn.data({
+				action: 'share.all.apps.list',
+				data: {
+					page: page
+				}
+			});
+
+			if (pageData.result.status != 'success') {
+				gs.error('Unsuccessfull: ' + JSON.stringify(pageData, null, 2));
+				break;
+			}
+
+			const resultData = pageData.result.data;
+			if (page++ >= (resultData.pagination.total_pages || 0)) {
+				break;
+			}
+
+			resultData.projects.forEach(project => {
+				// Note: Unfortunately the share.all.apps.list api doesn't include the project identifiers.
+				// They have to be parsed using URLSearchParams (which isn't available in ServiceNow JavaScript)
+				// or using an regex method below (which is also how the NOW implementation of the developer portal does it)
+				const sourceID = project.url.match(/contents\/([^?$]+)(\?|$)/)[1];
+				const res = this.importNOWShareApp(conn, sourceID, {
+					created: project.created_on,
+					category: project.category,
+					product: project.product,
+					downloads: project.downloads,
+					overall_rating: project.overall_rating,
+					total_ratings: project.total_ratings,
+					updated: project.owner_last_updated_on
+				});
+
+				if (res.status == 'error') {
+					gs.error(`Failed to import Share App '${sourceID}: ${res.messages.join('\n')}`);
+				}
+			});
 		}
 	},
 
-	initNOWShareConn: function () {
+	_initConn: function (instanceURL, aliasSysID, requestPage) {
+		if (instanceURL.endsWith('/')) {
+			throw new Error('instanceURL must not end with a /');
+		}
+
 		const userTokenReq = new sn_ws.RESTMessageV2();
 		userTokenReq.setHttpMethod('get');
-		userTokenReq.setEndpoint('https://developer.servicenow.com/login.do');
+		userTokenReq.setEndpoint(instanceURL + '/login.do');
 		const userTokenResp = userTokenReq.execute();
-		if (userTokenResp.getStatusCode() == 200) {
-			const userToken = getUserToken(userTokenResp);
-			if (userToken) {
-				const cookies = {};
-				parseCookies(cookies, userTokenResp);
-
-				const DevConn = function () {
-					this.baseURL = 'https://developer.servicenow.com/';
-				};
-				DevConn.prototype.data = function (jsonData) {
-					const dataReq = this.request('devportal.do?sysparm_data=' + encodeURI(JSON.stringify(jsonData)));
-					dataReq.setHttpMethod('get');
-					const dataResp = dataReq.execute();
-					if (dataResp.getStatusCode() == 200) {
-						return JSON.parse(dataResp.getBody());
-					}
-				};
-				DevConn.prototype.request = function (resource) {
-					const req = new sn_ws.RESTMessageV2();
-					setCookie(cookies, req);
-					req.setRequestHeader('X-UserToken', userToken);
-					req.setEndpoint(this.baseURL + resource);
-					return req;
-				};
-
-				return new DevConn();
-			}
+		if (userTokenResp.haveError()) {
+			throw new Error(`Failed to initialize connection: ${userTokenResp.getErrorMessage()} (${userTokenResp.getErrorCode()})`);
 		}
+
+		const userToken = getUserToken(userTokenResp);
+		if (!userToken) {
+			throw new Error('Failed to initialize connection: no UserToken present in login.do');
+		}
+
+		const cookies = {};
+		parseCookies(cookies, userTokenResp);
+
+		const accessToken = new sn_cc.StandardCredentialsProvider()
+				.getCredentialByAliasID(aliasSysID)
+				?.getAttribute('api_key');
+
+		const NOWConn = function () {
+			this.baseURL = instanceURL;
+			this.accessToken = accessToken;
+		};
+		NOWConn.prototype.data = function (jsonData) {
+			const dataReq = this.request(requestPage + '?sysparm_data=' + encodeURI(JSON.stringify(jsonData)));
+			dataReq.setHttpMethod('get');
+			const dataResp = dataReq.execute();
+			if (dataResp.getStatusCode() == 200) {
+				return JSON.parse(dataResp.getBody());
+			}
+		};
+		NOWConn.prototype.request = function (resource) {
+			const req = new sn_ws.RESTMessageV2();
+			setCookie(cookies, req);
+			req.setRequestHeader('X-UserToken', userToken);
+			req.setEndpoint(this.baseURL + '/' + resource);
+			return req;
+		};
+
+		return new NOWConn();
 
 		function parseCookies(cookies, resp) {
 			const filterCookies = ['JSESSIONID', 'glide_user_route', 'glide_user', 'glide_user_session', 'glide_node_id_for_js'];
@@ -815,6 +468,14 @@ MPLCImport.prototype = {
 				return doubleQuotes[1];
 			}
 		}
+	},
+
+	initNOWStoreConn: function () {
+		return this._initConn('https://store.servicenow.com', this.mplUtil.CONN_ALIAS.NOW_STORE, 'appStore.do');
+	},
+
+	initNOWShareConn: function () {
+		return this._initConn('https://developer.servicenow.com', this.mplUtil.CONN_ALIAS.NOW_SHARE, 'devportal.do');
 	},
 
 	importGITApps: function () {
@@ -971,13 +632,13 @@ MPLCImport.prototype = {
         <sys_created_by>markus.kraus</sys_created_by>
         <sys_created_on>2024-08-11 08:03:57</sys_created_on>
         <sys_id>1b95290493041210e02873718bba10a2</sys_id>
-        <sys_mod_count>41</sys_mod_count>
+        <sys_mod_count>75</sys_mod_count>
         <sys_name>MPLCImport</sys_name>
         <sys_package display_value="Marketplace Client" source="x_376096_mplc">2fe28b4497bf39103c2d3f56f053af4e</sys_package>
         <sys_policy/>
         <sys_scope display_value="Marketplace Client">2fe28b4497bf39103c2d3f56f053af4e</sys_scope>
         <sys_update_name>sys_script_include_1b95290493041210e02873718bba10a2</sys_update_name>
         <sys_updated_by>markus.kraus</sys_updated_by>
-        <sys_updated_on>2024-08-26 01:16:39</sys_updated_on>
+        <sys_updated_on>2024-08-27 23:00:41</sys_updated_on>
     </sys_script_include>
 </record_update>

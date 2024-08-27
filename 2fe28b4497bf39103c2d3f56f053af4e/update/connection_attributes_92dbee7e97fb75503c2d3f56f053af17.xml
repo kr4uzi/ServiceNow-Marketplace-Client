@@ -38,7 +38,7 @@
         <label>Type</label>
         <mandatory>true</mandatory>
         <max_length>40</max_length>
-        <model display_value="x_376096_mplc.Krauzis_Assets">71cb6e7e97fb75503c2d3f56f053af99</model>
+        <model/>
         <model_id>71cb6e7e97fb75503c2d3f56f053af99</model_id>
         <model_table/>
         <name>var__m_connection_attributes_71cb6e7e97fb75503c2d3f56f053af99</name>

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sys_package_dependency_m2m">
+    <sys_package_dependency_m2m action="INSERT_OR_UPDATE">
+        <dependency display_value="Scripted REST APIs" source="com.glide.scripted_rest_services">2d9bbfe2f832021008dd9cfea425ac1a</dependency>
+        <min_version>1.0.0</min_version>
+        <sys_created_by>markus.kraus</sys_created_by>
+        <sys_created_on>2024-08-27 19:43:11</sys_created_on>
+        <sys_id>075fda9d93109a14e02873718bba1069</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_package display_value="Marketplace Client" source="x_376096_mplc">2fe28b4497bf39103c2d3f56f053af4e</sys_package>
+        <sys_updated_by>markus.kraus</sys_updated_by>
+        <sys_updated_on>2024-08-27 19:43:11</sys_updated_on>
+    </sys_package_dependency_m2m>
+</record_update>

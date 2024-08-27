@@ -38,7 +38,7 @@
         <label>GitHub Type</label>
         <mandatory>true</mandatory>
         <max_length>40</max_length>
-        <model display_value="x_376096_mplc.GitHub">ce0f535697fbf1503c2d3f56f053afee</model>
+        <model display_value="x_376096_mplc.GitHub_Marketplace">ce0f535697fbf1503c2d3f56f053afee</model>
         <model_id>ce0f535697fbf1503c2d3f56f053afee</model_id>
         <model_table/>
         <name>var__m_connection_attributes_ce0f535697fbf1503c2d3f56f053afee</name>

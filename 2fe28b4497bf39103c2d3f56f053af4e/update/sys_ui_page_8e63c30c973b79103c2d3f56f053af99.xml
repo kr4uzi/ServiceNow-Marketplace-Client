@@ -5,6 +5,18 @@
 /* eslint no-undef: "error" */
 pageConfig = JSON.parse(pageConfig.replace(/&quot;/g, '"').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&'));
 
+function editNOWShareConnection(connAliasSysID, status) {
+	if (status == 'ok') {
+		var gm = new GlideModalForm('NOW Share Config', 'sys_alias', function () {
+			g_navigation.reloadWindow();
+		});
+		gm.setSysID(connAliasSysID);	
+		gm.render();
+	} else if (status == 'incomplete') {
+		g_navigation.open('x_376096_mplc_devportal_oauth.do');
+	}
+}
+
 function editConnection(connSysID) {
 	openConnModal('Configure Source', connSysID);
 }
@@ -59,10 +71,48 @@ function addFakeUIPolicy(g_form) {
 	<g:evaluate>
 		const mplcUtil = new x_376096_mplc.MPLCUtil();
 		const gitHubSources = mplcUtil.getGitHubSources();
-		gitHubSources.forEach(src => src.status_icon = 'mpl-status-' + src.status + ' ' + (src.status == 'ok' ? 'icon-circle-solid' : 'icon-warning-circle bg-warning'));
+		gitHubSources.forEach(src => src.status_icon = 'mpl-status-' + src.status + ' ' + ((src.status == 'ok' || src.status == 'incomplete') ? 'icon-circle-solid' : 'icon-warning-circle bg-warning'));
 		const pageConfig = {
 			globalScopeSelected: gs.getCurrentApplicationId() == 'global',
 			gitHubSources: gitHubSources
+		};
+
+		const nowShare = {
+			logo: (function () {
+				return 'data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyB3aWR0aD0iNDJweCIgaGVpZ2h0PSI0MHB4IiB2aWV3Qm94PSIwIDAgNDIgNDAiIHZlcnNpb249IjEuMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayI+CiAgICA8IS0tIEdlbmVyYXRvcjogU2tldGNoIDUyLjYgKDY3NDkxKSAtIGh0dHA6Ly93d3cuYm9oZW1pYW5jb2RpbmcuY29tL3NrZXRjaCAtLT4KICAgIDx0aXRsZT5Hcm91cCA3PC90aXRsZT4KICAgIDxkZXNjPkNyZWF0ZWQgd2l0aCBTa2V0Y2guPC9kZXNjPgogICAgPGcgaWQ9IlN5bWJvbHMiIHN0cm9rZT0ibm9uZSIgc3Ryb2tlLXdpZHRoPSIxIiBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPgogICAgICAgIDxnIGlkPSJNYXJrZXRpbmctSWNvbnMtLy1TaGFyZS1Qcm9qZWN0cyIgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoMC4wMDAwMDAsIC0xLjAwMDAwMCkiPgogICAgICAgICAgICA8ZyBpZD0iR3JvdXAtNyIgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoMC4wMDAwMDAsIDEuMDAwMDAwKSI+CiAgICAgICAgICAgICAgICA8cGF0aCBkPSJNNDIsMzUuODAzMjc4NyBDNDIsMzcuNzAzNjA2NiAzNy44NDEzMTE1LDM5LjI0NTkwMTYgMzIuNzA0OTE4LDM5LjI0NTkwMTYgQzI3LjU2ODUyNDYsMzkuMjQ1OTAxNiAyMy40MDk4MzYxLDM3LjcwMzYwNjYgMjMuNDA5ODM2MSwzNS44MDMyNzg3IEMyMy40MDk4MzYxLDM0LjQ1Mzc3MDUgMjUuNTA5ODM2MSwzMy4yODMyNzg3IDI4LjU3Mzc3MDUsMzIuNzE4Njg4NSBMMjguNTczNzcwNSwzNC4wODE5NjcyIEwzNi44MzYwNjU2LDM0LjA4MTk2NzIgTDM2LjgzNjA2NTYsMzIuNzE4Njg4NSBDMzkuOSwzMy4yODMyNzg3IDQyLDM0LjQ1Mzc3MDUgNDIsMzUuODAzMjc4NyIgaWQ9IkZpbGwtMSIgZmlsbD0iIzgxQjVBMCI+PC9wYXRoPgogICAgICAgICAgICAgICAgPHBhdGggZD0iTTE4LjU5MDE2MzksMzUuODAzMjc4NyBDMTguNTkwMTYzOSwzNy43MDM2MDY2IDE0LjQzMTQ3NTQsMzkuMjQ1OTAxNiA5LjI5NTA4MTk3LDM5LjI0NTkwMTYgQzQuMTU4Njg4NTIsMzkuMjQ1OTAxNiAwLDM3LjcwMzYwNjYgMCwzNS44MDMyNzg3IEMwLDM0LjQ1Mzc3MDUgMi4xLDMzLjI4MzI3ODcgNS4xNjM5MzQ0MywzMi43MTg2ODg1IEw1LjE2MzkzNDQzLDM0LjA4MTk2NzIgTDEzLjQyNjIyOTUsMzQuMDgxOTY3MiBMMTMuNDI2MjI5NSwzMi43MTg2ODg1IEMxNi40OTAxNjM5LDMzLjI4MzI3ODcgMTguNTkwMTYzOSwzNC40NTM3NzA1IDE4LjU5MDE2MzksMzUuODAzMjc4NyIgaWQ9IkZpbGwtMyIgZmlsbD0iIzgxQjVBMCI+PC9wYXRoPgogICAgICAgICAgICAgICAgPHBhdGggZD0iTTM3Ljg2ODg1MjUsMjAuMzExNDc1NCBMMzcuODY4ODUyNSwzNC4wODE5NjcyIEMzNy44Njg4NTI1LDM0LjY1MjA2NTYgMzcuNDA2ODUyNSwzNS4xMTQ3NTQxIDM2LjgzNjA2NTYsMzUuMTE0NzU0MSBMMjguNTczNzcwNSwzNS4xMTQ3NTQxIEMyOC4wMDI5ODM2LDM1LjExNDc1NDEgMjcuNTQwOTgzNiwzNC42NTIwNjU2IDI3LjU0MDk4MzYsMzQuMDgxOTY3MiBMMjcuNTQwOTgzNiwyMC4zMTE0NzU0IEMyNy41NDA5ODM2LDE5Ljc0MTM3NyAyOC4wMDI5ODM2LDE5LjI3ODY4ODUgMjguNTczNzcwNSwxOS4yNzg2ODg1IEMyOS4xNDQ1NTc0LDE5LjI3ODY4ODUgMjkuNjA2NTU3NCwxOS43NDEzNzcgMjkuNjA2NTU3NCwyMC4zMTE0NzU0IEwyOS42MDY1NTc0LDMzLjA0OTE4MDMgTDM1LjgwMzI3ODcsMzMuMDQ5MTgwMyBMMzUuODAzMjc4NywyMC4zMTE0NzU0IEMzNS44MDMyNzg3LDE5Ljc0MTM3NyAzNi4yNjUyNzg3LDE5LjI3ODY4ODUgMzYuODM2MDY1NiwxOS4yNzg2ODg1IEMzNy40MDY4NTI1LDE5LjI3ODY4ODUgMzcuODY4ODUyNSwxOS43NDEzNzcgMzcuODY4ODUyNSwyMC4zMTE0NzU0IE0yOC45MTgwMzI4LDUuODUyNDU5MDIgQzI4LjkxODAzMjgsMy43NjQ4NTI0NiAzMC42MTY2MjMsMi4wNjU1NzM3NyAzMi43MDQ5MTgsMi4wNjU1NzM3NyBDMzQuNzkzMjEzMSwyLjA2NTU3Mzc3IDM2LjQ5MTgwMzMsMy43NjQ4NTI0NiAzNi40OTE4MDMzLDUuODUyNDU5MDIgQzM2LjQ5MTgwMzMsNy45NDAwNjU1NyAzNC43OTMyMTMxLDkuNjM5MzQ0MjYgMzIuNzA0OTE4LDkuNjM5MzQ0MjYgQzMwLjYxNjYyMyw5LjYzOTM0NDI2IDI4LjkxODAzMjgsNy45NDAwNjU1NyAyOC45MTgwMzI4LDUuODUyNDU5MDIgTTM2LjQyMzYzOTMsMTAuMzY4NDkxOCBDMzcuNzI1NjM5Myw5LjI5MzcwNDkyIDM4LjU1NzM3Nyw3LjY2ODA5ODM2IDM4LjU1NzM3Nyw1Ljg1MjQ1OTAyIEMzOC41NTczNzcsMi42MjUzNDQyNiAzNS45MzIwMzI4LDAgMzIuNzA0OTE4LDAgQzI5LjQ3NzgwMzMsMCAyNi44NTI0NTksMi42MjUzNDQyNiAyNi44NTI0NTksNS44NTI0NTkwMiBDMjYuODUyNDU5LDcuNjY4MDk4MzYgMjcuNjg0MTk2Nyw5LjI5MzcwNDkyIDI4Ljk4NjE5NjcsMTAuMzY4NDkxOCBDMjUuNzA3NDQyNiwxMS43MDc2NzIxIDIzLjQwOTgzNjEsMTQuNzU2NDU5IDIzLjQwOTgzNjEsMTguMjk4OTE4IEwyMy40MDk4MzYxLDI0LjQ0MjYyMyBDMjMuNDA5ODM2MSwyNS4wMTI3MjEzIDIzLjg3MTgzNjEsMjUuNDc1NDA5OCAyNC40NDI2MjMsMjUuNDc1NDA5OCBDMjUuMDEzNDA5OCwyNS40NzU0MDk4IDI1LjQ3NTQwOTgsMjUuMDEyNzIxMyAyNS40NzU0MDk4LDI0LjQ0MjYyMyBMMjUuNDc1NDA5OCwxOC4yOTg5MTggQzI1LjQ3NTQwOTgsMTQuNjYyODE5NyAyOC43MTgzNjA3LDExLjcwNDkxOCAzMi43MDQ5MTgsMTEuNzA0OTE4IEMzNi42OTE0NzU0LDExLjcwNDkxOCAzOS45MzQ0MjYyLDE0LjY2MjgxOTcgMzkuOTM0NDI2MiwxOC4yOTg5MTggTDM5LjkzNDQyNjIsMjQuNDQyNjIzIEMzOS45MzQ0MjYyLDI1LjAxMjcyMTMgNDAuMzk2NDI2MiwyNS40NzU0MDk4IDQwLjk2NzIxMzEsMjUuNDc1NDA5OCBDNDEuNTM4LDI1LjQ3NTQwOTggNDIsMjUuMDEyNzIxMyA0MiwyNC40NDI2MjMgTDQyLDE4LjI5ODkxOCBDNDIsMTQuNzU2NDU5IDM5LjcwMjM5MzQsMTEuNzA3NjcyMSAzNi40MjM2MzkzLDEwLjM2ODQ5MTggTTE0LjQ1OTAxNjQsMjAuMzExNDc1NCBMMTQuNDU5MDE2NCwzNC4wODE5NjcyIEMxNC40NTkwMTY0LDM0LjY1MjA2NTYgMTMuOTk3MDE2NCwzNS4xMTQ3NTQxIDEzLjQyNjIyOTUsMzUuMTE0NzU0MSBMNS4xNjM5MzQ0MywzNS4xMTQ3NTQxIEM0LjU5MzE0NzU0LDM1LjExNDc1NDEgNC4xMzExNDc1NCwzNC42NTIwNjU2IDQuMTMxMTQ3NTQsMzQuMDgxOTY3MiBMNC4xMzExNDc1NCwyMC4zMTE0NzU0IEM0LjEzMTE0NzU0LDE5Ljc0MTM3NyA0LjU5MzE0NzU0LDE5LjI3ODY4ODUgNS4xNjM5MzQ0MywxOS4yNzg2ODg1IEM1LjczNDcyMTMxLDE5LjI3ODY4ODUgNi4xOTY3MjEzMSwxOS43NDEzNzcgNi4xOTY3MjEzMSwyMC4zMTE0NzU0IEw2LjE5NjcyMTMxLDMzLjA0OTE4MDMgTDEyLjM5MzQ0MjYsMzMuMDQ5MTgwMyBMMTIuMzkzNDQyNiwyMC4zMTE0NzU0IEMxMi4zOTM0NDI2LDE5Ljc0MTM3NyAxMi44NTU0NDI2LDE5LjI3ODY4ODUgMTMuNDI2MjI5NSwxOS4yNzg2ODg1IEMxMy45OTcwMTY0LDE5LjI3ODY4ODUgMTQuNDU5MDE2NCwxOS43NDEzNzcgMTQuNDU5MDE2NCwyMC4zMTE0NzU0IE01LjUwODE5NjcyLDUuODUyNDU5MDIgQzUuNTA4MTk2NzIsMy43NjQ4NTI0NiA3LjIwNjc4Njg5LDIuMDY1NTczNzcgOS4yOTUwODE5NywyLjA2NTU3Mzc3IEMxMS4zODMzNzcsMi4wNjU1NzM3NyAxMy4wODE5NjcyLDMuNzY0ODUyNDYgMTMuMDgxOTY3Miw1Ljg1MjQ1OTAyIEMxMy4wODE5NjcyLDcuOTQwMDY1NTcgMTEuMzgzMzc3LDkuNjM5MzQ0MjYgOS4yOTUwODE5Nyw5LjYzOTM0NDI2IEM3LjIwNjc4Njg5LDkuNjM5MzQ0MjYgNS41MDgxOTY3Miw3Ljk0MDA2NTU3IDUuNTA4MTk2NzIsNS44NTI0NTkwMiBNMTMuMDEzODAzMywxMC4zNjg0OTE4IEMxNC4zMTU4MDMzLDkuMjkzNzA0OTIgMTUuMTQ3NTQxLDcuNjY4MDk4MzYgMTUuMTQ3NTQxLDUuODUyNDU5MDIgQzE1LjE0NzU0MSwyLjYyNTM0NDI2IDEyLjUyMjE5NjcsMCA5LjI5NTA4MTk3LDAgQzYuMDY3OTY3MjEsMCAzLjQ0MjYyMjk1LDIuNjI1MzQ0MjYgMy40NDI2MjI5NSw1Ljg1MjQ1OTAyIEMzLjQ0MjYyMjk1LDcuNjY4MDk4MzYgNC4yNzQzNjA2Niw5LjI5MzcwNDkyIDUuNTc2MzYwNjYsMTAuMzY4NDkxOCBDMi4yOTc2MDY1NiwxMS43MDc2NzIxIDAsMTQuNzU2NDU5IDAsMTguMjk4OTE4IEwwLDI0LjQ0MjYyMyBDMCwyNS4wMTI3MjEzIDAuNDYyLDI1LjQ3NTQwOTggMS4wMzI3ODY4OSwyNS40NzU0MDk4IEMxLjYwMzU3Mzc3LDI1LjQ3NTQwOTggMi4wNjU1NzM3NywyNS4wMTI3MjEzIDIuMDY1NTczNzcsMjQuNDQyNjIzIEwyLjA2NTU3Mzc3LDE4LjI5ODkxOCBDMi4wNjU1NzM3NywxNC42NjI4MTk3IDUuMzA4NTI0NTksMTEuNzA0OTE4IDkuMjk1MDgxOTcsMTEuNzA0OTE4IEMxMy4yODE2MzkzLDExLjcwNDkxOCAxNi41MjQ1OTAyLDE0LjY2MjgxOTcgMTYuNTI0NTkwMiwxOC4yOTg5MTggTDE2LjUyNDU5MDIsMjQuNDQyNjIzIEMxNi41MjQ1OTAyLDI1LjAxMjcyMTMgMTYuOTg2NTkwMiwyNS40NzU0MDk4IDE3LjU1NzM3NywyNS40NzU0MDk4IEMxOC4xMjgxNjM5LDI1LjQ3NTQwOTggMTguNTkwMTYzOSwyNS4wMTI3MjEzIDE4LjU5MDE2MzksMjQuNDQyNjIzIEwxOC41OTAxNjM5LDE4LjI5ODkxOCBDMTguNTkwMTYzOSwxNC43NTY0NTkgMTYuMjkyNTU3NCwxMS43MDc2NzIxIDEzLjAxMzgwMzMsMTAuMzY4NDkxOCIgaWQ9IkZpbGwtNSIgZmlsbD0iIzI5M0U0MCI+PC9wYXRoPgogICAgICAgICAgICA8L2c+CiAgICAgICAgPC9nPgogICAgPC9nPgo8L3N2Zz4=';
+				const appGr = new GlideRecordSecure('sys_app');
+				appGr.addQuery('sys_id', '2fe28b4497bf39103c2d3f56f053af4e');
+				appGr.addNotNullQuery('logo');
+				appGr.setLimit(1);
+				appGr.query();
+				if (appGr.next()) {
+					return '/' + appGr.logo + '.iix';
+				}
+			})(),
+			alias: mplcUtil.CONN_ALIAS.NOW_SHARE,
+			link: 'https://developer.servicenow.com/connect.do#!/share',
+			status: (function () {
+				const status = {
+					value: 'incomplete',
+					message: 'No OAuth Token configured',
+					icon: 'mpl-status-incomplete icon-circle-solid'
+				};
+
+				const credentials = new sn_cc.StandardCredentialsProvider().getCredentialByID(mplcUtil.CONN_ALIAS.NOW_SHARE);
+				if (credentials?.getAttribute('api_key')) {
+					status.value = 'ok';
+					status.message = 'NOW Share connected and valid OAuth Token configured';
+					status.icon = 'mpl-status-ok icon-circle-solid';
+				}
+
+				return status;
+			})()
+		};
+
+		const nowStore = {
+			logo: 'https://store.servicenow.com/images/logo/store-logo-new.svg',
+			alias: mplcUtil.CONN_ALIAS.NOW_STORE,
+			link: 'https://store.servicenow.com/sn_appstore_store.do#!/store'
 		};
 	</g:evaluate>
 	<script>var pageConfig = '${JSON.stringify(pageConfig)}';</script>
@@ -117,6 +167,10 @@ function addFakeUIPolicy(g_form) {
 		.mpl-status-error {
 			color: red;
 		}
+
+		.mpl-status-incomplete {
+			color: orange;
+		}
 	</style>
 	<div class="container">
 		<div class="row">
@@ -128,6 +182,31 @@ function addFakeUIPolicy(g_form) {
 			</div>
 		</div>
 		<div class="row">
+			<div class="col col-lg-4 col-md-6 col-sm-6 col-xs-12">
+				<div class="card">
+					<div class="card-header">
+						<img src="${nowShare.logo}" />
+						<a href="/x_376096_mplc_app_list.do?sysparm_query=source%3D${nowShare.alias}">NOW Share</a>
+						<i class="icon ${nowShare.status.icon} pull-right" data-toggle="tooltip" data-placement="bottom" title="${nowShare.status.message}"></i>
+						<a class="icon icon-cog pull-right" onclick="editNOWShareConnection('${nowShare.alias}', '${nowShare.status.value}')"></a>
+					</div>
+					<div class="card-body">
+						<span class="card-text">Install and Update apps from the$[SP]<a href="${nowShare.link}" target="_blank">NOW Share</a>$[SP](Developer Portal)</span>
+					</div>
+				</div>
+			</div>
+			<div class="col col-lg-4 col-md-6 col-sm-6 col-xs-12">
+				<div class="card">
+					<div class="card-header">
+						<img src="${nowStore.logo}" />
+						<a href="/x_376096_mplc_app_list.do?sysparm_query=source%3D${nowStore.alias}">NOW Store</a>
+					</div>
+					<div class="card-body">
+						<span class="card-text">Search apps from the$[SP]<a href="${nowStore.link}" target="_blank">NOW Store</a></span>
+					</div>
+				</div>
+			</div>
+
 			<j:forEach var="jvar_source" items="${gitHubSources}">
 				<div class="col col-lg-4 col-md-6 col-sm-6 col-xs-12">
 					<div class="card">
@@ -175,13 +254,13 @@ function addFakeUIPolicy(g_form) {
         <sys_created_by>markus.kraus</sys_created_by>
         <sys_created_on>2024-01-14 07:14:03</sys_created_on>
         <sys_id>8e63c30c973b79103c2d3f56f053af99</sys_id>
-        <sys_mod_count>103</sys_mod_count>
+        <sys_mod_count>122</sys_mod_count>
         <sys_name>overview</sys_name>
         <sys_package display_value="Marketplace Client" source="x_376096_mplc">2fe28b4497bf39103c2d3f56f053af4e</sys_package>
         <sys_policy/>
         <sys_scope display_value="Marketplace Client">2fe28b4497bf39103c2d3f56f053af4e</sys_scope>
         <sys_update_name>sys_ui_page_8e63c30c973b79103c2d3f56f053af99</sys_update_name>
-        <sys_updated_by>admin</sys_updated_by>
-        <sys_updated_on>2024-07-28 17:53:04</sys_updated_on>
+        <sys_updated_by>markus.kraus</sys_updated_by>
+        <sys_updated_on>2024-08-27 09:38:17</sys_updated_on>
     </sys_ui_page>
 </record_update>

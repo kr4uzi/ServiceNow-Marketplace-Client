@@ -116,6 +116,7 @@
 	<hr />
 	<p>Connecting this Instance to the ServiceNow Developer Portal enables the Marketplace Client to:
 		<ul>
+			<li>install packages</li>
 			<li>check for updates</li>
 			<li>scan installed packages</li>
 		</ul>
@@ -123,7 +124,7 @@
 	<hr />
 	<p>Before you continue, please login to the$[SP]<a target="_blank" href="https://developer.servicenow.com">Developer Portal ➚</a>.</p>
 	<p>Note: The public OAuth Client for the ServiceNow Agent (phone) app is used here.
-	Just like the phone app uses the generated to access the NOW API, the Marketplace Client can use the token to download the NOW Share Update Sets
+	Just like the phone app uses the generated token to access the NOW API, the Marketplace Client can use the token to download and process content from the NOW Share
 	</p>
 	<form>
 		<div class="row">
@@ -290,13 +291,13 @@
         <sys_created_by>markus.kraus</sys_created_by>
         <sys_created_on>2024-08-25 12:20:17</sys_created_on>
         <sys_id>72b4e220931c9ad0e02873718bba103e</sys_id>
-        <sys_mod_count>59</sys_mod_count>
+        <sys_mod_count>62</sys_mod_count>
         <sys_name>devportal_oauth</sys_name>
         <sys_package display_value="Marketplace Client" source="x_376096_mplc">2fe28b4497bf39103c2d3f56f053af4e</sys_package>
         <sys_policy/>
         <sys_scope display_value="Marketplace Client">2fe28b4497bf39103c2d3f56f053af4e</sys_scope>
         <sys_update_name>sys_ui_page_72b4e220931c9ad0e02873718bba103e</sys_update_name>
         <sys_updated_by>markus.kraus</sys_updated_by>
-        <sys_updated_on>2024-08-26 00:28:00</sys_updated_on>
+        <sys_updated_on>2024-08-26 11:21:46</sys_updated_on>
     </sys_ui_page>
 </record_update>

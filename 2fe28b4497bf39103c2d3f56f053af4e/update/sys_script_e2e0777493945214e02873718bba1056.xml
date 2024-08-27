@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update sys_domain="global" table="sys_script">
+    <sys_script action="INSERT_OR_UPDATE">
+        <abort_action>false</abort_action>
+        <access>package_private</access>
+        <action_delete>false</action_delete>
+        <action_insert>false</action_insert>
+        <action_query>false</action_query>
+        <action_update>false</action_update>
+        <active>true</active>
+        <add_message>false</add_message>
+        <advanced>true</advanced>
+        <change_fields>false</change_fields>
+        <client_callable>false</client_callable>
+        <collection>x_376096_mplc_app_version</collection>
+        <condition/>
+        <description/>
+        <execute_function>false</execute_function>
+        <filter_condition/>
+        <is_rest>false</is_rest>
+        <message/>
+        <name>MPLC App Ver - Scratchpad</name>
+        <order>100</order>
+        <priority>100</priority>
+        <rest_method/>
+        <rest_method_text/>
+        <rest_service/>
+        <rest_service_text/>
+        <rest_variables/>
+        <role_conditions/>
+        <script><![CDATA[(function executeRule(current, previous /*null when async*/) {
+
+	const attGr = new GlideRecordSecure('sys_attachment');
+	attGr.addQuery('table_name', current.getTableName());
+	attGr.addQuery('table_sys_id', current.getUniqueValue());
+	attGr.addQuery('content_type', 'application/xml');
+	attGr.query();
+
+	const gsa = new GlideSysAttachment();
+	const updateSets = [];
+	while (attGr.next()) {
+		const attSysID = attGr.getUniqueValue();
+		const xml = new XMLDocument2(gsa.getContentStream(attSysID));
+
+		updateSets.push({
+			name: attGr.getValue('file_name'),
+			attachment_sys_id: attSysID,
+			update_set_sys_id: xml.getNodeText('/unload/sys_remote_update_set/sys_id'),
+			update_set_name: xml.getNodeText('/unload/sys_remote_update_set/name')
+		});
+	}
+
+	g_scratchpad.mplc_data = {
+		update_sets: updateSets
+	};
+
+})(current, previous);]]></script>
+        <sys_class_name>sys_script</sys_class_name>
+        <sys_created_by>markus.kraus</sys_created_by>
+        <sys_created_on>2024-08-26 12:26:58</sys_created_on>
+        <sys_domain>global</sys_domain>
+        <sys_domain_path>/</sys_domain_path>
+        <sys_id>e2e0777493945214e02873718bba1056</sys_id>
+        <sys_mod_count>3</sys_mod_count>
+        <sys_name>MPLC App Ver - Scratchpad</sys_name>
+        <sys_overrides/>
+        <sys_package display_value="Marketplace Client" source="x_376096_mplc">2fe28b4497bf39103c2d3f56f053af4e</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="Marketplace Client">2fe28b4497bf39103c2d3f56f053af4e</sys_scope>
+        <sys_update_name>sys_script_e2e0777493945214e02873718bba1056</sys_update_name>
+        <sys_updated_by>markus.kraus</sys_updated_by>
+        <sys_updated_on>2024-08-26 14:33:21</sys_updated_on>
+        <template/>
+        <when>before_display</when>
+    </sys_script>
+    <sys_translated_text action="delete_multiple" query="documentkey=e2e0777493945214e02873718bba1056"/>
+</record_update>
