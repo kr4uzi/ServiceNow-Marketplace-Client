@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?><database>
     <element db_object_id="c93d1c58935492d0e02873718bba10c8" label="App Version" max_length="40" name="x_376096_mplc_app_version" type="collection">
-        <element attributes="readonly_clickthrough=true" label="App" max_length="32" name="app" reference="x_376096_mplc_app" type="reference"/>
+        <element attributes="readonly_clickthrough=true" label="App" max_length="32" name="app" reference="x_376096_mplc_app" reference_cascade_rule="cascade" reference_qual="null" reference_qual_condition="null" type="reference"/>
         <element display="true" label="Version" max_length="40" name="version" type="string"/>
         <element label="Hash" max_length="64" name="hash" type="string"/>
         <element label="Description" max_length="8000" name="description" type="html"/>

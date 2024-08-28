@@ -2,7 +2,7 @@
     <sys_script action="INSERT_OR_UPDATE">
         <abort_action>false</abort_action>
         <access>package_private</access>
-        <action_delete>false</action_delete>
+        <action_delete>true</action_delete>
         <action_insert>true</action_insert>
         <action_query>false</action_query>
         <action_update>true</action_update>
@@ -20,7 +20,7 @@
         </filter_condition>
         <is_rest>false</is_rest>
         <message/>
-        <name>MPLC Update Set - Calculate Hash</name>
+        <name>MPLC Update Set - Sync with App Version</name>
         <order>100</order>
         <priority>100</priority>
         <rest_method/>
@@ -31,37 +31,47 @@
         <role_conditions/>
         <script><![CDATA[(function executeRule(current, previous /*null when async*/) {
 
-	// Update the (Aggergated) Hash
-	const updateXmlGr = new GlideRecord('sys_update_xml');
-	updateXmlGr.addQuery('update_set', current.getUniqueValue());
-	updateXmlGr.addNotNullQuery('payload_hash');
-	updateXmlGr.query();
-
-	let hash = 0;
-	while (updateXmlGr.next()) {
-		hash += parseInt(updateXmlGr.payload_hash);
+	const op = current.operation();
+	if ((op == 'insert' || op == 'update') && current.x_376096_mplc_hash) {
+		// update the apps version entries where the hash no longer matches
+		const appVerGr = new GlideRecord('x_376096_mplc_app_version');
+		appVerGr.addQuery('update_set', current.sys_id);
+		appVerGr.addQuery('hash', '!=', current.x_376096_mplc_hash);
+		appVerGr.setValue('update_set', '');
+		appVerGr.updateMultiple();
+		
+		if (current.x_376096_mplc_hash) {
+			// update the app versions where the hash matches
+			const appVerGr = new GlideRecord('x_376096_mplc_app_version');
+			appVerGr.addQuery('hash', current.x_376096_mplc_hash);
+			appVerGr.setValue('update_set', current.sys_id);
+			appVerGr.updateMultiple('update_set', current.sys_id);
+		}
+	} else if (op == 'delete') {
+		const appVerGr = new GlideRecord('x_376096_mplc_app_version');
+		appVerGr.addQuery('update_set', current.sys_id);
+		appVerGr.setValue('update_set', '');
+		appVerGr.updateMultiple('update_set', current.sys_id);
 	}
-
-	current.x_376096_mplc_hash = String(hash);
 
 })(current, previous);]]></script>
         <sys_class_name>sys_script</sys_class_name>
         <sys_created_by>markus.kraus</sys_created_by>
-        <sys_created_on>2024-08-24 07:27:05</sys_created_on>
+        <sys_created_on>2024-08-28 06:09:16</sys_created_on>
         <sys_domain>global</sys_domain>
         <sys_domain_path>/</sys_domain_path>
-        <sys_id>c4b958dc931492d0e02873718bba10f7</sys_id>
-        <sys_mod_count>11</sys_mod_count>
-        <sys_name>MPLC Update Set - Calculate Hash</sys_name>
+        <sys_id>414ea4e993d81e14e02873718bba106f</sys_id>
+        <sys_mod_count>9</sys_mod_count>
+        <sys_name>MPLC Update Set - Sync with App Version</sys_name>
         <sys_overrides/>
         <sys_package display_value="Marketplace Client" source="x_376096_mplc">2fe28b4497bf39103c2d3f56f053af4e</sys_package>
         <sys_policy/>
         <sys_scope display_value="Marketplace Client">2fe28b4497bf39103c2d3f56f053af4e</sys_scope>
-        <sys_update_name>sys_script_c4b958dc931492d0e02873718bba10f7</sys_update_name>
+        <sys_update_name>sys_script_414ea4e993d81e14e02873718bba106f</sys_update_name>
         <sys_updated_by>markus.kraus</sys_updated_by>
-        <sys_updated_on>2024-08-28 16:48:27</sys_updated_on>
+        <sys_updated_on>2024-08-28 17:05:09</sys_updated_on>
         <template/>
-        <when>before</when>
+        <when>after</when>
     </sys_script>
-    <sys_translated_text action="delete_multiple" query="documentkey=c4b958dc931492d0e02873718bba10f7"/>
+    <sys_translated_text action="delete_multiple" query="documentkey=414ea4e993d81e14e02873718bba106f"/>
 </record_update>

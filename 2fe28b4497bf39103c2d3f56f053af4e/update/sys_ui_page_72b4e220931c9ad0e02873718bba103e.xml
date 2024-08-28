@@ -23,7 +23,6 @@
 
 	oAuthForm.querySelector('a#oauth-code-ref').addEventListener('click', function (event) {
 		this.setAttribute('disabled', '');
-		this.closest('.instructions').style.color = 'lightgrey';
 
 		var srcData = new FormData(this.closest('form'));
 		var data = new FormData();
@@ -39,6 +38,8 @@
 	});
 
 	oAuthForm.querySelector('a#oauth-token-ref').addEventListener('click', function (event) {
+		oAuthForm.querySelector('.code-instructions').style.color = 'lightgrey';
+
 		var srcData = new FormData(this.closest('form'));
 		var data = new FormData();
 		data.set('grant_type', 'authorization_code');
@@ -183,16 +184,16 @@
 		<div class="row">
 			<div class="col-md-6 form-group">
 				<div class="instructions code-instructions">
+					<hr />
+						<p>Note: Before you continue, please make sure you are already logged into the$[SP]<a target="_blank" href="https://developer.servicenow.com">developer portal ➚</a>.</p>
+						<p>This is required because the oauth redirect doesn't work for the developer portal due to its configuration.</p>
+					<hr/>
 					<ol>
 						<li>Open the browser$[SP]<b>console</b>$[SP]</li>
 						<li>Click$[SP]<a href="javascript:void(0)" id="oauth-code-ref">here</a>$[SP]to request the oauth</li>
 						<li>In the browser$[SP]<b>console</b>$[SP]open the$[SP]<b>[Network]</b>$[SP]tab and select the last (failed) request</li>
-						<li>Find the OAuth$[SP]<b>Code</b>$[SP]in the$[SP]<b>[Payload]</b>$[SP]section and copy the value into the field above</li>
+						<li>Find the OAuth$[SP]<b>Code</b>$[SP]in the$[SP]<b>[Payload]</b>$[SP]section and copy the value into the field below</li>
 					</ol>
-					<hr />
-						<p>Note: You need to be already logged into the$[SP]<a target="_blank" href="https://developer.servicenow.com">developer portal ➚</a>.</p>
-						<p>This is because the oauth redirect doesn't work for the developer portal due to the way it has been set up.</p>
-					<hr/>
 				</div>
 			</div>
 		</div>
@@ -207,7 +208,7 @@
 		<div class="row">
 			<div class="col-md-6 form-group">
 				<div class="instructions token-instructions">
-					<ol>
+					<ol start="5">
 						<li>Click$[SP]<a href="javascript:void(0)" id="oauth-token-ref">here</a>$[SP]to request the access token</li>
 						<li>The access token should be visible in frame below</li>
 					</ol>
@@ -291,13 +292,13 @@
         <sys_created_by>markus.kraus</sys_created_by>
         <sys_created_on>2024-08-25 12:20:17</sys_created_on>
         <sys_id>72b4e220931c9ad0e02873718bba103e</sys_id>
-        <sys_mod_count>62</sys_mod_count>
+        <sys_mod_count>65</sys_mod_count>
         <sys_name>devportal_oauth</sys_name>
         <sys_package display_value="Marketplace Client" source="x_376096_mplc">2fe28b4497bf39103c2d3f56f053af4e</sys_package>
         <sys_policy/>
         <sys_scope display_value="Marketplace Client">2fe28b4497bf39103c2d3f56f053af4e</sys_scope>
         <sys_update_name>sys_ui_page_72b4e220931c9ad0e02873718bba103e</sys_update_name>
         <sys_updated_by>markus.kraus</sys_updated_by>
-        <sys_updated_on>2024-08-26 11:21:46</sys_updated_on>
+        <sys_updated_on>2024-08-28 16:10:33</sys_updated_on>
     </sys_ui_page>
 </record_update>

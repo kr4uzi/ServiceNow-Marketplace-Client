@@ -7,8 +7,9 @@
         <client_callable>false</client_callable>
         <description/>
         <name>MPLCUtil</name>
-        <script><![CDATA[/* global Class, sn_cc, sn_ws, gs, x_376096_mplc, GlideStringUtil, XMLDocument2, GlideScriptedHierarchicalWorker, GlideScopedEvaluator */
-/* global GlideRecord, GlideRecordSecure */
+        <script><![CDATA[/* global Class, GlideStringUtil, XMLDocument2 */
+/* global sn_cc, sn_ws, gs, x_376096_mplc */
+/* global GlideRecord, GlideAggregate */
 /* eslint no-undef: "error" */
 var MPLCUtil = Class.create();
 MPLCUtil.prototype = {
@@ -32,11 +33,10 @@ MPLCUtil.prototype = {
 			if (sourceID) {
 				if (appGr.source == this.CONN_ALIAS.NOW_SHARE) {
 					const conn = importUtil.initNOWShareConn();
-					return importUtil.importNOWShareApp(conn, sourceID);
+					return importUtil.syncNOWShareApp(conn, sourceID);
 				} else if (appGr.source == this.CONN_ALIAS.NOW_STORE) {
 					const conn = importUtil.initNOWStoreConn();
-					const logoPath = 'keep';
-					return importUtil.importNOWStoreApp(conn, logoPath, sourceID);
+					return importUtil.syncNOWStoreApp(conn, sourceID);
 				} else {
 					errorMessages.push('Sync only implemented for Share and Store apps');
 				}	
@@ -71,15 +71,14 @@ MPLCUtil.prototype = {
 	 */
 	canImport: function (appVerGr) {
 		if (appVerGr.canRead() && appVerGr.app.source == this.CONN_ALIAS.NOW_SHARE && !appVerGr.update_set) {
-			const attGr = new GlideRecordSecure('sys_attachment');
-			attGr.addQuery('content_type', 'application/xml');
-			attGr.addQuery('table_name', appVerGr.getTableName());
-			attGr.addQuery('table_sys_id', appVerGr.getUniqueValue());
-			attGr.setLimit(2);
-			attGr.query();
-			if (attGr.next()) {
-				// installation is only possible if there is exactly one update set!
-				return !attGr.hasNext();
+			const attGa = new GlideAggregate('sys_attachment');
+			attGa.addQuery('content_type', 'application/xml');
+			attGa.addQuery('table_name', appVerGr.getTableName());
+			attGa.addQuery('table_sys_id', appVerGr.getUniqueValue());
+			attGa.addAggregate('COUNT');
+			attGa.query();
+			if (attGa.next()) {
+				return attGa.getAggregate('COUNT') == 1;
 			}
 		}
 
@@ -489,13 +488,13 @@ MPLCUtil.prototype = {
         <sys_created_by>markus.kraus</sys_created_by>
         <sys_created_on>2024-01-21 20:59:27</sys_created_on>
         <sys_id>e53bb6fe973f75503c2d3f56f053af5d</sys_id>
-        <sys_mod_count>151</sys_mod_count>
+        <sys_mod_count>155</sys_mod_count>
         <sys_name>MPLCUtil</sys_name>
         <sys_package display_value="Marketplace Client" source="x_376096_mplc">2fe28b4497bf39103c2d3f56f053af4e</sys_package>
         <sys_policy/>
         <sys_scope display_value="Marketplace Client">2fe28b4497bf39103c2d3f56f053af4e</sys_scope>
         <sys_update_name>sys_script_include_e53bb6fe973f75503c2d3f56f053af5d</sys_update_name>
         <sys_updated_by>markus.kraus</sys_updated_by>
-        <sys_updated_on>2024-08-27 22:15:58</sys_updated_on>
+        <sys_updated_on>2024-08-28 16:20:25</sys_updated_on>
     </sys_script_include>
 </record_update>

@@ -24,7 +24,7 @@ MPLCImport.prototype = {
 		}
 	},
 
-	importNOWStoreApp: function (conn, logoPath, sourceID) {
+	syncNOWStoreApp: function (conn, sourceID) {
 		const result = {
 			status: 'error',
 			messages: []
@@ -53,15 +53,31 @@ MPLCImport.prototype = {
 			appGr.source_id = sourceID;
 		}
 
+		appGr.name = details.title;
+		appGr.description = details.store_description;
+		appGr.url = conn.baseURL + '/sn_appstore_store.do#!/store/application/' + details.source_app_id;
+		appGr.app_scope = details.scope;
+		appGr.metadata = JSON.stringify({
+			downloads: details.trialCount || '?',
+			purchases: details.purchaseCount || '?',
+			custom_tables: details.apprepo_custom_table_count || '?',
+			application_type: details.application_type
+		});
+
 		const appSysID = appGr.getUniqueValue();
-		if (logoPath && logoPath != 'keep' && this.ext) {
-			const logoReq = new sn_ws.RESTMessageV2();
+		if (details.logo && this.ext) {
+			const logoReq = conn.request(details.logo);
 			logoReq.setHttpMethod('get');
-			logoReq.setEndpoint(conn.baseURL + '/' + logoPath);
+
+			if (appGr.isNewRecord()) {
+				// the insert needs to happend now, otherwise saveResponseBodyAsAttachment will throw
+				appGr.insert();
+			}
+
 			logoReq.saveResponseBodyAsAttachment(appGr.getTableName(), appSysID, 'logo');
 			const logoResp = logoReq.execute();
 			if (logoResp.haveError()) {
-				result.messages.push(`Failed to download ${logoPath}: ${logoResp.getErrorMessage()} (${logoResp.getErrorCode})`);
+				result.messages.push(`Failed to download ${details.logo}: ${logoResp.getErrorMessage()} (${logoResp.getErrorCode})`);
 			} else {
 				const attSysID = logoResp.getResponseAttachmentSysid();
 				const success = this.ext.updateAttachment(attSysID, {
@@ -83,23 +99,11 @@ MPLCImport.prototype = {
 					result.messages.push('Failed to set logo (please check for MPLCExt failure)');
 				}
 			}
-		} else if (!logoPath && appGr.logo) {
+		} else if (!details.logo && appGr.logo) {
 			// remove and delete the logo if it doesn't exist in the store anymore
 			this.gsa.deleteAttachment(appGr.logo);
 			appGr.logo = '';
 		}
-
-		appGr.name = details.title;
-		appGr.description = details.store_description;
-		appGr.url = conn.baseURL + '/sn_appstore_store.do#!/store/application/' + details.source_app_id;
-		appGr.app_scope = details.scope;
-
-		appGr.metadata = JSON.stringify({
-			downloads: details.trialCount || '?',
-			purchases: details.purchaseCount || '?',
-			custom_tables: details.apprepo_custom_table_count || '?',
-			application_type: details.application_type
-		});
 
 		if (appGr.isNewRecord()) {
 			appGr.insert();
@@ -144,7 +148,7 @@ MPLCImport.prototype = {
 		return result;
 	},
 
-	importNOWStoreApps: function () {
+	syncNOWStoreApps: function () {
 		const conn = this.initNOWStoreConn();
 		const apps = conn.data({
 			action: 'store.Search.GetLatestListing',
@@ -153,14 +157,14 @@ MPLCImport.prototype = {
 
 		let count = 0;
 		apps.forEach(base => {
-			const res = this.importNOWStoreApp(conn, base.logo, base.source_app_id);
+			const res = this.syncNOWStoreApp(conn, base.source_app_id, base.logo);
 			if (res.status != 'success') {
-				gs.error(`Failed to import Store App '${base.source_app_id}: ${res.messages.join('\n')}`);
+				gs.error(`Failed to sync Store App '${base.source_app_id}: ${res.messages.join('\n')}`);
 			}
 		});
 	},
 
-	importNOWShareApp: function (conn, sourceID, metadata) {
+	syncNOWShareApp: function (conn, sourceID, metadata) {
 		const result = {
 			status: 'error',
 			messages: []
@@ -179,9 +183,10 @@ MPLCImport.prototype = {
 			return result;
 		}
 
+		sourceID = details.project.permalink;
 		const appGr = new GlideRecord('x_376096_mplc_app');
 		appGr.addQuery('source', this.mplUtil.CONN_ALIAS.NOW_SHARE);
-		appGr.addQuery('source_id', details.permalink);
+		appGr.addQuery('source_id', sourceID);
 		appGr.setLimit(1);
 		appGr.query();
 		if (appGr.next()) {
@@ -189,12 +194,12 @@ MPLCImport.prototype = {
 		} else {
 			appGr.newRecord();
 			appGr.source = this.mplUtil.CONN_ALIAS.NOW_SHARE;
-			appGr.source_id = details.permalink;
+			appGr.source_id = sourceID;
 		}
 
 		appGr.name = details.project.title;
 		appGr.description = GlideStringUtil.unescapeHTML(details.project.description);
-		appGr.url = 'https://developer.servicenow.com' + details.project.project_urls.urls.latest_version;
+		appGr.url = details.project.project_urls.urls.latest_version;
 		if (metadata) {
 			appGr.metadata = JSON.stringify(metadata);
 		}
@@ -216,11 +221,9 @@ MPLCImport.prototype = {
 			}
 
 			versionGr.description = GlideStringUtil.unescapeHTML(details.product_details[version.key].release_notes);
-			const metaData = {
+			const versionMetadata = {
 				is_latest: version.key == activeVersionID
 			};
-
-			versionGr.metadata = JSON.stringify(metaData);
 
 			const updateSet = details.product_details[version.key].download_update_set;
 			const hasError = result.messages.length > 0;
@@ -253,7 +256,7 @@ MPLCImport.prototype = {
 						const attReq = new sn_ws.RESTMessageV2();
 						attReq.setEndpoint(attData.download_link);
 						attReq.setHttpMethod('get');
-						attReq.setRequestHeader('Authorization', 'Bearer ' + conn.getAccessToken());
+						attReq.setRequestHeader('Authorization', 'Bearer ' + conn.accessToken);
 
 						if (versionGr.isNewRecord()) {
 							// the insert needs to happend now, otherwise saveResponseBodyAsAttachment will throw
@@ -272,6 +275,8 @@ MPLCImport.prototype = {
 
 					if (attSysID) {
 						const doc = new XMLDocument2(this.gsa.getContentStream(attSysID));
+						const usSysID = doc.getNodeText('/unload/sys_remote_update_set/sys_id');
+
 						if (version.key == activeVersionID) {
 							const logo = this.mplUtil.getLogoFromXMLDoc(doc);
 							this.updateLogo(appGr, logo);
@@ -288,20 +293,29 @@ MPLCImport.prototype = {
 
 						let hash = 0;
 						for (let node = doc.getFirstNode('/unload/sys_update_xml/payload_hash'); node; node = doc.getNextNode(node)) {
-							hash += parseInt(node.getTextContent());
-						}
-
-						if (hash) {
-							const updateSetGr = new GlideRecord('sys_update_set');
-							updateSetGr.addQuery('x_376096_mplc_hash', hash);
-							updateSetGr.addQuery('state', 'complete');
-							updateSetGr.setLimit(1);
-							updateSetGr.query();
-							if (updateSetGr.next()) {
-								versionGr.update_set = updateSetGr.getUniqueValue();
+							// not sure if payload_hash can be empty (is an empty payload possible?)
+							const payloadHash = node.getTextContent();
+							if (payloadHash) {
+								hash += parseInt(payloadHash);
 							}
+						}						
 
-							versionGr.metadata.hash = String(hash);
+						const updateSetGr = new GlideRecord('sys_update_set');
+						const cond = updateSetGr.addQuery('remote_sys_id', usSysID);
+						if (hash) {
+							versionGr.hash = String(hash);
+							cond.addOrCondition('x_376096_mplc_hash', hash);
+						} else {
+							versionGr.hash = '';
+						}
+						
+						updateSetGr.addQuery('state', 'complete');
+						updateSetGr.setLimit(1);
+						updateSetGr.query();
+						if (updateSetGr.next()) {
+							versionGr.update_set = updateSetGr.getUniqueValue();
+						} else {
+							versionGr.update_set = '';
 						}
 					}
 				}
@@ -311,13 +325,15 @@ MPLCImport.prototype = {
 			// the "installed_version" of the app record is overwritten with the latest
 			// note: if this assumptions turns out to not be true, a simple glidequery after
 			// this loop can identify and set latest_version
-			if (versionGr.metadata.is_installed) {
+			if (versionMetadata.is_installed) {
 				appGr.installed_version = versionGr.getUniqueValue();
 			}
 
 			if (version.key == activeVersionID) {
 				appGr.latest_version = versionGr.getUniqueValue();
 			}
+
+			versionGr.metadata = JSON.stringify(versionMetadata);
 
 			if (versionGr.isNewRecord()) {
 				versionGr.insert();
@@ -336,7 +352,7 @@ MPLCImport.prototype = {
 		return result;
 	},
 
-	importNOWShareApps: function () {
+	syncNOWShareApps: function () {
 		const conn = this.initNOWShareConn();
 		// Access Token is optional but enables Update Set Download
 		let accessToken = new sn_cc.StandardCredentialsProvider()
@@ -344,7 +360,7 @@ MPLCImport.prototype = {
 			?.getAttribute('api_key');
 
 		let page = 1;
-		while (page < 40) {
+		while (page > 0) {
 			const pageData = conn.data({
 				action: 'share.all.apps.list',
 				data: {
@@ -367,7 +383,7 @@ MPLCImport.prototype = {
 				// They have to be parsed using URLSearchParams (which isn't available in ServiceNow JavaScript)
 				// or using an regex method below (which is also how the NOW implementation of the developer portal does it)
 				const sourceID = project.url.match(/contents\/([^?$]+)(\?|$)/)[1];
-				const res = this.importNOWShareApp(conn, sourceID, {
+				const res = this.syncNOWShareApp(conn, sourceID, {
 					created: project.created_on,
 					category: project.category,
 					product: project.product,
@@ -378,7 +394,7 @@ MPLCImport.prototype = {
 				});
 
 				if (res.status == 'error') {
-					gs.error(`Failed to import Share App '${sourceID}: ${res.messages.join('\n')}`);
+					gs.error(`Failed to sync Share App '${sourceID}: ${res.messages.join('\n')}`);
 				}
 			});
 		}
@@ -478,7 +494,7 @@ MPLCImport.prototype = {
 		return this._initConn('https://developer.servicenow.com', this.mplUtil.CONN_ALIAS.NOW_SHARE, 'devportal.do');
 	},
 
-	importGITApps: function () {
+	syncGITApps: function () {
 		const aliasGr = new GlideRecord('sys_alias');
 		aliasGr.addQuery('parent', this.mplUtil.CONN_ALIAS.GIT);
 		aliasGr.query();
@@ -632,13 +648,13 @@ MPLCImport.prototype = {
         <sys_created_by>markus.kraus</sys_created_by>
         <sys_created_on>2024-08-11 08:03:57</sys_created_on>
         <sys_id>1b95290493041210e02873718bba10a2</sys_id>
-        <sys_mod_count>75</sys_mod_count>
+        <sys_mod_count>87</sys_mod_count>
         <sys_name>MPLCImport</sys_name>
         <sys_package display_value="Marketplace Client" source="x_376096_mplc">2fe28b4497bf39103c2d3f56f053af4e</sys_package>
         <sys_policy/>
         <sys_scope display_value="Marketplace Client">2fe28b4497bf39103c2d3f56f053af4e</sys_scope>
         <sys_update_name>sys_script_include_1b95290493041210e02873718bba10a2</sys_update_name>
         <sys_updated_by>markus.kraus</sys_updated_by>
-        <sys_updated_on>2024-08-27 23:00:41</sys_updated_on>
+        <sys_updated_on>2024-08-28 16:41:58</sys_updated_on>
     </sys_script_include>
 </record_update>
