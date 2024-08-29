@@ -3,24 +3,22 @@
         <abort_action>false</abort_action>
         <access>package_private</access>
         <action_delete>false</action_delete>
-        <action_insert>true</action_insert>
+        <action_insert>false</action_insert>
         <action_query>false</action_query>
-        <action_update>true</action_update>
+        <action_update>false</action_update>
         <active>true</active>
         <add_message>false</add_message>
         <advanced>true</advanced>
         <change_fields>false</change_fields>
         <client_callable>false</client_callable>
-        <collection>sys_update_set</collection>
+        <collection>x_376096_mplc_app</collection>
         <condition/>
         <description/>
         <execute_function>false</execute_function>
-        <filter_condition table="sys_update_set">state=complete^EQ<item display_value="Complete" endquery="false" field="state" goto="false" newquery="false" operator="=" or="false" value="complete"/>
-            <item endquery="true" field="" goto="false" newquery="false" operator="=" or="false" value=""/>
-        </filter_condition>
+        <filter_condition/>
         <is_rest>false</is_rest>
         <message/>
-        <name>MPLC Update Set - Calculate Hash</name>
+        <name>MPLC App - Scratchpad</name>
         <order>100</order>
         <priority>100</priority>
         <rest_method/>
@@ -31,36 +29,28 @@
         <role_conditions/>
         <script><![CDATA[(function executeRule(current, previous /*null when async*/) {
 
-	const updateXmlGr = new GlideRecord('sys_update_xml');
-	updateXmlGr.addQuery('update_set', current.sys_id);
-	updateXmlGr.addNotNullQuery('payload_hash');
-	updateXmlGr.query();
-
-	let hash = 0;
-	while (updateXmlGr.next()) {
-		hash += parseInt(updateXmlGr.payload_hash);
-	}
-
-	current.x_376096_mplc_hash = String(hash);
+	g_scratchpad.mplc_data = {
+		source_id: current.getValue('source_id')
+	};
 
 })(current, previous);]]></script>
         <sys_class_name>sys_script</sys_class_name>
         <sys_created_by>markus.kraus</sys_created_by>
-        <sys_created_on>2024-08-24 07:27:05</sys_created_on>
+        <sys_created_on>2024-08-29 14:36:04</sys_created_on>
         <sys_domain>global</sys_domain>
         <sys_domain_path>/</sys_domain_path>
-        <sys_id>c4b958dc931492d0e02873718bba10f7</sys_id>
-        <sys_mod_count>13</sys_mod_count>
-        <sys_name>MPLC Update Set - Calculate Hash</sys_name>
+        <sys_id>6c1c27bd935c5654e02873718bba10c2</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name>MPLC App - Scratchpad</sys_name>
         <sys_overrides/>
         <sys_package display_value="Marketplace Client" source="x_376096_mplc">2fe28b4497bf39103c2d3f56f053af4e</sys_package>
         <sys_policy/>
         <sys_scope display_value="Marketplace Client">2fe28b4497bf39103c2d3f56f053af4e</sys_scope>
-        <sys_update_name>sys_script_c4b958dc931492d0e02873718bba10f7</sys_update_name>
+        <sys_update_name>sys_script_6c1c27bd935c5654e02873718bba10c2</sys_update_name>
         <sys_updated_by>markus.kraus</sys_updated_by>
-        <sys_updated_on>2024-08-29 14:01:52</sys_updated_on>
+        <sys_updated_on>2024-08-29 14:36:04</sys_updated_on>
         <template/>
-        <when>before</when>
+        <when>before_display</when>
     </sys_script>
-    <sys_translated_text action="delete_multiple" query="documentkey=c4b958dc931492d0e02873718bba10f7"/>
+    <sys_translated_text action="delete_multiple" query="documentkey=6c1c27bd935c5654e02873718bba10c2"/>
 </record_update>

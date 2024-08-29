@@ -57,6 +57,8 @@ MPLCImport.prototype = {
 		appGr.description = details.store_description;
 		appGr.url = conn.baseURL + '/sn_appstore_store.do#!/store/application/' + details.source_app_id;
 		appGr.app_scope = details.scope;
+		appGr.installed_version = '';
+		appGr.latest_version = '';
 		appGr.metadata = JSON.stringify({
 			downloads: details.trialCount || '?',
 			purchases: details.purchaseCount || '?',
@@ -107,8 +109,16 @@ MPLCImport.prototype = {
 
 		if (appGr.isNewRecord()) {
 			appGr.insert();
-		} else if (appGr.getElements().some(e => e.changes())) {
-			appGr.update();
+		}
+
+		const storeAppGr = new GlideRecord('sys_store_app');
+		storeAppGr.addQuery('sys_id', sourceID);
+		storeAppGr.setLimit(1);
+		storeAppGr.query();
+
+		let installedVersion = '';
+		if (storeAppGr.next()) {
+			installedVersion = storeAppGr.getValue('version');
 		}
 
 		details.versionsData.forEach(version => {
@@ -119,30 +129,48 @@ MPLCImport.prototype = {
 			versionGr.query();
 			if (versionGr.next()) {
 				// use existing app
-			} else if (version.isWithdrawn) {
-				// do not create new app version records for withdrawn versions
+			} else if (version.isWithdrawn && installedVersion != version.store_version) {
+				// do not create new app version records for withdrawn versions (unless the version is installed)
 				return;
 			} else {
 				versionGr.newRecord();
 				versionGr.app = appSysID;
 				versionGr.version = version.store_version;
+				versionGr.target_table = 'sys_store_app';
 			}
 
 			versionGr.description = version.release_notes;
 
-			versionGr.metadata = JSON.stringify({
+			const versionMetadata = {
 				withdrawn: version.isWithdrawn,
 				release_type: version.releaseType,
 				publish_date: version.publish_date,
 				is_latest: version.store_version == details.version
-			});
+			};
 			
+			versionGr.metadata = JSON.stringify(versionMetadata);
 			if (versionGr.isNewRecord()) {
 				versionGr.insert();
-			} else if (versionGr.getElements().some(e => e.changes())) {
+			} else /*if (versionGr.getElements().some(e => e.changes()))*/ {
 				versionGr.update();
 			}
+
+			const versionSysID = versionGr.getUniqueValue();
+			if (versionGr.version == installedVersion) {
+				appGr.installed_version = versionSysID;
+			}
+
+			if (versionMetadata.is_latest) {
+				appGr.latest_version = versionSysID;
+			}
 		});
+
+		// when the same GlideRecord has been 'insert()'-ed, a subsequent .update()
+		// will actually force a db-update (even if no fields have changed)
+		// (this is not the case if you re-initialize a gliderecord pointing to the same database row)
+		if (appGr.getElements().some(e => e.changes())) {
+			appGr.update();
+		}
 
 		result.status = result.messages.length == 0 ? 'success' : 'error';
 		return result;
@@ -200,8 +228,14 @@ MPLCImport.prototype = {
 		appGr.name = details.project.title;
 		appGr.description = GlideStringUtil.unescapeHTML(details.project.description);
 		appGr.url = details.project.project_urls.urls.latest_version;
+		appGr.installed_version = '';
+		appGr.latest_version = '';
 		if (metadata) {
 			appGr.metadata = JSON.stringify(metadata);
+		}
+
+		if (appGr.isNewRecord()) {
+			appGr.insert();
 		}
 
 		const appSysID = appGr.getUniqueValue();
@@ -218,12 +252,26 @@ MPLCImport.prototype = {
 				versionGr.newRecord();
 				versionGr.app = appSysID;
 				versionGr.version = version.name;
+				versionGr.target_table = 'sys_update_set';
 			}
 
 			versionGr.description = GlideStringUtil.unescapeHTML(details.product_details[version.key].release_notes);
+			versionGr.target = '';
 			const versionMetadata = {
 				is_latest: version.key == activeVersionID
 			};
+
+			let attSysID = '';
+			const attGr = new GlideRecord('sys_attachment');
+			attGr.addQuery('table_name', versionGr.getTableName());
+			attGr.addQuery('table_sys_id', versionGr.getUniqueValue());
+			attGr.addQuery('content_type', 'application/xml');
+			attGr.orderByDesc('sys_created_on');
+			attGr.setLimit(1);
+			attGr.query();
+			if (attGr.next()) {
+				attSysID = attGr.getUniqueValue();
+			}
 
 			const updateSet = details.product_details[version.key].download_update_set;
 			const hasError = result.messages.length > 0;
@@ -239,7 +287,6 @@ MPLCImport.prototype = {
 					conn.accessToken = '';
 				} else {
 					const attData = JSON.parse(attDataResp.getBody()).result;
-					let attSysID = '';
 					if (attData.hash) {
 						const attGr = new GlideRecord('sys_attachment');
 						attGr.addQuery('table_name', versionGr.getTableName());
@@ -249,6 +296,9 @@ MPLCImport.prototype = {
 						attGr.query();
 						if (attGr.next()) {
 							attSysID = attGr.getUniqueValue();
+						} else {
+							// force reload of the update set
+							attSysID = '';
 						}
 					}
 
@@ -272,52 +322,57 @@ MPLCImport.prototype = {
 							attSysID = attResp.getResponseAttachmentSysid();
 						}
 					}
+				}
+			}
 
-					if (attSysID) {
-						const doc = new XMLDocument2(this.gsa.getContentStream(attSysID));
-						const usSysID = doc.getNodeText('/unload/sys_remote_update_set/sys_id');
+			if (attSysID) {
+				const doc = new XMLDocument2(this.gsa.getContentStream(attSysID));
+				const usSysID = doc.getNodeText('/unload/sys_remote_update_set/sys_id');
+				if (usSysID) {
+					versionMetadata.update_set_type = 'remote';
 
-						if (version.key == activeVersionID) {
-							const logo = this.mplUtil.getLogoFromXMLDoc(doc);
-							this.updateLogo(appGr, logo);
+					if (version.key == activeVersionID) {
+						const logo = this.mplUtil.getLogoFromXMLDoc(doc);
+						this.updateLogo(appGr, logo);
 
-							appGr.app_sys_id = doc.getNodeText('/unload/sys_remote_update_set/application') || '';
-							appGr.app_scope = doc.getNodeText('/unload/sys_remote_update_set/application_scope') || '';
+						appGr.app_sys_id = doc.getNodeText('/unload/sys_remote_update_set/application') || '';
+						appGr.app_scope = doc.getNodeText('/unload/sys_remote_update_set/application_scope') || '';
 
-							// todo: verify if overriding the name makes sense
-							if (appGr.app_sys_id.startsWith('x_')) {
-								// in case this is a custom app, we override the app's name (which by default is the project title for share-content)
-								appGr.name = doc.getNodeText('/unload/sys_remote_update_set/application_name');
-							}
-						}
-
-						let hash = 0;
-						for (let node = doc.getFirstNode('/unload/sys_update_xml/payload_hash'); node; node = doc.getNextNode(node)) {
-							// not sure if payload_hash can be empty (is an empty payload possible?)
-							const payloadHash = node.getTextContent();
-							if (payloadHash) {
-								hash += parseInt(payloadHash);
-							}
-						}						
-
-						const updateSetGr = new GlideRecord('sys_update_set');
-						const cond = updateSetGr.addQuery('remote_sys_id', usSysID);
-						if (hash) {
-							versionGr.hash = String(hash);
-							cond.addOrCondition('x_376096_mplc_hash', hash);
-						} else {
-							versionGr.hash = '';
-						}
-						
-						updateSetGr.addQuery('state', 'complete');
-						updateSetGr.setLimit(1);
-						updateSetGr.query();
-						if (updateSetGr.next()) {
-							versionGr.update_set = updateSetGr.getUniqueValue();
-						} else {
-							versionGr.update_set = '';
+						// todo: verify if overriding the name makes sense
+						if (appGr.app_sys_id.startsWith('x_')) {
+							// in case this is a custom app, we override the app's name (which by default is the project title for share-content)
+							appGr.name = doc.getNodeText('/unload/sys_remote_update_set/application_name');
 						}
 					}
+
+					let hash = 0;
+					for (let node = doc.getFirstNode('/unload/sys_update_xml/payload_hash'); node; node = doc.getNextNode(node)) {
+						// not sure if payload_hash can be empty (is an empty payload possible?)
+						const payloadHash = node.getTextContent();
+						if (payloadHash) {
+							hash += parseInt(payloadHash);
+						}
+					}						
+
+					const updateSetGr = new GlideRecord('sys_update_set');
+					const cond = updateSetGr.addQuery('remote_sys_id', usSysID);
+					if (hash) {
+						versionGr.hash = String(hash);
+						cond.addOrCondition('x_376096_mplc_hash', hash);
+					} else {
+						versionGr.hash = '';
+					}
+					
+					updateSetGr.addQuery('state', 'complete');
+					updateSetGr.setLimit(1);
+					updateSetGr.query();
+					if (updateSetGr.next()) {
+						versionGr.target = updateSetGr.getUniqueValue();
+					}
+				} else {
+					// some folks literally upload XML exports of the update set containing ony the sys_update_set xml-export
+					// (instead of using the 'Export to XML' UI Action)
+					versionMetadata.update_set_type = 'invalid';
 				}
 			}
 
@@ -342,9 +397,7 @@ MPLCImport.prototype = {
 			}
 		});
 
-		if (appGr.isNewRecord()) {
-			appGr.insert();
-		} else if (appGr.getElements().some(e => e.changes())) {
+		if (appGr.getElements().some(e => e.changes())) {
 			appGr.update();
 		}
 
@@ -518,7 +571,6 @@ MPLCImport.prototype = {
 					appGr.source_id = appData.git.id;
 				}
 
-				//updateLogo(jsLibs, eps, gsa, appGr, appData);
 				this.updateLogo(appGr, appData.app.logo);
 
 				appGr.name = appData.app.name;
@@ -539,57 +591,6 @@ MPLCImport.prototype = {
 				}
 			});
 		}
-
-		/*function updateLogo(jsLibs, eps, gsa, appGr, appData) {
-			const logoData = appData.app.logo;
-			if (logoData) {
-				const attGr = new GlideRecord('sys_attachment');
-				attGr.addQuery('sys_id', appGr.logo);
-				attGr.setLimit(1);
-				attGr.query();
-				if (attGr.next()) {
-					if (attGr.hash == logoData.hash) {
-						// logo didn't change
-						return;
-					}
-
-					gsa.deleteAttachment(attGr.sys_id);
-				}
-			}
-
-			appGr.logo = '';
-
-			if (eps.length && logoData) {
-				const Base64 = jsLibs.require('Base64');
-
-				const data = [];
-				logoData.content_base64.forEach(str => Base64.atob(str).split('').forEach(x => data.push(x.charCodeAt(0))));
-				const bytes = new Uint8Array(data);
-
-				let logoBase64 = '';
-				if (logoData.compressed) {
-					const gzip = jsLibs.require('gzip');
-					const decompressed = new Uint8Array(gzip.unzip(bytes));
-					logoBase64 = Base64.fromUint8Array(decompressed);
-				} else {
-					logoBase64 = Base64.fromUint8Array(bytes);
-				}
-
-				let attSysID = gsa.writeBase64(appGr, 'logo', logoData.content_type, logoBase64);
-				if (attSysID) {
-					const success = eps[0].updateAttachment(attSysID, {
-						table_name: 'ZZ_YY' + appGr.getTableName(),
-						content_type: logoData.content_type
-					});
-
-					if (success) {
-						appGr.logo = attSysID;
-					} else {
-						gsa.deleteAttachment(attSysID);
-					}
-				}
-			}
-		}*/
 	},
 
 	updateLogo: function (appGr, logoData) {
@@ -648,13 +649,13 @@ MPLCImport.prototype = {
         <sys_created_by>markus.kraus</sys_created_by>
         <sys_created_on>2024-08-11 08:03:57</sys_created_on>
         <sys_id>1b95290493041210e02873718bba10a2</sys_id>
-        <sys_mod_count>87</sys_mod_count>
+        <sys_mod_count>98</sys_mod_count>
         <sys_name>MPLCImport</sys_name>
         <sys_package display_value="Marketplace Client" source="x_376096_mplc">2fe28b4497bf39103c2d3f56f053af4e</sys_package>
         <sys_policy/>
         <sys_scope display_value="Marketplace Client">2fe28b4497bf39103c2d3f56f053af4e</sys_scope>
         <sys_update_name>sys_script_include_1b95290493041210e02873718bba10a2</sys_update_name>
         <sys_updated_by>markus.kraus</sys_updated_by>
-        <sys_updated_on>2024-08-28 16:41:58</sys_updated_on>
+        <sys_updated_on>2024-08-29 13:36:08</sys_updated_on>
     </sys_script_include>
 </record_update>

@@ -15,7 +15,8 @@
         <condition/>
         <description/>
         <execute_function>false</execute_function>
-        <filter_condition table="x_376096_mplc_app_version">update_setVALCHANGES^EQ<item endquery="false" field="update_set" goto="false" newquery="false" operator="VALCHANGES" or="false" value=""/>
+        <filter_condition table="x_376096_mplc_app_version">target_table=sys_update_set^targetVALCHANGES^EQ<item endquery="false" field="target_table" goto="false" newquery="false" operator="=" or="false" value="sys_update_set"/>
+            <item endquery="false" field="target" goto="false" newquery="false" operator="VALCHANGES" or="false" value=""/>
             <item endquery="true" field="" goto="false" newquery="false" operator="=" or="false" value=""/>
         </filter_condition>
         <is_rest>false</is_rest>
@@ -32,15 +33,9 @@
         <script><![CDATA[(function executeRule(current, previous /*null when async*/) {
 
 	const appGr = current.app.getRefRecord();
-	if (current.update_set) {
-		// only set the app installed_version to this record if it is the latest installed version
-		const appVerGr = new GlideRecord('x_376096_mplc_app_version');
-		appVerGr.addQuery('app', appGr.sys_id);
-		appVerGr.addNotNullQuery('update_set');
-		appVerGr.orderByDesc('version');
-		appVerGr.setLimit(1);
-		appVerGr.query();
-		if (appVerGr.next()) {
+	if (current.target) {
+		const appVerGr = getLatestAppVersion(appGr.sys_id);
+		if (appVerGr.isValidRecord()) {
 			if (appVerGr.sys_id == current.sys_id) {
 				appGr.installed_version = current.sys_id;
 				appGr.update();
@@ -48,13 +43,8 @@
 		}
 	} else {
 		if (appGr.getValue('installed_version') == current.sys_id) {
-			const appVerGr = new GlideRecord('x_376096_mplc_app_version');
-			appVerGr.addQuery('app', appGr.sys_id);
-			appVerGr.addNotNullQuery('update_set');
-			appVerGr.orderByDesc('version');
-			appVerGr.setLimit(1);
-			appVerGr.query();
-			if (appVerGr.next()) {
+			const appVerGr = getLatestAppVersion(appGr.sys_id);
+			if (appVerGr.isValidRecord()) {
 				appGr.installed_version = appVerGr.sys_id;
 			} else {
 				appGr.installed_version = '';
@@ -64,6 +54,17 @@
 		}
 	}
 
+	function getLatestAppVersion(appSysID) {
+		const appVerGr = new GlideRecord('x_376096_mplc_app_version');
+		appVerGr.addQuery('app', appSysID);
+		appVerGr.addNotNullQuery('target');
+		appVerGr.orderByDesc('version');
+		appVerGr.setLimit(1);
+		appVerGr.query();
+		appVerGr.next();
+		return appVerGr;
+	}
+
 })(current, previous);]]></script>
         <sys_class_name>sys_script</sys_class_name>
         <sys_created_by>markus.kraus</sys_created_by>
@@ -71,7 +72,7 @@
         <sys_domain>global</sys_domain>
         <sys_domain_path>/</sys_domain_path>
         <sys_id>71b1cb2993d8de14e02873718bba1072</sys_id>
-        <sys_mod_count>2</sys_mod_count>
+        <sys_mod_count>3</sys_mod_count>
         <sys_name>MPLC App Version - Update Set Changes</sys_name>
         <sys_overrides/>
         <sys_package display_value="Marketplace Client" source="x_376096_mplc">2fe28b4497bf39103c2d3f56f053af4e</sys_package>
@@ -79,7 +80,7 @@
         <sys_scope display_value="Marketplace Client">2fe28b4497bf39103c2d3f56f053af4e</sys_scope>
         <sys_update_name>sys_script_71b1cb2993d8de14e02873718bba1072</sys_update_name>
         <sys_updated_by>markus.kraus</sys_updated_by>
-        <sys_updated_on>2024-08-28 17:06:11</sys_updated_on>
+        <sys_updated_on>2024-08-29 13:49:51</sys_updated_on>
         <template/>
         <when>after</when>
     </sys_script>

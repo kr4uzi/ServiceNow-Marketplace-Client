@@ -7,7 +7,7 @@
 
 }]]></client_script_v2>
         <comments/>
-        <condition>new x_376096_mplc.MPLCUtil().canImport(current)</condition>
+        <condition>new x_376096_mplc.MPLCUtil().canOpenInAppManager(current)</condition>
         <form_action>true</form_action>
         <form_button>false</form_button>
         <form_button_v2>false</form_button_v2>
@@ -27,57 +27,11 @@
         <list_save_with_form_button>false</list_save_with_form_button>
         <list_style/>
         <messages/>
-        <name>Import Update Set</name>
-        <onclick>mplc_install()</onclick>
+        <name>Open in App Manager ➚</name>
+        <onclick>mplc_openInAppManager()</onclick>
         <order>100</order>
-        <script><![CDATA[function mplc_install() {
-	if (g_scratchpad.mplc_data.update_sets.length != 1) {
-		g_form.addErrorMessage('Import only possible with exactly one Update Set present');
-		return;
-	}
-
-	var updateSet = g_scratchpad.mplc_data.update_sets[0];
-	var gm = new GlideModal('upload');
-	gm.setTitle('Update Set Import');
-	var uploaded = false;
-	gm.renderIframe('upload.do?sysparm_target=sys_remote_update_set', function () {
-		if (uploaded) {
-			gm.destroy();
-			gm = new GlideModalForm(updateSet.update_set.name, 'sys_remote_update_set');
-			gm.setSysID(updateSet.update_set.sys_id);
-			gm.render();
-			return;
-		}
-
-		gm.maximizeHeight();
-
-		var iframeDoc = gm.$window.find('iframe').get(0).contentDocument;
-		iframeDoc.querySelector('.navbar').style.display = 'none';
-
-		// prevent user from entering data or submitting
-		var inputFile = iframeDoc.querySelector('input[type=file]');
-		inputFile.setAttribute('readonly', '');
-
-		var submitBtn = iframeDoc.querySelector('input[type=submit]');
-		submitBtn.setAttribute('readonly', '');
-
-		var req = new XMLHttpRequest();
-		req.responseType = 'blob';
-		req.open('get', '/api/now/attachment/' + updateSet.attachment.sys_id + '/file', true);
-		req.setRequestHeader('X-UserToken', g_ck);
-		req.addEventListener('load', function () {
-			var headers = JSON.parse(req.getResponseHeader('X-Attachment-Metadata'));
-			var list = new DataTransfer();
-			list.items.add(new File([req.response], headers.file_name));
-			
-			inputFile.files = list.files;
-			submitBtn.click();
-			g_form.addInfoMessage('Retrieved Update Set: <a href="/sys_remote_update_set.do?sys_id=' + updateSet.update_set.sys_id + '">LINK</a>')
-			uploaded = true;
-		});
-
-		req.send();
-	});
+        <script><![CDATA[function mplc_openInAppManager() {
+	g_navigation.open('/now/app-manager/home/app/id/' + g_scratchpad.mplc_data.source_id, 'mplc_app_manager');
 }]]></script>
         <show_insert>false</show_insert>
         <show_multiple_update>false</show_multiple_update>
@@ -85,20 +39,20 @@
         <show_update>true</show_update>
         <sys_class_name>sys_ui_action</sys_class_name>
         <sys_created_by>markus.kraus</sys_created_by>
-        <sys_created_on>2024-08-26 12:02:43</sys_created_on>
+        <sys_created_on>2024-08-29 14:36:20</sys_created_on>
         <sys_domain>global</sys_domain>
         <sys_domain_path>/</sys_domain_path>
-        <sys_id>134927fc93905214e02873718bba10bf</sys_id>
-        <sys_mod_count>14</sys_mod_count>
-        <sys_name>Import Update Set</sys_name>
+        <sys_id>237be7b9935c5654e02873718bba1076</sys_id>
+        <sys_mod_count>3</sys_mod_count>
+        <sys_name>Open in App Manager ➚</sys_name>
         <sys_overrides/>
         <sys_package display_value="Marketplace Client" source="x_376096_mplc">2fe28b4497bf39103c2d3f56f053af4e</sys_package>
         <sys_policy/>
         <sys_scope display_value="Marketplace Client">2fe28b4497bf39103c2d3f56f053af4e</sys_scope>
-        <sys_update_name>sys_ui_action_134927fc93905214e02873718bba10bf</sys_update_name>
+        <sys_update_name>sys_ui_action_237be7b9935c5654e02873718bba1076</sys_update_name>
         <sys_updated_by>markus.kraus</sys_updated_by>
-        <sys_updated_on>2024-08-29 13:34:29</sys_updated_on>
-        <table>x_376096_mplc_app_version</table>
+        <sys_updated_on>2024-08-29 14:40:50</sys_updated_on>
+        <table>x_376096_mplc_app</table>
         <ui11_compatible>false</ui11_compatible>
         <ui16_compatible>false</ui16_compatible>
         <x_376096_pxp_client_script><![CDATA[/* eslint no-undef: "error" */

@@ -32,26 +32,29 @@
         <script><![CDATA[(function executeRule(current, previous /*null when async*/) {
 
 	const op = current.operation();
-	if ((op == 'insert' || op == 'update') && current.x_376096_mplc_hash) {
+	if (op == 'insert' || op == 'update') {
 		// update the apps version entries where the hash no longer matches
+		// while this should be only one (in theory) we might have the same update set
+		// either being used for multiple NOW Share projects and/or same versions within the project
 		const appVerGr = new GlideRecord('x_376096_mplc_app_version');
-		appVerGr.addQuery('update_set', current.sys_id);
+		appVerGr.addQuery('target', current.sys_id);
 		appVerGr.addQuery('hash', '!=', current.x_376096_mplc_hash);
-		appVerGr.setValue('update_set', '');
+		appVerGr.setValue('target', '');
 		appVerGr.updateMultiple();
 		
 		if (current.x_376096_mplc_hash) {
 			// update the app versions where the hash matches
 			const appVerGr = new GlideRecord('x_376096_mplc_app_version');
 			appVerGr.addQuery('hash', current.x_376096_mplc_hash);
-			appVerGr.setValue('update_set', current.sys_id);
-			appVerGr.updateMultiple('update_set', current.sys_id);
+			appVerGr.addQuery('target_table', 'sys_update_set');
+			appVerGr.setValue('target', current.sys_id);
+			appVerGr.updateMultiple('target', current.sys_id);
 		}
 	} else if (op == 'delete') {
 		const appVerGr = new GlideRecord('x_376096_mplc_app_version');
-		appVerGr.addQuery('update_set', current.sys_id);
-		appVerGr.setValue('update_set', '');
-		appVerGr.updateMultiple('update_set', current.sys_id);
+		appVerGr.addQuery('target', current.sys_id);
+		appVerGr.setValue('target', '');
+		appVerGr.updateMultiple('target', current.sys_id);
 	}
 
 })(current, previous);]]></script>
@@ -61,7 +64,7 @@
         <sys_domain>global</sys_domain>
         <sys_domain_path>/</sys_domain_path>
         <sys_id>414ea4e993d81e14e02873718bba106f</sys_id>
-        <sys_mod_count>9</sys_mod_count>
+        <sys_mod_count>11</sys_mod_count>
         <sys_name>MPLC Update Set - Sync with App Version</sys_name>
         <sys_overrides/>
         <sys_package display_value="Marketplace Client" source="x_376096_mplc">2fe28b4497bf39103c2d3f56f053af4e</sys_package>
@@ -69,7 +72,7 @@
         <sys_scope display_value="Marketplace Client">2fe28b4497bf39103c2d3f56f053af4e</sys_scope>
         <sys_update_name>sys_script_414ea4e993d81e14e02873718bba106f</sys_update_name>
         <sys_updated_by>markus.kraus</sys_updated_by>
-        <sys_updated_on>2024-08-28 17:05:09</sys_updated_on>
+        <sys_updated_on>2024-08-29 13:57:50</sys_updated_on>
         <template/>
         <when>after</when>
     </sys_script>
