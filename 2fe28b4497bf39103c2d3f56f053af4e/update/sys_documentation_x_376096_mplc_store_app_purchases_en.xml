@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update>
+    <sys_documentation element="purchases" label="Purchases" language="en" table="x_376096_mplc_store_app">
+        <sys_documentation action="INSERT_OR_UPDATE">
+            <element>purchases</element>
+            <help/>
+            <hint/>
+            <label>Purchases</label>
+            <language>en</language>
+            <name>x_376096_mplc_store_app</name>
+            <plural>Purchases</plural>
+            <sys_class_name>sys_documentation</sys_class_name>
+            <sys_created_by>markus.kraus@intrux.ch</sys_created_by>
+            <sys_created_on>2025-08-20 19:06:34</sys_created_on>
+            <sys_mod_count>0</sys_mod_count>
+            <sys_name>Purchases</sys_name>
+            <sys_package display_value="Marketplace Client" source="x_376096_mplc">2fe28b4497bf39103c2d3f56f053af4e</sys_package>
+            <sys_policy/>
+            <sys_scope display_value="Marketplace Client">2fe28b4497bf39103c2d3f56f053af4e</sys_scope>
+            <sys_update_name>sys_documentation_x_376096_mplc_store_app_purchases_en</sys_update_name>
+            <sys_updated_by>markus.kraus@intrux.ch</sys_updated_by>
+            <sys_updated_on>2025-08-20 19:06:34</sys_updated_on>
+            <url/>
+            <url_target/>
+        </sys_documentation>
+    </sys_documentation>
+</record_update>

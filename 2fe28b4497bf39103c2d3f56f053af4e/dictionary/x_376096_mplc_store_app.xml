@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?><database>
+    <element db_object_id="0e8fb124c3a32290de14d8477d0131c9" extends="x_376096_mplc_app" label="Store App" max_length="40" name="x_376096_mplc_store_app" type="collection">
+        <element label="Downloads" max_length="40" name="downloads" type="integer"/>
+        <element label="Custom Tables" max_length="40" name="custom_tables" type="integer"/>
+        <element label="Purchases" max_length="40" name="purchases" type="integer"/>
+    </element>
+</database>
