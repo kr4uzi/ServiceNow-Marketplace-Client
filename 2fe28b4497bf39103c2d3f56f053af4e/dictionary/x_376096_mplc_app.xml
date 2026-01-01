@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?><database>
-    <element db_object_id="3a1ea52b93f38210e02873718bba107d" label="App" max_length="40" name="x_376096_mplc_app" type="collection">
-        <element label="Logo" max_length="40" name="logo" type="user_image"/>
-        <element attributes="readonly_clickthrough=true" label="Source" max_length="32" name="source" reference="sys_alias" reference_qual="parent=ce0f535697fbf1503c2d3f56f053afee^ORid=x_376096_mplc.NOW_Share^EQ" reference_qual_condition="parent=ce0f535697fbf1503c2d3f56f053afee^ORid=x_376096_mplc.NOW_Share^EQ" type="reference"/>
-        <element label="App Scope" max_length="18" name="app_scope" type="string"/>
+    <element audit="true" db_object_id="3a1ea52b93f38210e02873718bba107d" label="App" max_length="40" name="x_376096_mplc_app" type="collection">
         <element attributes="readonly_clickthrough=true" label="Latest Version" max_length="32" name="latest_version" reference="x_376096_mplc_app_version" type="reference"/>
-        <element label="App Sys ID" max_length="32" name="app_sys_id" type="string"/>
-        <element default="javascript:current.getTableName();" label="Class" max_length="80" name="sys_class_name" type="sys_class_name"/>
-        <element label="Source ID" max_length="512" name="source_id" type="string"/>
-        <element label="URL" max_length="1024" name="url" type="url"/>
-        <element attributes="readonly_clickthrough=true" label="Installed Version" max_length="32" name="installed_version" reference="x_376096_mplc_app_version" type="reference"/>
-        <element label="Metadata" max_length="4000" name="metadata" type="simple_name_values"/>
+        <element attributes="readonly_clickthrough=true" label="Source" max_length="32" name="source" reference="sys_alias" reference_qual="parent=ce0f535697fbf1503c2d3f56f053afee^ORid=x_376096_mplc.NOW_Share^EQ" reference_qual_condition="parent=ce0f535697fbf1503c2d3f56f053afee^ORid=x_376096_mplc.NOW_Share^EQ" type="reference"/>
         <element label="Description" max_length="500" name="description" type="html"/>
+        <element attributes="readonly_clickthrough=true" label="Installed Version" max_length="32" name="installed_version" reference="x_376096_mplc_app_version" type="reference"/>
+        <element label="Source ID" max_length="512" name="source_id" type="string"/>
+        <element label="Logo" max_length="40" name="logo" type="user_image"/>
+        <element label="App Scope" max_length="18" name="app_scope" type="string"/>
+        <element default="javascript:current.getTableName();" dynamic_default_value="b5cb83a85f220100a9ad2572f2b4773c" label="Class" max_length="80" name="sys_class_name" type="sys_class_name" use_dynamic_default="true"/>
         <element label="Name" max_length="100" name="name" type="string"/>
+        <element label="Metadata" max_length="4000" name="metadata" type="simple_name_values"/>
+        <element label="App Sys ID" max_length="32" name="app_sys_id" type="string"/>
+        <element label="URL" max_length="1024" name="url" type="url"/>
         <index name="index">
             <element name="installed_version"/>
         </index>

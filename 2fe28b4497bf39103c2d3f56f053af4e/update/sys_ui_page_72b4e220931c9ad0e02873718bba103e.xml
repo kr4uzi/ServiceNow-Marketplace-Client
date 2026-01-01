@@ -4,24 +4,27 @@
         <client_script><![CDATA[/* global document, GlideUI, FormData, URLSearchParams */
 /* eslint no-undef: "error" */
 (function () {
-	var oAuthForm = document.querySelector('form');
-	var pageForm = document.querySelector('form[id^=form]');
+	var form = document.querySelector('form');
+	var submitButton = form.querySelector('button[type=submit]');
 
-	var iframe = oAuthForm.querySelector('iframe');
-	var codeNode = oAuthForm.querySelector('form input[name=code]');
-	codeNode.closest('div.row').style.display = 'none';
+	var iframe = form.querySelector('iframe');
+	var codeNode = form.querySelector('form input[name=code]');
+	codeNode.addEventListener('change', function () {
+		if (this.value) submitButton.removeAttribute('disabled');
+		else submitButton.setAttribute('disabled', '');
+	});
 
-
-	oAuthForm.querySelector('button[type=submit]').addEventListener('click', function (event) {
+	form.querySelector('button[id=start]').addEventListener('click', function (event) {
 		event.preventDefault(); // prevent submit
 		this.setAttribute('disabled', '');
 
-		oAuthForm.querySelector('input[name=state]').setAttribute('readonly', '');
-		oAuthForm.querySelector('.code-instructions').style.display = 'block';
+		form.querySelector('input[name=state]').setAttribute('readonly', '');
+		form.querySelector('.code-instructions').style.display = 'block';
 		codeNode.closest('div.row').style.display = 'block';
+		submitButton.style.display = 'block';
 	});
 
-	oAuthForm.querySelector('a#oauth-code-ref').addEventListener('click', function (event) {
+	form.querySelector('a#oauth-code-ref').addEventListener('click', function (event) {
 		this.setAttribute('disabled', '');
 
 		var srcData = new FormData(this.closest('form'));
@@ -34,10 +37,10 @@
 		iframe.src = 'https://developer.servicenow.com/oauth_auth.do?' + new URLSearchParams(data);
 		
 		codeNode.removeAttribute('readonly');
-		oAuthForm.querySelector('.token-instructions').style.display = 'block';
 	});
 
-	oAuthForm.querySelector('a#oauth-token-ref').addEventListener('click', function (event) {
+	// this no longer works because of 'X-Frame-Options' is now 'sameorigin'
+	/*oAuthForm.querySelector('a#oauth-token-ref').addEventListener('click', function (event) {
 		oAuthForm.querySelector('.code-instructions').style.color = 'lightgrey';
 
 		var srcData = new FormData(this.closest('form'));
@@ -77,7 +80,7 @@
 		form.submit();
 
 		pageForm.style.display = 'block';
-	});
+	});*/
 })();]]></client_script>
         <description/>
         <direct>false</direct>
@@ -104,12 +107,12 @@
 	.instructions {
 		display: none;
 	}
-	iframe#oauth-frame {
+	form iframe {
 		display: none;
 		border: none;
 		width: 100%;
 	}
-	form[id^=form] {
+	form button[type=submit] {
 		display: none;
 	}
 	</style>
@@ -127,7 +130,7 @@
 	<p>Note: The public OAuth Client for the ServiceNow Agent (phone) app is used here.
 	Just like the phone app uses the generated token to access the NOW API, the Marketplace Client can use the token to download and process content from the NOW Share
 	</p>
-	<form>
+	<g:ui_form>
 		<div class="row">
 			<div class="col-md-6 form-group">
 				<label for="code_verifier" class="col-xs-12 col-md-3 col-lg-4 control-label">Code Verifier</label>
@@ -178,7 +181,7 @@
 		</div>
 		<div class="row">
 			<div class="col-md-6 form-group">
-				<button type="submit" class="pull-right">Start</button>
+				<button type="button" id="start" class="pull-right">Start</button>
 			</div>
 		</div>
 		<div class="row">
@@ -197,7 +200,7 @@
 				</div>
 			</div>
 		</div>
-		<div class="row">
+		<div class="row" style="display: none">
 			<div class="col-md-6 form-group">
 				<label for="code" class="col-xs-12 col-md-3 col-lg-4 control-label">Code</label>
 				<div class="col-xs-10 col-sm-9 col-md-6 col-lg-5 form-field input_controls">
@@ -207,27 +210,14 @@
 		</div>
 		<div class="row">
 			<div class="col-md-6 form-group">
-				<div class="instructions token-instructions">
-					<ol start="5">
-						<li>Click$[SP]<a href="javascript:void(0)" id="oauth-token-ref">here</a>$[SP]to request the access token</li>
-						<li>The access token should be visible in frame below</li>
-					</ol>
-				</div>
+				<button type="submit" disabled="" class="pull-right">Continue</button>
 			</div>
 		</div>
-		<div class="row">
-			<div class="col-md-6 form-group">
-				<iframe id="oauth-frame" />
-			</div>
-		</div>
-	</form>
-	<g:ui_form>
-		<textarea name="oauth_data" rows="7" cols="100" />
-		<button type="submit">Save OAuth Token</button>
+		<iframe/>
 	</g:ui_form>
 </j:jelly>]]></html>
         <name>devportal_oauth</name>
-        <processing_script><![CDATA[/* global gs, x_376096_mplc */
+        <processing_script><![CDATA[/* global gs, sn_ws, x_376096_mplc */
 /* global request, response */
 /* global GlideRecordSecure */
 /* eslint no-undef: "error" */
@@ -240,50 +230,76 @@
 	
 	// this
 	// [represents the values from the <g:ui_form>]
-	
-	const oAuthSchemaMessage = 'JSON input of type { access_token: string, refresh_token: string, expires_in: number, token_type: "Bearer" } expected';
+
+	if (!this.code) {
+		gs.addErrorMessage('code input empty!');
+		response.sendRedirect('x_376096_mplc_devportal_oauth.do');
+		return;
+	}
+
+	const tokenReq = new sn_ws.RESTMessageV2();
+	tokenReq.setEndpoint('https://developer.servicenow.com/oauth_token.do');
+	tokenReq.setHttpMethod('post');
+	tokenReq.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+	tokenReq.setRequestBody('grant_type=authorization_code'
+		+ '&code=' + this.code
+		+ '&client_id=' + this.client_id
+		+ '&client_secret=' + encodeURIComponent(this.client_secret)
+		+ '&redirect_uri=' + encodeURIComponent(this.redirect_uri)
+		+ '&code_verifier=' + this.code_verifier
+		+ '&state=' + encodeURIComponent(this.state)
+	);
+	const tokenResp = tokenReq.execute();
+	if (tokenResp.haveError()) {
+		gs.addErrorMessage(tokenResp.getErrorMessage());
+		response.sendRedirect('x_376096_mplc_devportal_oauth.do');
+		return;
+	}
+
+	let oAuthData = null;
 	try {
-		const oauthData = JSON.parse(this.oauth_data);
-		if (!oauthData.access_token || !oauthData.refresh_token || !oauthData.expires_in || oauthData.token_type != 'Bearer') {
+		oAuthData = JSON.parse(tokenResp.getBody());
+		if (!oAuthData.access_token || !oAuthData.refresh_token || !oAuthData.expires_in || oAuthData.token_type != 'Bearer') {
 			throw new Error();
 		}
-
-		const shareAlias = new x_376096_mplc.MPLCUtil().CONN_ALIAS.NOW_SHARE;
-		const tokenName = `NOW Share (${gs.getUser().getName()})`;
-		const credGr = new GlideRecordSecure('api_key_credentials');
-		credGr.addQuery('name', tokenName);
-		credGr.addQuery('tag', 'CONTAINS', shareAlias);
-		credGr.orderByDesc('active'); // prefer active token if one exists
-		credGr.setLimit(1);
-		credGr.query();
-		if (credGr.next()) {
-			credGr.active = true;
-		} else {
-			credGr.newRecord();
-			credGr.name = tokenName;
-			credGr.tag = shareAlias;
-		}
-
-		credGr.api_key = oauthData.access_token;
-		credGr.authentication_key = oauthData.refresh_token;
-		credGr.order = oauthData.expires_in;
-		
-		let success = false;
-		if (credGr.isNewRecord()) {
-			success = credGr.insert() != null;
-		} else {
-			success = credGr.update() != null;
-		}
-
-		if (success) {
-			gs.addInfoMessage(gs.getMessage('OAuth Token saved'));
-			response.sendRedirect('sysauto_script.do?sys_id=75d62fcc9300d210e02873718bba1014');
-		} else {
-			gs.addErrorMessage('Failed to insert/update OAuth Token');
-			response.sendRedirect('x_376096_mplc_devportal_oauth.do');
-		}
 	} catch (e) {
-		gs.addErrorMessage(oAuthSchemaMessage);
+		gs.addErrorMessage('JSON input of type { access_token: string, refresh_token: string, expires_in: number, token_type: "Bearer" } expected');
+		response.sendRedirect('x_376096_mplc_devportal_oauth.do');
+		return;
+	}
+	
+	const shareAlias = new x_376096_mplc.MPLCUtil().CONN_ALIAS.NOW_SHARE;
+	const tokenName = `NOW Share (${gs.getUser().getName()})`;
+	const credGr = new GlideRecordSecure('api_key_credentials');
+	credGr.addQuery('name', tokenName);
+	credGr.addQuery('tag', 'CONTAINS', shareAlias);
+	credGr.orderByDesc('active'); // prefer active token if one exists
+	credGr.setLimit(1);
+	credGr.query();
+	if (credGr.next()) {
+		credGr.active = true;
+	} else {
+		credGr.newRecord();
+		credGr.name = tokenName;
+		credGr.tag = shareAlias;
+	}
+
+	credGr.api_key = oAuthData.access_token;
+	credGr.authentication_key = oAuthData.refresh_token;
+	credGr.order = oAuthData.expires_in;
+	
+	let success = false;
+	if (credGr.isNewRecord()) {
+		success = credGr.insert() != null;
+	} else {
+		success = credGr.update() != null;
+	}
+
+	if (success) {
+		gs.addInfoMessage(gs.getMessage('OAuth Token saved'));
+		response.sendRedirect('sysauto_script.do?sys_id=75d62fcc9300d210e02873718bba1014');
+	} else {
+		gs.addErrorMessage('Failed to insert/update OAuth Token');
 		response.sendRedirect('x_376096_mplc_devportal_oauth.do');
 	}
 
@@ -292,13 +308,13 @@
         <sys_created_by>markus.kraus</sys_created_by>
         <sys_created_on>2024-08-25 12:20:17</sys_created_on>
         <sys_id>72b4e220931c9ad0e02873718bba103e</sys_id>
-        <sys_mod_count>65</sys_mod_count>
+        <sys_mod_count>82</sys_mod_count>
         <sys_name>devportal_oauth</sys_name>
         <sys_package display_value="Marketplace Client" source="x_376096_mplc">2fe28b4497bf39103c2d3f56f053af4e</sys_package>
         <sys_policy/>
         <sys_scope display_value="Marketplace Client">2fe28b4497bf39103c2d3f56f053af4e</sys_scope>
         <sys_update_name>sys_ui_page_72b4e220931c9ad0e02873718bba103e</sys_update_name>
-        <sys_updated_by>markus.kraus</sys_updated_by>
-        <sys_updated_on>2024-08-28 16:10:33</sys_updated_on>
+        <sys_updated_by>markus.kraus@intrux.ch</sys_updated_by>
+        <sys_updated_on>2025-11-22 13:28:55</sys_updated_on>
     </sys_ui_page>
 </record_update>

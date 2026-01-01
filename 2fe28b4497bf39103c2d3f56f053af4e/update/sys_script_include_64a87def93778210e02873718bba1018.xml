@@ -6,14 +6,16 @@
         <caller_access/>
         <client_callable>false</client_callable>
         <description>Implements extension point x_376096_mplc.MPLCExt</description>
+        <mobile_callable>false</mobile_callable>
         <name>MPLCExt</name>
+        <sandbox_callable>false</sandbox_callable>
         <script><![CDATA[/* global Class, GlideRecord, GlideScopedEvaluator */
 /* eslint no-undef: "error" */
 var MPLCExt = Class.create();
 MPLCExt.prototype = {
 	initialize: function () {
-		const scriptGr = new GlideRecord('sys_rte_eb_script_operation');
-		scriptGr.addQuery('sys_id', '26659daf97fb39503c2d3f56f053af90');
+		const scriptGr = new GlideRecord('clone_cleanup_script');
+		scriptGr.addQuery('sys_scope', 'global');
 		scriptGr.setLimit(1);
 		scriptGr.query();
 		if (scriptGr.next()) {
@@ -27,7 +29,6 @@ MPLCExt.prototype = {
 	 * @param {number} ms - milliseconds
 	 */
 	sleep: function (ms) {
-		this.scriptGr.sys_scope = 'global';
 		this.scriptGr.script = 'gs.sleep(ms)';
 		new GlideScopedEvaluator().evaluateScript(this.scriptGr, 'script', {
 			ms: ms
@@ -48,7 +49,6 @@ MPLCExt.prototype = {
 			}
 		}
 
-		this.scriptGr.sys_scope = 'global';
 		this.scriptGr.script = `(function (attSysID, values) {
 			var attGr = new GlideRecord('sys_attachment');
 			attGr.addQuery('sys_id', attSysID);
@@ -75,13 +75,13 @@ MPLCExt.prototype = {
         <sys_created_by>markus.kraus</sys_created_by>
         <sys_created_on>2024-08-09 20:08:55</sys_created_on>
         <sys_id>64a87def93778210e02873718bba1018</sys_id>
-        <sys_mod_count>4</sys_mod_count>
+        <sys_mod_count>7</sys_mod_count>
         <sys_name>MPLCExt</sys_name>
         <sys_package display_value="Marketplace Client" source="x_376096_mplc">2fe28b4497bf39103c2d3f56f053af4e</sys_package>
         <sys_policy/>
         <sys_scope display_value="Marketplace Client">2fe28b4497bf39103c2d3f56f053af4e</sys_scope>
         <sys_update_name>sys_script_include_64a87def93778210e02873718bba1018</sys_update_name>
-        <sys_updated_by>markus.kraus</sys_updated_by>
-        <sys_updated_on>2024-08-10 09:10:46</sys_updated_on>
+        <sys_updated_by>markus.kraus@intrux.ch</sys_updated_by>
+        <sys_updated_on>2026-01-01 16:08:52</sys_updated_on>
     </sys_script_include>
 </record_update>

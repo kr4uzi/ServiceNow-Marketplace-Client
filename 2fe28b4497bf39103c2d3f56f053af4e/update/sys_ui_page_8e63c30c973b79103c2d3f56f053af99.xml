@@ -98,7 +98,7 @@ function addFakeUIPolicy(g_form) {
 					icon: 'mpl-status-incomplete icon-circle-solid'
 				};
 
-				const credentials = new sn_cc.StandardCredentialsProvider().getCredentialByID(mplcUtil.CONN_ALIAS.NOW_SHARE);
+				const credentials = new sn_cc.StandardCredentialsProvider().getCredentialByAliasID(mplcUtil.CONN_ALIAS.NOW_SHARE);
 				if (credentials?.getAttribute('api_key')) {
 					status.value = 'ok';
 					status.message = 'NOW Share connected and valid OAuth Token configured';
@@ -222,12 +222,14 @@ function addFakeUIPolicy(g_form) {
 					</div>
 				</div>
 			</j:forEach>
-			<j:if test="${gitHubSources.length == 0}">
+		</div>
+		<j:if test="${gitHubSources.length == 0}">
+			<div class="row">
 				<div class="col col-lg-12">
 					<p style="color: orange;">No Sources Configured</p>
 				</div>
-			</j:if>
-		</div>
+			</div>
+		</j:if>
 	</div>
 </j:jelly>]]></html>
         <name>overview</name>
@@ -254,13 +256,13 @@ function addFakeUIPolicy(g_form) {
         <sys_created_by>markus.kraus</sys_created_by>
         <sys_created_on>2024-01-14 07:14:03</sys_created_on>
         <sys_id>8e63c30c973b79103c2d3f56f053af99</sys_id>
-        <sys_mod_count>122</sys_mod_count>
+        <sys_mod_count>124</sys_mod_count>
         <sys_name>overview</sys_name>
         <sys_package display_value="Marketplace Client" source="x_376096_mplc">2fe28b4497bf39103c2d3f56f053af4e</sys_package>
         <sys_policy/>
         <sys_scope display_value="Marketplace Client">2fe28b4497bf39103c2d3f56f053af4e</sys_scope>
         <sys_update_name>sys_ui_page_8e63c30c973b79103c2d3f56f053af99</sys_update_name>
-        <sys_updated_by>markus.kraus</sys_updated_by>
-        <sys_updated_on>2024-08-27 09:38:17</sys_updated_on>
+        <sys_updated_by>markus.kraus@intrux.ch</sys_updated_by>
+        <sys_updated_on>2025-11-22 13:38:36</sys_updated_on>
     </sys_ui_page>
 </record_update>
